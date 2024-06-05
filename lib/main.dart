@@ -29,6 +29,7 @@
 //   }
 // }
 
+import 'package:demo/pages/login/index.dart';
 import 'package:demo/themes/dark_mode.dart';
 import 'package:demo/themes/light_mode.dart';
 import 'package:demo/themes/theme_provider.dart';
@@ -36,8 +37,12 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'pages/home/index.dart';
 import 'package:demo/models/playlistProvider.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
   runApp(
     MultiProvider(
       providers: [
@@ -61,7 +66,16 @@ class MyApp extends StatelessWidget {
           debugShowCheckedModeBanner: false,
           title: 'Provider Theme Changer',
           theme: value.darkTheme == false ? lightMode : darkMode,
-          home: const HomePage(),
+          home: StreamBuilder(
+            stream: FirebaseAuth.instance.authStateChanges(),
+            builder: (context, snapshot) {
+              if (snapshot.hasData) {
+                return const HomePage();
+              } else {
+                return const LoginScreen();
+              }
+            },
+          ),
         ),
       ),
     );
