@@ -66,16 +66,7 @@ class MyApp extends StatelessWidget {
           debugShowCheckedModeBanner: false,
           title: 'Provider Theme Changer',
           theme: value.darkTheme == false ? lightMode : darkMode,
-          home: StreamBuilder(
-            stream: FirebaseAuth.instance.authStateChanges(),
-            builder: (context, snapshot) {
-              if (snapshot.hasData) {
-                return const HomePage();
-              } else {
-                return const LoginScreen();
-              }
-            },
-          ),
+          home: FirebaseAuth.instance.currentUser != null ? const HomePage() :const LoginScreen(),
         ),
       ),
     );

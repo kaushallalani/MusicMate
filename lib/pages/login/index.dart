@@ -47,21 +47,19 @@ class _LoginScreenState extends State<LoginScreen> {
 
   void signInWithGoogle() async {
     String res = await AuthServices().signInWithGoogle();
-    if (res != "Success") {
+    if (res == "Success") {
+      setState(() {
+        isLoading == true;
+      });
+
+      Navigator.of(context).pushReplacement(
+          MaterialPageRoute(builder: (context) => const HomePage()));
+    } else {
       setState(() {
         isLoading = false;
       });
 
       showSnackBar(context, res);
-    } else {
-      setState(() {
-        isLoading == true;
-      });
-
-      if (res == "Success") {
-        Navigator.of(context).pushReplacement(
-            MaterialPageRoute(builder: (context) => const HomePage()));
-      }
     }
   }
 
