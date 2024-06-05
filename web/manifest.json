@@ -1,6 +1,6 @@
 {
-    "name": "demo",
-    "short_name": "demo",
+    "name": "musicmate",
+    "short_name": "musicmate",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",

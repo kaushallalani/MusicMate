@@ -1,6 +1,6 @@
 // ignore_for_file: deprecated_member_use
 
-import 'package:demo/pages/settings/index.dart';
+import 'package:musicmate/pages/settings/index.dart';
 import 'package:flutter/material.dart';
 
 class Mydrawer extends StatelessWidget {

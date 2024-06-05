@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:demo/models/song.dart';
+import 'package:musicmate/models/song.dart';
 
 class Playlistprovider extends ChangeNotifier {
   // playlist of songs
