@@ -7,7 +7,9 @@ import 'package:musicmate/themes/dark_mode.dart';
 import 'package:musicmate/themes/light_mode.dart';
 import 'package:musicmate/themes/theme_provider.dart';
 import 'package:provider/provider.dart';
-
+import 'package:shared_preferences/shared_preferences.dart';
+import 'pages/home/index.dart';
+// import 'package:demo/models/playlistProvider.dart';
 import 'package:firebase_core/firebase_core.dart';
 
 void main() async {
@@ -24,10 +26,43 @@ void main() async {
   );
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
+  MyApp({super.key});
+
+  @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  bool isLogin = false;
   final routeConfig = NavigationConfig(stackNavigation);
 
-  MyApp({super.key});
+  @override
+  void initState() {
+    super.initState();
+    initialCall();
+  }
+
+  void initialCall() async {
+    var prefs = await SharedPreferences.getInstance();
+    var islogin = prefs.getBool('isLogin');
+
+    if (islogin != null) {
+      if (islogin == true) {
+        setState(() {
+          isLogin = true;
+        });
+      } else {
+        setState(() {
+          isLogin = false;
+        });
+      }
+    } else {
+      setState(() {
+        isLogin = false;
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
