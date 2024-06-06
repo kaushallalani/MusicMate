@@ -1,5 +1,6 @@
 // ignore_for_file: deprecated_member_use
 
+import 'package:demo/pages/login/index.dart';
 import 'package:demo/pages/settings/index.dart';
 import 'package:demo/services/authentication.dart';
 import 'package:flutter/material.dart';
@@ -60,6 +61,8 @@ class Mydrawer extends StatelessWidget {
               leading: const Icon(Icons.logout),
               onTap: () async {
                 await AuthServices().signOut();
+                Navigator.of(context).pushReplacement(MaterialPageRoute(
+                    builder: (context) => const LoginScreen()));
               },
             ),
           )

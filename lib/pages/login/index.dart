@@ -1,7 +1,6 @@
 import 'package:demo/components/snackbar.dart';
 import 'package:demo/pages/home/index.dart';
 import 'package:demo/services/authentication.dart';
-import 'package:demo/themes/metrics.dart';
 import 'package:flutter/material.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -26,41 +25,47 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   void loginUser() async {
-    String res = await AuthServices().loginUser(
-        email: _emailController.text, password: _passwordController.text);
+    setState(() {
+      isLoading = true;
+    });
 
-    if (res == "Success") {
-      setState(() {
-        isLoading = true;
-      });
+    Future.delayed(const Duration(seconds: 1), () async {
+      String res = await AuthServices().loginUser(
+          email: _emailController.text, password: _passwordController.text);
 
-      Navigator.of(context).pushReplacement(
-          MaterialPageRoute(builder: (context) => const HomePage()));
-    } else {
-      setState(() {
-        isLoading = false;
-      });
+      if (res == "Success") {
+        setState(() {
+          isLoading = false;
+        });
+        Navigator.of(context).pushReplacement(
+            MaterialPageRoute(builder: (context) => const HomePage()));
+      } else {
+        setState(() {
+          isLoading = false;
+        });
 
-      showSnackBar(context, res);
-    }
+        showSnackBar(context, res);
+      }
+    });
   }
 
   void signInWithGoogle() async {
-    String res = await AuthServices().signInWithGoogle();
-    if (res == "Success") {
-      setState(() {
-        isLoading == true;
-      });
+    setState(() {
+      isLoading == true;
+    });
 
-      Navigator.of(context).pushReplacement(
-          MaterialPageRoute(builder: (context) => const HomePage()));
-    } else {
-      setState(() {
-        isLoading = false;
-      });
-
-      showSnackBar(context, res);
-    }
+    Future.delayed(const Duration(seconds: 1), () async {
+      String res = await AuthServices().signInWithGoogle();
+      if (res == "Success") {
+        Navigator.of(context).pushReplacement(
+            MaterialPageRoute(builder: (context) => const HomePage()));
+      } else {
+        showSnackBar(context, res);
+        setState(() {
+          isLoading = false;
+        });
+      }
+    });
   }
 
   @override
@@ -74,80 +79,93 @@ class _LoginScreenState extends State<LoginScreen> {
         centerTitle: true,
         backgroundColor: Colors.blue,
       ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            SizedBox(
-              width: MediaQuery.of(context).size.width / 2,
-              child: TextField(
-                controller: _emailController,
-                decoration: const InputDecoration(hintText: 'Email'),
-              ),
-            ),
-            const SizedBox(
-              height: 30.0,
-            ),
-            SizedBox(
-              width: MediaQuery.of(context).size.width / 2,
-              child: TextField(
-                controller: _passwordController,
-                obscureText: passwordVisible ? false : true,
-                decoration: InputDecoration(
-                  suffixIcon: IconButton(
-                    icon: Icon(passwordVisible
-                        ? Icons.visibility
-                        : Icons.visibility_off),
-                    onPressed: () {
-                      setState(() {
-                        passwordVisible = !passwordVisible;
-                      });
-                    },
-                  ),
-                  hintText: 'Password',
-                ),
-              ),
-            ),
-            const SizedBox(
-              height: 30.0,
-            ),
-            ElevatedButton(
-              onPressed: loginUser,
-              child: const Text('Login'),
-            ),
-            const SizedBox(
-              height: 30.0,
-            ),
-            Row(
+      body: Stack(
+        children: [
+          Center(
+            child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Container(
-                  child: Divider(),
-                  width: Metrics.width(context) * 0.35,
+                SizedBox(
+                  width: MediaQuery.of(context).size.width / 2,
+                  child: TextField(
+                    controller: _emailController,
+                    decoration: const InputDecoration(hintText: 'Email'),
+                  ),
                 ),
-                Container(
-                  child: Center(child: Text("Or")),
-                  width: Metrics.width(context) * 0.15,
+                const SizedBox(
+                  height: 30.0,
                 ),
-                Container(
-                  child: Divider(),
-                  width: Metrics.width(context) * 0.35,
+                SizedBox(
+                  width: MediaQuery.of(context).size.width / 2,
+                  child: TextField(
+                    controller: _passwordController,
+                    obscureText: !passwordVisible,
+                    decoration: InputDecoration(
+                      suffixIcon: IconButton(
+                        icon: Icon(
+                          passwordVisible
+                              ? Icons.visibility
+                              : Icons.visibility_off,
+                        ),
+                        onPressed: () {
+                          setState(() {
+                            passwordVisible = !passwordVisible;
+                          });
+                        },
+                      ),
+                      hintText: 'Password',
+                    ),
+                  ),
+                ),
+                const SizedBox(
+                  height: 30.0,
+                ),
+                ElevatedButton(
+                  onPressed: loginUser,
+                  child: const Text('Login'),
+                ),
+                const SizedBox(
+                  height: 30.0,
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    SizedBox(
+                      width: MediaQuery.of(context).size.width * 0.35,
+                      child: const Divider(),
+                    ),
+                    SizedBox(
+                      width: MediaQuery.of(context).size.width * 0.15,
+                      child: const Center(child: Text("Or")),
+                    ),
+                    SizedBox(
+                      width: MediaQuery.of(context).size.width * 0.35,
+                      child: const Divider(),
+                    ),
+                  ],
+                ),
+                Center(
+                  child: MaterialButton(
+                    minWidth: MediaQuery.of(context).size.width * 0.07,
+                    onPressed: signInWithGoogle,
+                    child: Image.asset(
+                      'assets/images/google.png',
+                      fit: BoxFit.contain,
+                      width: MediaQuery.of(context).size.width * 0.09,
+                    ),
+                  ),
                 ),
               ],
             ),
-            Center(
-              child: MaterialButton(
-                onPressed: signInWithGoogle,
-                child: Image.asset(
-                  'assets/images/google.png',
-                  fit: BoxFit.contain,
-                  width: Metrics.width(context) * 0.09,
-                ),
-                minWidth: Metrics.width(context) * 0.07,
+          ),
+          if (isLoading)
+            Container(
+              color: Colors.black.withOpacity(0.5),
+              child: const Center(
+                child: CircularProgressIndicator(),
               ),
-            )
-          ],
-        ),
+            ),
+        ],
       ),
     );
   }
