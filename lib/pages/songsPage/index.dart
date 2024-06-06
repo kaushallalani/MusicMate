@@ -1,19 +1,17 @@
-// ignore_for_file: deprecated_member_use
-
-import 'package:demo/components/newBox.dart';
-import 'package:demo/models/playlistProvider.dart';
 import 'package:flutter/material.dart';
+import 'package:musicmate/components/newBox.dart';
+import 'package:musicmate/models/playlistProvider.dart';
 import 'package:provider/provider.dart';
 
-class SongPage extends StatelessWidget {
-  const SongPage({super.key});
+class SongsPage extends StatelessWidget {
+  const SongsPage({super.key});
 
 //convert dru in to min:sec
 
   String formatTime(Duration duration) {
     String twoDigitSeconds =
         duration.inSeconds.remainder(60).toString().padLeft(2, '0');
-    String formattedTime = "${duration.inMinutes}:${twoDigitSeconds}";
+    String formattedTime = "${duration.inMinutes}:$twoDigitSeconds";
 
     return formattedTime;
   }
@@ -28,7 +26,7 @@ class SongPage extends StatelessWidget {
       final currentSong = playlist[value.currentSongIndex ?? 0];
       //return scaffold UI
       return Scaffold(
-        backgroundColor: Theme.of(context).colorScheme.background,
+        backgroundColor: Theme.of(context).colorScheme.surface,
         body: SafeArea(
           child: Padding(
             padding: const EdgeInsets.only(left: 25, right: 25, bottom: 25),
@@ -40,12 +38,12 @@ class SongPage extends StatelessWidget {
                   children: [
                     IconButton(
                       onPressed: () => Navigator.pop(context),
-                      icon: Icon(Icons.arrow_back),
+                      icon: const Icon(Icons.arrow_back),
                     ),
-                    Text("P L A Y L I S T"),
+                    const Text("P L A Y L I S T"),
                     IconButton(
                       onPressed: () {},
-                      icon: Icon(Icons.menu),
+                      icon: const Icon(Icons.menu),
                     )
                   ],
                 ),
@@ -67,7 +65,7 @@ class SongPage extends StatelessWidget {
                               children: [
                                 Text(
                                   currentSong.songName,
-                                  style: TextStyle(
+                                  style: const TextStyle(
                                     fontWeight: FontWeight.bold,
                                     fontSize: 20,
                                   ),
@@ -75,7 +73,7 @@ class SongPage extends StatelessWidget {
                                 Text(currentSong.artistName)
                               ],
                             ),
-                            Icon(
+                            const Icon(
                               Icons.favorite,
                               color: Colors.red,
                             )
@@ -96,9 +94,9 @@ class SongPage extends StatelessWidget {
                           //start
                           Text(formatTime(value.currentDuration)),
                           //shuffle
-                          Icon(Icons.shuffle),
+                          const Icon(Icons.shuffle),
                           //repert
-                          Icon(Icons.repeat),
+                          const Icon(Icons.repeat),
                           //end
                           Text(formatTime(value.totalDuration)),
                         ],
@@ -132,7 +130,7 @@ class SongPage extends StatelessWidget {
                     Expanded(
                       child: GestureDetector(
                         onTap: value.playPreviousSong,
-                        child: NewBox(
+                        child: const NewBox(
                           child: Icon(Icons.skip_previous),
                         ),
                       ),
@@ -154,7 +152,7 @@ class SongPage extends StatelessWidget {
                     Expanded(
                       child: GestureDetector(
                         onTap: value.playNextSong,
-                        child: NewBox(
+                        child: const NewBox(
                           child: Icon(Icons.skip_next),
                         ),
                       ),

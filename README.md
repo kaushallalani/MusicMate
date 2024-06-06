@@ -1,4 +1,4 @@
-# demo
+# musicmate
 
 A new Flutter project.
 

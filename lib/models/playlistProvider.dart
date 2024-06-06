@@ -1,6 +1,6 @@
 // ignore: file_names
 import 'package:flutter/material.dart';
-import 'package:demo/models/song.dart';
+import 'package:musicmate/models/song.dart';
 import 'package:audioplayers/audioplayers.dart';
 
 class Playlistprovider extends ChangeNotifier {

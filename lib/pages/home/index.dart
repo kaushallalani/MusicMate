@@ -1,10 +1,12 @@
-// ignore_for_file: deprecated_member_use
+import 'dart:ffi';
 
-import 'package:demo/components/myDrawer.dart';
-import 'package:demo/pages/songsPage/index.dart';
 import 'package:flutter/material.dart';
-import 'package:demo/models/playlistProvider.dart';
-import 'package:demo/models/song.dart';
+import 'package:go_router/go_router.dart';
+import 'package:musicmate/components/index.dart';
+import 'package:musicmate/constants/theme.dart';
+import 'package:musicmate/models/playlistProvider.dart';
+import 'package:musicmate/models/song.dart';
+import 'package:musicmate/navigation/app_navigation.dart';
 import 'package:provider/provider.dart';
 
 class HomePage extends StatefulWidget {
@@ -17,6 +19,7 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
 // get the playlist provider
   late final dynamic playlistProvider;
+  int currentIndex = 0;
   @override
   void initState() {
     super.initState();
@@ -25,23 +28,24 @@ class _HomePageState extends State<HomePage> {
   }
 
 // go to a song
-  void goToSong(int songIndex) {
+  void goToSong(int songIndex, BuildContext context) {
 // update current song index
     playlistProvider.currentSongIndex = songIndex;
 // navigate to song page
 
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => const SongPage(),
-      ),
-    );
+    context.push(NAVIGATION.songsPage);
+    // Navigator.push(
+    //   context,
+    //   MaterialPageRoute(
+    //     builder: (context) => SongsPage(),
+    //   ),
+    // );
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Theme.of(context).colorScheme.background,
+      backgroundColor: Theme.of(context).colorScheme.surface,
       appBar: AppBar(
         title: const Text('P L A Y L I S T'),
       ),
@@ -65,7 +69,7 @@ class _HomePageState extends State<HomePage> {
               title: Text(song.songName),
               subtitle: Text(song.artistName),
               leading: Image.asset(song.albumArtImagePath),
-              onTap: () => goToSong(index),
+              onTap: () => goToSong(index, context),
             );
           },
         );
@@ -73,3 +77,10 @@ class _HomePageState extends State<HomePage> {
     );
   }
 }
+
+
+// Container(
+//         // height: Metrics.height(context) * 0.08,
+//         decoration: const BoxDecoration(
+//             color: Colors.red,
+//             border: Border(top: BorderSide(color: Colors.grey))),

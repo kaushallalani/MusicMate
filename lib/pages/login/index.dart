@@ -1,7 +1,9 @@
-import 'package:demo/components/snackbar.dart';
-import 'package:demo/pages/home/index.dart';
-import 'package:demo/services/authentication.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import 'package:logger/logger.dart';
+import 'package:musicmate/components/snackbar.dart';
+import 'package:musicmate/navigation/app_navigation.dart';
+import 'package:musicmate/services/authentication.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({Key? key}) : super(key: key);
@@ -11,17 +13,28 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-  final TextEditingController _emailController = TextEditingController();
-  final TextEditingController _passwordController = TextEditingController();
+  final TextEditingController _emailController =
+      TextEditingController(text: 'dhanraj@malinator.com');
+  final TextEditingController _passwordController =
+      TextEditingController(text: 'Abc@223133');
 
   bool isLoading = false;
   bool passwordVisible = false;
+  final log = Logger();
 
   @override
   void dispose() {
     super.dispose();
     _emailController.dispose();
     _passwordController.dispose();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    // if (isLoading == false) {
+    //   context.push(NAVIGATION.dashboard);
+    // }
   }
 
   void loginUser() async {
@@ -33,19 +46,20 @@ class _LoginScreenState extends State<LoginScreen> {
       String res = await AuthServices().loginUser(
           email: _emailController.text, password: _passwordController.text);
 
+      log.d(res);
       if (res == "Success") {
         setState(() {
           isLoading = false;
         });
-        Navigator.of(context).pushReplacement(
-            MaterialPageRoute(builder: (context) => const HomePage()));
       } else {
         setState(() {
           isLoading = false;
         });
 
-        showSnackBar(context, res);
+        // showSnackBar(context, res);
       }
+
+      context.push(NAVIGATION.dashboard);
     });
   }
 
@@ -57,8 +71,7 @@ class _LoginScreenState extends State<LoginScreen> {
     Future.delayed(const Duration(seconds: 1), () async {
       String res = await AuthServices().signInWithGoogle();
       if (res == "Success") {
-        Navigator.of(context).pushReplacement(
-            MaterialPageRoute(builder: (context) => const HomePage()));
+        context.push(NAVIGATION.dashboard);
       } else {
         showSnackBar(context, res);
         setState(() {
