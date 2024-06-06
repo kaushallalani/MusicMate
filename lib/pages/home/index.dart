@@ -50,30 +50,6 @@ class _HomePageState extends State<HomePage> {
         title: const Text('P L A Y L I S T'),
       ),
       drawer: const Mydrawer(),
-      bottomNavigationBar: BottomNavigationBar(
-          currentIndex: currentIndex,
-          backgroundColor: Colors.white,
-          selectedIconTheme: const IconThemeData(color: AppColor.aquaBlue),
-          unselectedIconTheme: const IconThemeData(color: AppColor.black),
-          selectedFontSize: FontSize.medium,
-          unselectedFontSize: FontSize.normal,
-          selectedItemColor: AppColor.aquaBlue,
-          unselectedItemColor: AppColor.black,
-          selectedLabelStyle: const TextStyle(color: AppColor.aquaBlue),
-          type: BottomNavigationBarType.fixed,
-          onTap: (value) {
-            setState(() {
-              currentIndex = value;
-            });
-          },
-          items: [
-            const BottomNavigationBarItem(
-                icon: Icon(FontAwesome5.home), label: 'Home'),
-            const BottomNavigationBarItem(
-                icon: Icon(FontAwesome5.search), label: 'Search'),
-            const BottomNavigationBarItem(
-                icon: Icon(Icons.settings), label: 'Search')
-          ]),
       body: Consumer<Playlistprovider>(builder: (context, value, child) {
         // get the list
 

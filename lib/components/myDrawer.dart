@@ -1,9 +1,9 @@
 // ignore_for_file: deprecated_member_use
 
-import 'package:demo/pages/login/index.dart';
+import 'package:musicmate/pages/login/index.dart';
 import 'package:musicmate/pages/settings/index.dart';
-import 'package:demo/services/authentication.dart';
 import 'package:flutter/material.dart';
+import 'package:musicmate/services/authentication.dart';
 
 class Mydrawer extends StatelessWidget {
   const Mydrawer({super.key});

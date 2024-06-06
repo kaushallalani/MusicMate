@@ -4,9 +4,9 @@
 /// To regenerate, run: `dart run slang`
 ///
 /// Locales: 2
-/// Strings: 2 (1 per locale)
+/// Strings: 10 (5 per locale)
 ///
-/// Built on 2024-06-05 at 08:58 UTC
+/// Built on 2024-06-06 at 08:27 UTC
 
 // coverage:ignore-file
 // ignore_for_file: type=lint
@@ -149,6 +149,10 @@ class Translations implements BaseTranslations<AppLocale, Translations> {
 
 	// Translations
 	String get hello => 'Hello';
+	String get home => 'Home';
+	String get settings => 'Settings';
+	String get library => 'Library';
+	String get search => 'Search';
 }
 
 // Path: <root>
@@ -176,6 +180,10 @@ class _StringsAr implements Translations {
 
 	// Translations
 	@override String get hello => 'مرحبًا';
+	@override String get home => 'بيت';
+	@override String get settings => 'إعدادات';
+	@override String get library => 'مكتبة';
+	@override String get search => 'يبحث';
 }
 
 /// Flat map(s) containing all translations.
@@ -185,6 +193,10 @@ extension on Translations {
 	dynamic _flatMapFunction(String path) {
 		switch (path) {
 			case 'hello': return 'Hello';
+			case 'home': return 'Home';
+			case 'settings': return 'Settings';
+			case 'library': return 'Library';
+			case 'search': return 'Search';
 			default: return null;
 		}
 	}
@@ -194,6 +206,10 @@ extension on _StringsAr {
 	dynamic _flatMapFunction(String path) {
 		switch (path) {
 			case 'hello': return 'مرحبًا';
+			case 'home': return 'بيت';
+			case 'settings': return 'إعدادات';
+			case 'library': return 'مكتبة';
+			case 'search': return 'يبحث';
 			default: return null;
 		}
 	}

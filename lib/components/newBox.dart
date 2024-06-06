@@ -1,7 +1,6 @@
-// ignore_for_file: deprecated_member_use
 
-import 'package:demo/themes/theme_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:musicmate/themes/theme_provider.dart';
 import 'package:provider/provider.dart';
 
 class NewBox extends StatelessWidget {

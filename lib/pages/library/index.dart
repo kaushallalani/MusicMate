@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:musicmate/constants/i18n/strings.g.dart';
 
 class Library extends StatelessWidget {
   const Library({super.key});
@@ -9,7 +10,7 @@ class Library extends StatelessWidget {
       color: const Color(0xffC4DFCB),
       child: Center(
         child: Text(
-          "Page Library",
+          t.library,
           style: TextStyle(
             color: Colors.green[900],
             fontSize: 45,

@@ -1,9 +1,11 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:logger/logger.dart';
 
 class AuthServices {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  final log = Logger();
 
   // for authentication
   final FirebaseAuth _auth = FirebaseAuth.instance;
@@ -12,9 +14,15 @@ class AuthServices {
       {required String email, required String password}) async {
     String res = "Some error Ocurred";
     try {
-      if (email.isNotEmpty || password.isNotEmpty) {
-        await _auth.signInWithEmailAndPassword(
-            email: email, password: password);
+      log.d(email.isNotEmpty);
+      if (email.isNotEmpty && password.isNotEmpty) {
+        log.d(await _auth.signInWithEmailAndPassword(
+            email: email, password: password));
+        await _auth
+            .signInWithEmailAndPassword(email: email, password: password)
+            .then((res) {
+          log.d(res);
+        });
         res = "Success";
       } else {
         res = "Please enter all the fields";

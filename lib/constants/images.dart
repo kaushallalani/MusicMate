@@ -1,5 +1,7 @@
+
 class Images {
   Images._();
-  static const _defaultPath = 'lib/assets/images';
-  static const String loginBg = '$_defaultPath/loginBg.png';
+  
+  static const _defaultPath = 'assets/images';
+  static const String library = '$_defaultPath/library.png';
 }
