@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "488111375762",
+    "firebase_url": "https://musicmate-d438a-default-rtdb.asia-southeast1.firebasedatabase.app",
+    "project_id": "musicmate-d438a",
+    "storage_bucket": "musicmate-d438a.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:488111375762:android:3238643290ec3749c7ad4b",
+        "android_client_info": {
+          "package_name": "com.musicmate"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "488111375762-m3nv0n44hs8p3eabrqq440hpmurl7491.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.musicmate",
+            "certificate_hash": "e5e57944521b89a8b5d32541ba3de450d6366be9"
+          }
+        },
+        {
+          "client_id": "488111375762-jim9c3e4r5mfljikej62u6m6jl48mbov.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAO3Ma4cvxfz-88uvu_1RMF6G615ds-FWA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "488111375762-jim9c3e4r5mfljikej62u6m6jl48mbov.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
