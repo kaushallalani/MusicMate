@@ -1,10 +1,8 @@
-import 'dart:ffi';
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:musicmate/components/index.dart';
-import 'package:musicmate/constants/theme.dart';
 import 'package:musicmate/models/playlistProvider.dart';
 import 'package:musicmate/models/song.dart';
 import 'package:musicmate/navigation/app_navigation.dart';

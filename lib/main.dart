@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:musicmate/constants/i18n/strings.g.dart';
+import 'package:musicmate/firebase_options.dart';
 import 'package:musicmate/models/playlistProvider.dart';
 import 'package:musicmate/navigation/app_navigation.dart';
 import 'package:musicmate/navigation/navigation.dart';
@@ -8,13 +9,12 @@ import 'package:musicmate/themes/light_mode.dart';
 import 'package:musicmate/themes/theme_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'pages/home/index.dart';
 // import 'package:demo/models/playlistProvider.dart';
 import 'package:firebase_core/firebase_core.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp();
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   runApp(
     MultiProvider(
       providers: [
