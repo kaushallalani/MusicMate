@@ -6,18 +6,19 @@ import 'package:musicmate/constants/theme.dart';
 import 'package:musicmate/navigation/app_navigation.dart';
 import 'package:musicmate/services/authentication.dart';
 
-class LoginScreen extends StatefulWidget {
-  const LoginScreen({Key? key}) : super(key: key);
+class SignupScreen extends StatefulWidget {
+  const SignupScreen({Key? key}) : super(key: key);
 
   @override
-  _LoginScreenState createState() => _LoginScreenState();
+  _SignupScreenState createState() => _SignupScreenState();
 }
 
-class _LoginScreenState extends State<LoginScreen> {
+class _SignupScreenState extends State<SignupScreen> {
   final TextEditingController _emailController =
-      TextEditingController(text: 'test@gmail.com');
+      TextEditingController();
   final TextEditingController _passwordController =
-      TextEditingController(text: 'Test@223133');
+      TextEditingController();
+    final TextEditingController _nameConroller = TextEditingController();
 
   bool isLoading = false;
   bool passwordVisible = false;
@@ -28,6 +29,7 @@ class _LoginScreenState extends State<LoginScreen> {
     super.dispose();
     _emailController.dispose();
     _passwordController.dispose();
+    _nameConroller.dispose();
   }
 
   @override
@@ -38,14 +40,16 @@ class _LoginScreenState extends State<LoginScreen> {
     // }
   }
 
-  void loginUser() async {
+  void registerUser() async {
     setState(() {
       isLoading = true;
     });
 
     Future.delayed(const Duration(seconds: 1), () async {
-      String res = await AuthServices().loginUser(
-          email: _emailController.text, password: _passwordController.text);
+      String res = await AuthServices().registerUser(
+          name: _nameConroller.text,
+          email: _emailController.text,
+          password: _passwordController.text);
 
       log.d(res);
       if (res == "Success") {
@@ -63,13 +67,13 @@ class _LoginScreenState extends State<LoginScreen> {
     });
   }
 
-  void signInWithGoogle() async {
+  void signupWithGoogle() async {
     setState(() {
       isLoading == true;
     });
 
     Future.delayed(const Duration(seconds: 1), () async {
-      String res = await AuthServices().signInWithGoogle();
+      String res = await AuthServices().signupWithGoogle();
       if (res == "Success") {
         context.push(NAVIGATION.dashboard);
       } else {
@@ -86,7 +90,7 @@ class _LoginScreenState extends State<LoginScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text(
-          'Login',
+          'Sign Up',
           style: TextStyle(color: Colors.white),
         ),
         centerTitle: true,
@@ -98,6 +102,16 @@ class _LoginScreenState extends State<LoginScreen> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
+                SizedBox(
+                  width: Metrics.width(context) * 0.85,
+                  child: TextField(
+                    controller: _nameConroller,
+                    decoration: const InputDecoration(hintText: 'Full Name'),
+                  ),
+                ),
+                const SizedBox(
+                  height: 30.0,
+                ),
                 SizedBox(
                   width: Metrics.width(context) * 0.85,
                   child: TextField(
@@ -136,9 +150,9 @@ class _LoginScreenState extends State<LoginScreen> {
                 SizedBox(
                   width: Metrics.width(context) * 0.85,
                   child: ElevatedButton(
-                    onPressed: loginUser,
+                    onPressed: registerUser,
                     child: const Text(
-                      'Login',
+                      'Register',
                       style: TextStyle(color: Colors.black),
                     ),
                   ),
@@ -172,7 +186,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     minWidth: MediaQuery.of(context).size.width * 0.07,
                     padding:
                         const EdgeInsets.only(top: Metrics.doubleBaseMargin),
-                    onPressed: signInWithGoogle,
+                    onPressed: signupWithGoogle,
                     child: Image.asset(
                       'assets/images/google.png',
                       fit: BoxFit.contain,
@@ -185,12 +199,12 @@ class _LoginScreenState extends State<LoginScreen> {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      const Text('Not a Member ?'),
+                      const Text('Already have an account ?'),
                       Padding(
                         padding: const EdgeInsets.only(left: 5.0, right: 5.0),
                         child: GestureDetector(
-                          child: const Text('Register', style: TextStyle(color: Colors.blue,fontWeight: FontWeight.bold)),
-                          onTap: () => context.push(NAVIGATION.signup),
+                          child: const Text('Sign In', style: TextStyle(color: Colors.blue,fontWeight: FontWeight.bold)),
+                          onTap: () => context.pop(),
                         ),
                       ),
                     ],

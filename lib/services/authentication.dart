@@ -39,6 +39,57 @@ class AuthServices {
     return res;
   }
 
+  Future<String> registerUser(
+    {required String name, required String email, required String password} 
+  ) async {
+    String res = "Some Error Occured";
+    try {
+      if(email.isNotEmpty && password.isNotEmpty && name.isNotEmpty) {
+        var register = await _auth.createUserWithEmailAndPassword(email: email, password: password);
+        register.user!.updateDisplayName(name);
+        var status = await createUser(register.user!.uid,email,name);
+        if (status == "Success") {
+          res = "Success";
+        } else {
+          res = "Error in creating user document";
+        }
+      } else {
+        res = "Please enter all the fields";
+      }
+    } catch (e) {
+      return e.toString();
+    }
+    return res;
+  }
+
+  Future<dynamic> signupWithGoogle() async {
+    String res = "Some Error Occured";
+    try {
+      final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
+      if(googleUser != null) {
+        final GoogleSignInAuthentication? googleAuth = 
+            await googleUser.authentication;
+        final credential = GoogleAuthProvider.credential(
+          accessToken: googleAuth?.accessToken,
+          idToken: googleAuth?.idToken,
+        );
+        var response = await _auth.signInWithCredential(credential);
+        if (response.additionalUserInfo!.isNewUser) {
+          var userInfo = response.user;
+          var user = await createUser(userInfo!.uid, userInfo.email, userInfo.displayName);
+          if(user == "Success") {
+            res = "Success";
+          } else {
+            res = "Error in creating user";
+          }
+        }
+      }
+    } catch (e) {
+      return e.toString();
+    }
+    return res;
+  }
+
   Future<dynamic> signInWithGoogle() async {
     String res = "Some error Ocurred";
     try {
@@ -58,11 +109,38 @@ class AuthServices {
           await _auth.currentUser?.delete();
           // await signOut();
         } else {
-          res = "Success";
+          var status = await userDetailsGet(id: response.user!.uid);
+          if (status == "Success") {
+            res = "Success";
+          }
         }
       }
     } catch (e) {
       return e.toString();
+    }
+    return res;
+  }
+
+  Future<dynamic> createUser(userId, email,name) async{
+    String res = "Some Error Occured";
+    try {
+      final document = await _firestore.collection("users").doc(userId);
+      final snapshot = await document.set({
+        "id" : userId,
+        "email": email,
+        "fullName": name,
+        // "deviceUniqueId": ,
+        "createdAt": FieldValue.serverTimestamp(),
+        "updatedAt": FieldValue.serverTimestamp(),
+      });
+      var user = await userDetailsGet(id: userId);
+      if (user == "Success") {
+        res = "Success";
+      } else {
+        res = "Error in getting user detail";
+      }
+    } catch (e) {
+      return res;
     }
     return res;
   }
