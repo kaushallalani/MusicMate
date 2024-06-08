@@ -1,13 +1,13 @@
-import 'dart:ffi';
+import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:musicmate/components/index.dart';
-import 'package:musicmate/constants/theme.dart';
 import 'package:musicmate/models/playlistProvider.dart';
 import 'package:musicmate/models/song.dart';
 import 'package:musicmate/navigation/app_navigation.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -20,11 +20,25 @@ class _HomePageState extends State<HomePage> {
 // get the playlist provider
   late final dynamic playlistProvider;
   int currentIndex = 0;
+  dynamic userDetails;
   @override
   void initState() {
     super.initState();
 // get playlist provider
     playlistProvider = Provider.of<Playlistprovider>(context, listen: false);
+    getUserDetail();
+  }
+
+  void getUserDetail() async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    var user = prefs.getString('user');
+    print("objectfsdfdsff");
+    print(user);
+    if (user != null) {
+      setState(() {
+        userDetails = jsonDecode(user);
+      });
+    }
   }
 
 // go to a song
@@ -56,22 +70,31 @@ class _HomePageState extends State<HomePage> {
         final List<Song> playlist = value.playlist;
 
         //return lst view UI
+        return Column(
+          children: [
+            Flexible(
+                child: userDetails != null
+                    ? Text("Welcome, ${userDetails['fullName']}")
+                    : const Text("Welcome, User")),
+            Flexible(
+              child: ListView.builder(
+                itemCount: playlist.length,
+                itemBuilder: (context, index) {
+                  //get individual song
+                  final Song song = playlist[index];
 
-        return ListView.builder(
-          itemCount: playlist.length,
-          itemBuilder: (context, index) {
-            //get individual song
-            final Song song = playlist[index];
+                  //return ist tile ui
 
-            //return ist tile ui
-
-            return ListTile(
-              title: Text(song.songName),
-              subtitle: Text(song.artistName),
-              leading: Image.asset(song.albumArtImagePath),
-              onTap: () => goToSong(index, context),
-            );
-          },
+                  return ListTile(
+                    title: Text(song.songName),
+                    subtitle: Text(song.artistName),
+                    leading: Image.asset(song.albumArtImagePath),
+                    onTap: () => goToSong(index, context),
+                  );
+                },
+              ),
+            ),
+          ],
         );
       }),
     );

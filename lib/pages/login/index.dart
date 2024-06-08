@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:logger/logger.dart';
 import 'package:musicmate/components/snackbar.dart';
+import 'package:musicmate/constants/theme.dart';
 import 'package:musicmate/navigation/app_navigation.dart';
 import 'package:musicmate/services/authentication.dart';
 
@@ -14,9 +15,9 @@ class LoginScreen extends StatefulWidget {
 
 class _LoginScreenState extends State<LoginScreen> {
   final TextEditingController _emailController =
-      TextEditingController(text: 'dhanraj@malinator.com');
+      TextEditingController(text: 'test@gmail.com');
   final TextEditingController _passwordController =
-      TextEditingController(text: 'Abc@223133');
+      TextEditingController(text: 'Test@223133');
 
   bool isLoading = false;
   bool passwordVisible = false;
@@ -99,7 +100,7 @@ class _LoginScreenState extends State<LoginScreen> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 SizedBox(
-                  width: MediaQuery.of(context).size.width / 2,
+                  width: Metrics.width(context) * 0.85,
                   child: TextField(
                     controller: _emailController,
                     decoration: const InputDecoration(hintText: 'Email'),
@@ -109,7 +110,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   height: 30.0,
                 ),
                 SizedBox(
-                  width: MediaQuery.of(context).size.width / 2,
+                  width: Metrics.width(context) * 0.85,
                   child: TextField(
                     controller: _passwordController,
                     obscureText: !passwordVisible,
@@ -133,9 +134,15 @@ class _LoginScreenState extends State<LoginScreen> {
                 const SizedBox(
                   height: 30.0,
                 ),
-                ElevatedButton(
-                  onPressed: loginUser,
-                  child: const Text('Login'),
+                SizedBox(
+                  width: Metrics.width(context) * 0.85,
+                  child: ElevatedButton(
+                    onPressed: loginUser,
+                    child: const Text(
+                      'Login',
+                      style: TextStyle(color: Colors.black),
+                    ),
+                  ),
                 ),
                 const SizedBox(
                   height: 30.0,
@@ -144,22 +151,28 @@ class _LoginScreenState extends State<LoginScreen> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     SizedBox(
-                      width: MediaQuery.of(context).size.width * 0.35,
-                      child: const Divider(),
+                      width: MediaQuery.of(context).size.width * 0.3,
+                      child: const Divider(
+                        color: Colors.grey,
+                      ),
                     ),
                     SizedBox(
                       width: MediaQuery.of(context).size.width * 0.15,
                       child: const Center(child: Text("Or")),
                     ),
                     SizedBox(
-                      width: MediaQuery.of(context).size.width * 0.35,
-                      child: const Divider(),
+                      width: MediaQuery.of(context).size.width * 0.3,
+                      child: const Divider(
+                        color: Colors.grey,
+                      ),
                     ),
                   ],
                 ),
                 Center(
                   child: MaterialButton(
                     minWidth: MediaQuery.of(context).size.width * 0.07,
+                    padding:
+                        const EdgeInsets.only(top: Metrics.doubleBaseMargin),
                     onPressed: signInWithGoogle,
                     child: Image.asset(
                       'assets/images/google.png',

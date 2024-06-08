@@ -1,7 +1,10 @@
+import 'dart:convert';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:logger/logger.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class AuthServices {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
@@ -18,12 +21,15 @@ class AuthServices {
       if (email.isNotEmpty && password.isNotEmpty) {
         log.d(await _auth.signInWithEmailAndPassword(
             email: email, password: password));
-        await _auth
-            .signInWithEmailAndPassword(email: email, password: password)
-            .then((res) {
-          log.d(res);
-        });
-        res = "Success";
+        var user = await _auth.signInWithEmailAndPassword(
+            email: email, password: password);
+        var status = await userDetailsGet(id: user.user!.uid);
+        print("status $status");
+        if (status == "Success") {
+          res = "Success";
+        } else {
+          res = "User Data not found.";
+        }
       } else {
         res = "Please enter all the fields";
       }
@@ -66,5 +72,34 @@ class AuthServices {
       await GoogleSignIn().signOut();
     }
     await _auth.signOut();
+  }
+
+  Future<dynamic> userDetailsGet({required String id}) async {
+    String res = "Some Error Ocurred";
+    try {
+      final document = await _firestore.collection("users").doc('$id');
+      final snapshot = await document.get();
+      final data = snapshot.data();
+      print("objectfsdfdsff");
+      print(data);
+      final finalData = data!.map((key, value) {
+        if (value is Timestamp) {
+          return MapEntry(
+              key,
+              value
+                  .toDate()
+                  .toString()); // Convert to DateTime and then to String
+        } else {
+          return MapEntry(key, value);
+        }
+      });
+      final SharedPreferences prefs = await SharedPreferences.getInstance();
+      await prefs.setString('user', jsonEncode(finalData));
+      await prefs.setBool('isLogin', true);
+      res = "Success";
+    } catch (e) {
+      return e.toString();
+    }
+    return res;
   }
 }
