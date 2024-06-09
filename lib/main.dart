@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:musicmate/constants/i18n/strings.g.dart';
 import 'package:musicmate/firebase_options.dart';
 import 'package:musicmate/models/playlistProvider.dart';
 import 'package:musicmate/navigation/app_navigation.dart';
 import 'package:musicmate/navigation/navigation.dart';
+import 'package:musicmate/pages/authentication/bloc/authentication_bloc.dart';
 import 'package:musicmate/themes/dark_mode.dart';
 import 'package:musicmate/themes/light_mode.dart';
 import 'package:musicmate/themes/theme_provider.dart';
@@ -40,7 +42,7 @@ class _MyAppState extends State<MyApp> {
   @override
   void initState() {
     super.initState();
-    initialCall();
+    // initialCall();
   }
 
   void initialCall() async {
@@ -69,13 +71,19 @@ class _MyAppState extends State<MyApp> {
     return ChangeNotifierProvider<ThemeProvider>(
       create: (_) => ThemeProvider(),
       child: Consumer<ThemeProvider>(
-        builder: (context, value, child) => MaterialApp.router(
-          debugShowCheckedModeBanner: false,
-          title: 'Provider Theme Changer',
-          theme: value.darkTheme == false ? lightMode : darkMode,
-          supportedLocales: {const Locale('en', '')},
-          restorationScopeId: 'app',
-          routerConfig: routeConfig.router,
+        builder: (context, value, child) => MultiBlocProvider(
+          providers: [
+            BlocProvider<AuthenticationBloc>(
+                create: (BuildContext context) => AuthenticationBloc())
+          ],
+          child: MaterialApp.router(
+            debugShowCheckedModeBanner: false,
+            title: 'Provider Theme Changer',
+            theme: value.darkTheme == false ? lightMode : darkMode,
+            supportedLocales: {const Locale('en', '')},
+            restorationScopeId: 'app',
+            routerConfig: routeConfig.router,
+          ),
         ),
       ),
     );
