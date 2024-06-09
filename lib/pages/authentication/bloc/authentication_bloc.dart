@@ -63,5 +63,21 @@ class AuthenticationBloc
 
       emit(AuthenticationLoadingState(isLoading: false));
     });
+
+    on<GoogleSignIn>((event, emit) async {
+      emit(AuthenticationLoadingState(isLoading: true));
+      try {
+        final user = await authenticationService.signInWithGoogle();
+
+        if(user != null){
+          emit(AuthenticationSuccessState(user));
+        }else{
+          emit(AuthenticationFailureState('error'));
+        }
+      } on Exception catch (e) {
+        emit(AuthenticationFailureState(e.toString()));
+      }
+      emit(AuthenticationLoadingState(isLoading: false));
+    });
   }
 }

@@ -85,23 +85,17 @@ class _LoginScreenState extends State<LoginScreen> {
     return BlocConsumer<AuthenticationBloc, AuthenticationState>(
       listener: (context, state) {
         if (state is AuthenticationSuccessState) {
-          setState(() {
-            isLoading = false;
-          });
           context.push(NAVIGATION.dashboard);
         } else if (state is AuthenticationLoadingState) {
           setState(() {
-            isLoading = true;
+            isLoading = state.isLoading;
           });
         } else if (state is AuthenticationFailureState) {
           showSnackBar(context, state.errorMessage);
-          setState(() {
-            isLoading = false;
-          });
         }
       },
       builder: (context, state) {
-       
+        print(isLoading);
         return Scaffold(
           appBar: AppBar(
             title: const Text(
