@@ -25,6 +25,10 @@ class TextComponent extends StatelessWidget {
             fontSize: textStyle?.fontSize,
             fontFamily: textStyle?.fontFamily,
             color: textStyle?.color,
-            fontWeight: textStyle?.fontWeight));
+            fontWeight: textStyle?.fontWeight,
+            backgroundColor: textStyle?.backgroundColor,
+            wordSpacing: textStyle?.wordSpacing,
+            letterSpacing: textStyle?.letterSpacing,
+            overflow: textStyle?.overflow));
   }
 }

@@ -66,4 +66,13 @@ class AuthenticationService {
       print('exception->$e');
     }
   }
+
+  Future<User?> getCurrentUser() async {
+    try {
+      final User? currentUser = _firebaseAuth.currentUser;
+      return currentUser;
+    } on FirebaseException catch (e) {
+      return Future.error(e);
+    }
+  }
 }

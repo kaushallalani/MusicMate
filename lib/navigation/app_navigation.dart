@@ -13,11 +13,11 @@ class NAVIGATION {
   static const String songsPage = '/songsPage';
   static const String home = '/home';
   static const String settings = '/settings';
-  static const String dashboard = '/dashboard';
+  static const String dashboard = '/';
   static const String search = '/search';
   static const String library = '/library';
   static const String login='/login';
-  static const String splash='/';
+  static const String splash='/login';
 }
 
 List<Map<String, dynamic>> stackNavigation = [
