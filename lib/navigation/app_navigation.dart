@@ -8,6 +8,7 @@ import 'package:musicmate/pages/signup/index.dart';
 import 'package:musicmate/pages/songsPage/index.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:musicmate/pages/splash/index.dart';
 
 class NAVIGATION {
   static const String songsPage = '/songsPage';
@@ -16,8 +17,9 @@ class NAVIGATION {
   static const String dashboard = '/dashboard';
   static const String search = '/search';
   static const String library = '/library';
-  static const String login='/';
-  static const String signup='/signup';
+  static const String login = '/login';
+  static const String splash = '/';
+  static const String signup = '/signup';
 }
 
 List<Map<String, dynamic>> stackNavigation = [
@@ -55,14 +57,22 @@ List<Map<String, dynamic>> stackNavigation = [
     "component": (BuildContext context, GoRouterState state) => const Library(),
     "options": {"path": NAVIGATION.library}
   },
-   {
+  {
     "name": NAVIGATION.login,
-    "component": (BuildContext context, GoRouterState state) => const LoginScreen(),
+    "component": (BuildContext context, GoRouterState state) =>
+        const LoginScreen(),
     "options": {"path": NAVIGATION.login}
   },
   {
+    "name": NAVIGATION.splash,
+    "component": (BuildContext context, GoRouterState state) =>
+        const SplashScreen(),
+    "options": {"path": NAVIGATION.splash}
+  },
+  {
     "name": NAVIGATION.signup,
-    "component": (BuildContext context, GoRouterState state) => const SignupScreen(),
+    "component": (BuildContext context, GoRouterState state) =>
+        const SignupScreen(),
     "options": {"path": NAVIGATION.signup}
   }
 ];
