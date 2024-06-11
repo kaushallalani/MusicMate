@@ -56,7 +56,7 @@ class AuthServices {
           res = "user not exist";
           await GoogleSignIn().signOut();
           await _auth.currentUser?.delete();
-          // await signOut();
+          await signOut();
         } else {
           res = "Success";
         }
