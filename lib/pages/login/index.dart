@@ -63,21 +63,22 @@ class _LoginScreenState extends State<LoginScreen> {
   // }
 
   void signInWithGoogle() async {
-    setState(() {
-      isLoading == true;
-    });
+    BlocProvider.of<AuthenticationBloc>(context).add(GoogleSignIn());
+    // setState(() {
+    //   isLoading == true;
+    // });
 
-    Future.delayed(const Duration(seconds: 1), () async {
-      String res = await AuthServices().signInWithGoogle();
-      if (res == "Success") {
-        context.push(NAVIGATION.dashboard);
-      } else {
-        showSnackBar(context, res);
-        setState(() {
-          isLoading = false;
-        });
-      }
-    });
+    // Future.delayed(const Duration(seconds: 1), () async {
+    //   String res = await AuthServices().signInWithGoogle();
+    //   if (res == "Success") {
+    //     context.push(NAVIGATION.dashboard);
+    //   } else {
+    //     showSnackBar(context, res);
+    //     setState(() {
+    //       isLoading = false;
+    //     });
+    //   }
+    // });
   }
 
   @override

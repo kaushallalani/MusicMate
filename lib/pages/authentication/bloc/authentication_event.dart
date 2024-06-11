@@ -25,7 +25,10 @@ class SigninUser extends AuthenticationEvent {
   List<Object> get props => [email, password];
 }
 
-class GoogleSignIn extends AuthenticationEvent{
-
+class GoogleSignIn extends AuthenticationEvent {
+  const GoogleSignIn();
+  @override
+  List<Object> get props => [];
 }
-class SignoutUser extends AuthenticationEvent{}
+
+class SignoutUser extends AuthenticationEvent {}
