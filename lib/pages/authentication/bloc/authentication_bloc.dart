@@ -1,6 +1,5 @@
 import 'package:bloc/bloc.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/rendering.dart';
 import 'package:meta/meta.dart';
 import 'package:musicmate/models/user.dart';
 import 'package:musicmate/services/auth.dart';
@@ -69,9 +68,9 @@ class AuthenticationBloc
       try {
         final user = await authenticationService.signInWithGoogle();
 
-        if(user != null){
+        if (user != null) {
           emit(AuthenticationSuccessState(user));
-        }else{
+        } else {
           emit(AuthenticationFailureState('error'));
         }
       } on Exception catch (e) {

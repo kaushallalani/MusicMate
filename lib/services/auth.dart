@@ -1,5 +1,7 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:logger/logger.dart';
 import 'package:musicmate/models/user.dart';
 
 class AuthenticationService {
@@ -11,10 +13,9 @@ class AuthenticationService {
       final UserCredential userCredential =
           await _firebaseAuth.createUserWithEmailAndPassword(
               email: email.trim(), password: password.trim());
-
       final User? firebaseUser = userCredential.user;
       if (firebaseUser != null) {
-        return UserModel(id: firebaseUser.uid, email: firebaseUser.email!);
+        // return UserModel(id: firebaseUser.uid, email: firebaseUser.email!);
       }
     } on FirebaseException catch (e) {
       print(e.toString());
@@ -37,8 +38,12 @@ class AuthenticationService {
           await _firebaseAuth.signInWithEmailAndPassword(
               email: email.trim(), password: password.trim());
       final User? firebaseUser = userCredential.user;
+      final userDetail = await userDetailsGet(id: firebaseUser!.uid);
       if (firebaseUser != null) {
-        return UserModel(id: firebaseUser.uid, email: firebaseUser.email!);
+        Logger().d(userDetail["email"]);
+        return UserModel(userDetail["fullName"], userDetail["createdAt"],
+            userDetail["updatedAt"],
+            id: firebaseUser.uid, email: userDetail["email"]);
       }
     } on FirebaseException catch (e) {
       print('loginn error');
@@ -61,18 +66,50 @@ class AuthenticationService {
         idToken: googleAuth?.idToken,
       );
 
-      return await FirebaseAuth.instance.signInWithCredential(credential);
+      var response =
+          await FirebaseAuth.instance.signInWithCredential(credential);
+      if (response.additionalUserInfo!.isNewUser) {
+        await GoogleSignIn().signOut();
+        await FirebaseAuth.instance.currentUser!.delete();
+        return;
+      } else {
+        final User? firebaseUser = response.user;
+        final userDetail = await userDetailsGet(id: firebaseUser!.uid);
+        return UserModel(userDetail["fullName"], userDetail["createdAt"],
+            userDetail["updatedAt"],
+            id: firebaseUser.uid, email: userDetail["email"]);
+      }
     } on Exception catch (e) {
       print('exception->$e');
+      return e.toString();
     }
   }
 
-  Future<User?> getCurrentUser() async {
+  Future<dynamic> userDetailsGet({required String id}) async {
     try {
-      final User? currentUser = _firebaseAuth.currentUser;
-      return currentUser;
-    } on FirebaseException catch (e) {
-      return Future.error(e);
+      final document =
+          await FirebaseFirestore.instance.collection("users").doc('$id');
+      final snapshot = await document.get();
+      final data = snapshot.data();
+      print("objectfsdfdsff");
+      print(data);
+      final finalData = data!.map((key, value) {
+        if (value is Timestamp) {
+          return MapEntry(
+              key,
+              value
+                  .toDate()
+                  .toString()); // Convert to DateTime and then to String
+        } else {
+          return MapEntry(key, value);
+        }
+      });
+      return finalData;
+      // final SharedPreferences prefs = await SharedPreferences.getInstance();
+      // await prefs.setString('user', jsonEncode(finalData));
+      // await prefs.setBool('isLogin', true);
+    } catch (e) {
+      return e.toString();
     }
   }
 }
