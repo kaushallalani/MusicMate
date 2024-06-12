@@ -16,8 +16,8 @@ class NAVIGATION {
   static const String dashboard = '/dashboard';
   static const String search = '/search';
   static const String library = '/library';
-  static const String login='/login';
-  static const String splash='/';
+  static const String login = '/login';
+  static const String splash = '/';
 }
 
 List<Map<String, dynamic>> stackNavigation = [
@@ -55,14 +55,16 @@ List<Map<String, dynamic>> stackNavigation = [
     "component": (BuildContext context, GoRouterState state) => const Library(),
     "options": {"path": NAVIGATION.library}
   },
-   {
+  {
     "name": NAVIGATION.login,
-    "component": (BuildContext context, GoRouterState state) => const LoginScreen(),
+    "component": (BuildContext context, GoRouterState state) =>
+        const LoginScreen(),
     "options": {"path": NAVIGATION.login}
   },
   {
     "name": NAVIGATION.splash,
-    "component": (BuildContext context, GoRouterState state) => const SplashScreen(),
+    "component": (BuildContext context, GoRouterState state) =>
+        const SplashScreen(),
     "options": {"path": NAVIGATION.splash}
   }
 ];
