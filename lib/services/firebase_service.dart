@@ -4,22 +4,17 @@ import 'package:google_sign_in/google_sign_in.dart';
 import 'package:logger/logger.dart';
 import 'package:musicmate/models/user.dart';
 
-class AuthenticationService {
+class FirebaseService {
   final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
 
   ///create a user
-  Future<UserModel?> signupUser(String email, String password) async {
+  Future<UserCredential?> signupUser(String email, String password) async {
     try {
       final UserCredential userCredential =
           await _firebaseAuth.createUserWithEmailAndPassword(
               email: email.trim(), password: password.trim());
-      final User? firebaseUser = userCredential.user;
-      if (firebaseUser != null) {
-        final UserModel? userDetails =
-            await userDetailsGet(id: firebaseUser.uid);
-        return userDetails;
-        // return UserModel(id: firebaseUser.uid, email: firebaseUser.email!);
-      }
+
+      return userCredential;
     } on FirebaseException catch (e) {
       print(e.toString());
     }
@@ -35,28 +30,19 @@ class AuthenticationService {
   }
 
   ///signin User
-  Future<UserModel?> signinUser(String email, String password) async {
+  Future<UserCredential?> signinUser(String email, String password) async {
     try {
       final UserCredential userCredential =
           await _firebaseAuth.signInWithEmailAndPassword(
               email: email.trim(), password: password.trim());
-      final User? firebaseUser = userCredential.user;
 
-      if (firebaseUser != null) {
-        final UserModel? userDetail =
-            await userDetailsGet(id: firebaseUser!.uid);
-        return userDetail;
-      }
+      return userCredential;
     } on FirebaseException catch (e) {
-      print('loginn error');
-      print(e.message);
       return Future.error(e);
     }
-
-    return null;
   }
 
-  Future<dynamic> signInWithGoogle() async {
+  Future<UserCredential?> signInWithGoogle() async {
     try {
       final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
 
@@ -70,19 +56,21 @@ class AuthenticationService {
 
       var response =
           await FirebaseAuth.instance.signInWithCredential(credential);
-      if (response.additionalUserInfo!.isNewUser) {
-        await GoogleSignIn().signOut();
-        await FirebaseAuth.instance.currentUser!.delete();
-        return;
-      } else {
-        final User? firebaseUser = response.user;
-        final UserModel? userDetail =
-            await userDetailsGet(id: firebaseUser!.uid);
-        return userDetail!;
-      }
+
+          return response;
+      // if (response.additionalUserInfo!.isNewUser) {
+      //   await GoogleSignIn().signOut();
+      //   await FirebaseAuth.instance.currentUser!.delete();
+      //   return;
+      // } else {
+      //   final User? firebaseUser = response.user;
+      //   final UserModel? userDetail =
+      //       await userDetailsGet(id: firebaseUser!.uid);
+      //   return userDetail!;
+      // }
     } on Exception catch (e) {
       print('exception->$e');
-      return e.toString();
+     
     }
   }
 
@@ -98,7 +86,7 @@ class AuthenticationService {
     }
   }
 
-  Future<dynamic> userDetailsGet({required String id}) async {
+  Future<UserModel> userDetailsGet({required String id}) async {
     try {
       final document =
           await FirebaseFirestore.instance.collection("users").doc('$id');
@@ -124,7 +112,7 @@ class AuthenticationService {
       // await prefs.setString('user', jsonEncode(finalData));
       // await prefs.setBool('isLogin', true);
     } catch (e) {
-      return e.toString();
+      return Future.error(e);
     }
   }
 

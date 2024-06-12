@@ -80,7 +80,7 @@ class AuthServices {
       final document = await _firestore.collection("users").doc('$id');
       final snapshot = await document.get();
       final data = snapshot.data();
-      print("objectfsdfdsff");
+      print("user details");
       print(data);
       final finalData = data!.map((key, value) {
         if (value is Timestamp) {

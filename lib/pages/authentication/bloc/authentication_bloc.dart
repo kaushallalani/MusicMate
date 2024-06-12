@@ -2,6 +2,8 @@ import 'package:bloc/bloc.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:meta/meta.dart';
 import 'package:musicmate/models/user.dart';
+import 'package:musicmate/repositories/firebase_repository.dart';
+import 'package:musicmate/repositories/user_repository.dart';
 import 'package:musicmate/services/auth.dart';
 
 part 'authentication_event.dart';
@@ -9,9 +11,12 @@ part 'authentication_state.dart';
 
 class AuthenticationBloc
     extends Bloc<AuthenticationEvent, AuthenticationState> {
-  final AuthenticationService authenticationService = AuthenticationService();
+  final FirebaseRepository firebaseRepository;
+  final UserRepository userRepository;
 
-  AuthenticationBloc() : super(AuthenticationInitial()) {
+  final AuthenticationService authenticationService = AuthenticationService();
+  AuthenticationBloc(this.firebaseRepository, this.userRepository)
+      : super(AuthenticationInitial()) {
     on<AuthenticationEvent>((event, emit) {});
 
     on<SignupUser>((event, emit) async {
@@ -36,7 +41,7 @@ class AuthenticationBloc
     on<SignoutUser>((event, emit) async {
       emit(AuthenticationLoadingState(isLoading: true));
       try {
-        authenticationService.signOutUser();
+        firebaseRepository.signOut();
       } catch (e) {
         print('error');
         print(e.toString());
@@ -48,11 +53,16 @@ class AuthenticationBloc
       emit(AuthenticationLoadingState(isLoading: true));
 
       try {
-        final UserModel? user =
-            await authenticationService.signinUser(event.email, event.password);
+        final User? user =
+            await firebaseRepository.signIn(event.email, event.password);
+        // if (user != null) {
+        //   final data = await firebaseRepository.getCurrentUser();
+        //   userRepository.saveUserData(data!);
+        // }
+        // await authenticationService.signinUser(event.email, event.password);
 
         if (user != null) {
-          emit(AuthenticationSuccessState(user));
+          emit(AuthenticationSuccessState(userRepository.userDataModel!));
         } else {
           emit(AuthenticationFailureState('User Signin failed'));
         }

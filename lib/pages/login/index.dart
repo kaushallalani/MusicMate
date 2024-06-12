@@ -6,6 +6,7 @@ import 'package:musicmate/components/snackbar.dart';
 import 'package:musicmate/constants/theme.dart';
 import 'package:musicmate/navigation/app_navigation.dart';
 import 'package:musicmate/pages/authentication/bloc/authentication_bloc.dart';
+import 'package:musicmate/pages/dashboard/bloc/dashboard_bloc.dart';
 import 'package:musicmate/services/authentication.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -86,6 +87,10 @@ class _LoginScreenState extends State<LoginScreen> {
     return BlocConsumer<AuthenticationBloc, AuthenticationState>(
       listener: (context, state) {
         if (state is AuthenticationSuccessState) {
+          // final user = state.user;
+          // Logger().d(user.createdAt);
+          // context.read<DashboardBloc>().add(GetUserDetails());
+
           context.push(NAVIGATION.dashboard);
         } else if (state is AuthenticationLoadingState) {
           setState(() {

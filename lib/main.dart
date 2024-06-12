@@ -6,17 +6,19 @@ import 'package:musicmate/models/playlistProvider.dart';
 import 'package:musicmate/navigation/app_navigation.dart';
 import 'package:musicmate/navigation/navigation.dart';
 import 'package:musicmate/pages/authentication/bloc/authentication_bloc.dart';
+import 'package:musicmate/pages/dashboard/bloc/dashboard_bloc.dart';
 import 'package:musicmate/themes/dark_mode.dart';
 import 'package:musicmate/themes/light_mode.dart';
 import 'package:musicmate/themes/theme_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-// import 'package:demo/models/playlistProvider.dart';
+import './injectionContainer/injection_container.dart' as di;
 import 'package:firebase_core/firebase_core.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  await di.init();
   runApp(
     MultiProvider(
       providers: [
@@ -74,7 +76,11 @@ class _MyAppState extends State<MyApp> {
         builder: (context, value, child) => MultiBlocProvider(
           providers: [
             BlocProvider<AuthenticationBloc>(
-                create: (BuildContext context) => AuthenticationBloc())
+                create: (BuildContext context) =>
+                    di.serviceLocater<AuthenticationBloc>()),
+            BlocProvider<DashboardBloc>(
+                create: (BuildContext context) =>
+                    di.serviceLocater<DashboardBloc>())
           ],
           child: MaterialApp.router(
             debugShowCheckedModeBanner: false,

@@ -1,5 +1,6 @@
 // ignore_for_file: deprecated_member_use
 
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:musicmate/navigation/app_navigation.dart';
 import 'package:musicmate/pages/login/index.dart';
@@ -7,6 +8,8 @@ import 'package:musicmate/pages/settings/index.dart';
 import 'package:flutter/material.dart';
 import 'package:musicmate/services/authentication.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
+import '../pages/authentication/bloc/authentication_bloc.dart';
 
 class Mydrawer extends StatelessWidget {
   const Mydrawer({super.key});
@@ -63,12 +66,15 @@ class Mydrawer extends StatelessWidget {
               title: const Text('L O G O U T'),
               leading: const Icon(Icons.logout),
               onTap: () async {
-                await AuthServices().signOut();
-                final SharedPreferences prefs =
-                    await SharedPreferences.getInstance();
-                await prefs.setBool("isLogin", false);
-                await prefs.remove("user");
+                BlocProvider.of<AuthenticationBloc>(context).add(SignoutUser());
                 context.pushReplacement(NAVIGATION.login);
+
+                // await AuthServices().signOut();
+                // final SharedPreferences prefs =
+                //     await SharedPreferences.getInstance();
+                // await prefs.setBool("isLogin", false);
+                // await prefs.remove("user");
+                // context.(NAVIGATION.login);
               },
             ),
           )

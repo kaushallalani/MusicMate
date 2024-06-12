@@ -1,11 +1,17 @@
+import 'dart:async';
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:logger/logger.dart';
 import 'package:musicmate/components/index.dart';
 import 'package:musicmate/constants/theme.dart';
 import 'package:musicmate/models/playlistProvider.dart';
 import 'package:musicmate/models/song.dart';
+import 'package:musicmate/models/user.dart';
 import 'package:musicmate/navigation/app_navigation.dart';
+import 'package:musicmate/pages/authentication/bloc/authentication_bloc.dart';
+import 'package:musicmate/pages/dashboard/bloc/dashboard_bloc.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -21,23 +27,35 @@ class _HomePageState extends State<HomePage> {
   late final dynamic playlistProvider;
   int currentIndex = 0;
   double sliderValue = 0;
-  dynamic userDetails;
+  bool isLoading = false;
+  late UserModel? _userDetails;
+
   @override
   void initState() {
     super.initState();
 // get playlist provider
     playlistProvider = Provider.of<Playlistprovider>(context, listen: false);
-    getUserDetail();
+    _userDetails = UserModel();
+
+    // Timer(Duration(milliseconds: 500), () {
+    //   setState(() {
+    //     // isLoading = !isLoading;
+    //   });
+    // });
+
+    context.read<DashboardBloc>().add(GetUserDetails());
+    // getUserDetail();
   }
 
   void getUserDetail() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     var user = prefs.getString('user');
-    print("objectfsdfdsff");
+
+    print("objectfsdfdsff userrr");
     print(user);
     if (user != null) {
       setState(() {
-        userDetails = jsonDecode(user);
+        // _user = jsonDecode(user);
       });
     }
   }
@@ -53,101 +71,140 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Theme.of(context).colorScheme.surface,
-      appBar: AppBar(
-        title: const Text('P L A Y L I S T'),
-      ),
-      drawer: const Mydrawer(),
-      body: Consumer<Playlistprovider>(builder: (context, value, child) {
-        // get the list
+    return BlocConsumer<DashboardBloc, DashboardState>(
+      listener: (context, state) {
+        if (state is DashboardInitial) {
+          // Logger().d('init');
+        }
+        if (state is DashboardLoadingState) {
 
-        final List<Song> playlist = value.playlist;
+          setState(() {
+            isLoading = state.isLoading;
+          });
+        }
+        if (state is DashboardSuccessState) {
+          setState(() {
+            _userDetails = state.currentUser!;
+          });
+        }
 
-        return Container(
-          height: double.infinity,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Expanded(
-                flex: 0,
-                child: Padding(
-                  padding: EdgeInsets.symmetric(
-                      horizontal: Metrics.width(context) * 0.04),
-                  child: ListView.separated(
-                    padding: EdgeInsets.symmetric(
-                        vertical: Metrics.width(context) * 0.04),
-                    shrinkWrap: true,
-                    itemCount: playlist.length,
-                    itemBuilder: (context, index) {
-                      //get individual song
-                      final Song song = playlist[index];
+        if (state is DashboardFailureState) {
+          // Logger().d('fail');
+        }
+      },
+      builder: (context, state) {
+        Logger().d(isLoading);
+        print(_userDetails!.email);
+        return Scaffold(
+          backgroundColor: Theme.of(context).colorScheme.surface,
+          appBar: AppBar(
+            title: Text('Welcome ${_userDetails!.fullName}'),
+          ),
+          drawer: const Mydrawer(),
+          body: Consumer<Playlistprovider>(
+            builder: (context, value, child) {
+              // get the list
 
-                      //return ist tile ui
+              final List<Song> playlist = value.playlist;
 
-                      return CustomSongTile(
-                        songs: song,
-                        onTap: () => goToSong(index, context),
-                      );
-                    },
-                    separatorBuilder: (BuildContext context, int index) {
-                      return Padding(
-                          padding:
-                              EdgeInsets.all(Metrics.width(context) * 0.02));
-                    },
-                  ),
-                ),
-              ),
-              FooterComponent(
-                footerMargin: const EdgeInsets.all(10),
-                footerSize: SizedBox(
-                  height: Metrics.height(context) * 0.1,
-                ),
-                footerStyle: const BoxDecoration(
-                    color: Colors.red,
-                    borderRadius: BorderRadius.all(Radius.circular(10))),
-                child: Column(
-                  children: [
-                    Expanded(
-                      child: Container(
-                        width: double.infinity,
-                        color: Colors.blue,
-                        child: Row(),
-                      ),
-                    ),
-                    Expanded(
-                      child: Container(
-                        width: double.infinity,
-                        color: Colors.amber,
-                        child: SliderTheme(
-                          data:
-                              SliderTheme.of(context).copyWith(trackHeight: 5),
-                          child: Slider(
-                            min: 0,
-                            max: 3.05,
-                            value: sliderValue,
-                            activeColor: Colors.green,
-                            onChanged: (value) {
-                              setState(() {
-                                sliderValue = value;
-                              });
-                              // during when the user is liding around
-                            },
-                            onChangeEnd: (double double) {
-                              // slading has finished go to that position in the song
-                              // value.seek(Duration(seconds: double.toInt()));
-                            },
-                          ),
+              return (isLoading == true
+                  ? Container(
+                      color: Colors.white,
+                      child: const Center(
+                        child: CircularProgressIndicator(
+                          color: AppColor.aquaBlue,
                         ),
                       ),
                     )
-                  ],
-                ),
-              )
-            ],
+                  : Container(
+                      height: double.infinity,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Expanded(
+                            flex: 0,
+                            child: Padding(
+                              padding: EdgeInsets.symmetric(
+                                  horizontal: Metrics.width(context) * 0.04),
+                              child: ListView.separated(
+                                padding: EdgeInsets.symmetric(
+                                    vertical: Metrics.width(context) * 0.04),
+                                shrinkWrap: true,
+                                itemCount: playlist.length,
+                                itemBuilder: (context, index) {
+                                  //get individual song
+                                  final Song song = playlist[index];
+
+                                  //return ist tile ui
+
+                                  return CustomSongTile(
+                                    songs: song,
+                                    onTap: () => goToSong(index, context),
+                                  );
+                                },
+                                separatorBuilder:
+                                    (BuildContext context, int index) {
+                                  return Padding(
+                                      padding: EdgeInsets.all(
+                                          Metrics.width(context) * 0.02));
+                                },
+                              ),
+                            ),
+                          ),
+                          FooterComponent(
+                            footerMargin: const EdgeInsets.all(10),
+                            footerSize: SizedBox(
+                              height: Metrics.height(context) * 0.1,
+                            ),
+                            footerStyle: const BoxDecoration(
+                                color: Colors.red,
+                                borderRadius:
+                                    BorderRadius.all(Radius.circular(10))),
+                            child: Column(
+                              children: [
+                                Expanded(
+                                  child: Container(
+                                    width: double.infinity,
+                                    color: Colors.blue,
+                                    child: Row(),
+                                  ),
+                                ),
+                                Expanded(
+                                  child: Container(
+                                    width: double.infinity,
+                                    color: Colors.amber,
+                                    child: SliderTheme(
+                                      data: SliderTheme.of(context)
+                                          .copyWith(trackHeight: 5),
+                                      child: Slider(
+                                        min: 0,
+                                        max: 3.05,
+                                        value: sliderValue,
+                                        activeColor: Colors.green,
+                                        onChanged: (value) {
+                                          setState(() {
+                                            sliderValue = value;
+                                          });
+                                          // during when the user is liding around
+                                        },
+                                        onChangeEnd: (double double) {
+                                          // slading has finished go to that position in the song
+                                          // value.seek(Duration(seconds: double.toInt()));
+                                        },
+                                      ),
+                                    ),
+                                  ),
+                                )
+                              ],
+                            ),
+                          )
+                        ],
+                      ),
+                    ));
+            },
           ),
         );
-      }),
+      },
     );
   }
 }
