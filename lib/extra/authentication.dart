@@ -95,11 +95,11 @@ class AuthServices {
     try {
       final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
       if (googleUser != null) {
-        final GoogleSignInAuthentication? googleAuth =
+        final GoogleSignInAuthentication googleAuth =
             await googleUser.authentication;
         final credential = GoogleAuthProvider.credential(
-          accessToken: googleAuth?.accessToken,
-          idToken: googleAuth?.idToken,
+          accessToken: googleAuth.accessToken,
+          idToken: googleAuth.idToken,
         );
         var response = await _auth.signInWithCredential(credential);
         print("RESPONSEEE $response");
@@ -155,10 +155,10 @@ class AuthServices {
   Future<dynamic> userDetailsGet({required String id}) async {
     String res = "Some Error Ocurred";
     try {
-      final document = await _firestore.collection("users").doc('$id');
+      final document = _firestore.collection("users").doc(id);
       final snapshot = await document.get();
       final data = snapshot.data();
-      print("objectfsdfdsff");
+      print("user details");
       print(data);
       final finalData = data!.map((key, value) {
         if (value is Timestamp) {

@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:musicmate/components/bottomNav/custom_bottom_navigation.dart';
-import 'package:musicmate/components/bottomNav/custom_bottom_navigation_bar_item.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:logger/logger.dart';
 import 'package:musicmate/components/index.dart';
 import 'package:musicmate/constants/i18n/strings.g.dart';
 import 'package:musicmate/constants/theme.dart';
+import 'package:musicmate/pages/dashboard/bloc/dashboard_bloc.dart';
 import 'package:musicmate/pages/home/index.dart';
 import 'package:musicmate/pages/library/index.dart';
 import 'package:musicmate/pages/search/index.dart';
@@ -40,7 +41,7 @@ class _DashboardState extends State<Dashboard> {
       'label': Text(t.settings),
     },
     {
-      'icon': const ImageIcon(const AssetImage(Images.library)),
+      'icon': const ImageIcon(AssetImage(Images.library)),
       'label': Text(t.library),
     }
   ];
@@ -49,6 +50,13 @@ class _DashboardState extends State<Dashboard> {
     setState(() {
       pageIndex = index;
     });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    Logger().d('dashboard called');
+    BlocProvider.of<DashboardBloc>(context).add(FetchUserDataFromFirebase());
   }
 
   @override
