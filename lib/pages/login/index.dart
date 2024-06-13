@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:logger/logger.dart';
+import 'package:musicmate/components/button/button_component.dart';
 import 'package:musicmate/components/snackbar.dart';
 import 'package:musicmate/constants/theme.dart';
 import 'package:musicmate/navigation/app_navigation.dart';
@@ -159,6 +160,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     const SizedBox(
                       height: 30.0,
                     ),
+                
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
@@ -172,6 +174,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           width: MediaQuery.of(context).size.width * 0.15,
                           child: const Center(child: Text("Or")),
                         ),
+                       
                         SizedBox(
                           width: MediaQuery.of(context).size.width * 0.3,
                           child: const Divider(

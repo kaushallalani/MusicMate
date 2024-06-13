@@ -60,7 +60,7 @@ class AuthenticationBloc
         // await authenticationService.signinUser(event.email, event.password);
 
         if (user != null) {
-          emit(AuthenticationSuccessState(userRepository.userDataModel!));
+          emit(AuthenticationSuccessState(userRepository.userDataModel));
         } else {
           emit(AuthenticationFailureState('User Signin failed'));
         }

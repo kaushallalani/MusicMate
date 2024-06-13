@@ -1,6 +1,7 @@
 import 'package:musicmate/pages/dashboard/index.dart';
 import 'package:musicmate/pages/home/index.dart';
 import 'package:musicmate/pages/library/index.dart';
+import 'package:musicmate/pages/listenTogether/index.dart';
 import 'package:musicmate/pages/login/index.dart';
 import 'package:musicmate/pages/search/index.dart';
 import 'package:musicmate/pages/settings/index.dart';
@@ -17,7 +18,8 @@ class NAVIGATION {
   static const String search = '/search';
   static const String library = '/library';
   static const String login = '/login';
-  static const String splash = '/';
+  static const String splash = '/splash';
+  static const String listenTogether='/';
 }
 
 List<Map<String, dynamic>> stackNavigation = [
@@ -66,5 +68,11 @@ List<Map<String, dynamic>> stackNavigation = [
     "component": (BuildContext context, GoRouterState state) =>
         const SplashScreen(),
     "options": {"path": NAVIGATION.splash}
+  },
+    {
+    "name": NAVIGATION.listenTogether,
+    "component": (BuildContext context, GoRouterState state) =>
+        const ListenTogether(),
+    "options": {"path": NAVIGATION.listenTogether}
   }
 ];

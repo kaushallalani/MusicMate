@@ -7,13 +7,15 @@ class FooterComponent extends StatelessWidget {
   final Widget child;
   final BoxDecoration? footerStyle;
   final EdgeInsetsGeometry? footerMargin;
+  final EdgeInsetsGeometry? footerPadding;
 
   const FooterComponent(
       {super.key,
       this.footerSize,
       required this.child,
       this.footerStyle,
-      this.footerMargin});
+      this.footerMargin,
+      this.footerPadding});
 
   @override
   Widget build(BuildContext context) {
@@ -25,8 +27,7 @@ class FooterComponent extends StatelessWidget {
               height: footerSize?.height ?? Metrics.height(context) * 0.09,
               margin: footerMargin,
               width: double.infinity,
-              padding:
-                  footerMargin ?? EdgeInsets.all(Metrics.width(context) * 0.04),
+              padding: footerPadding,
               decoration: Styles.footerStyle.copyWith(
                 color: footerStyle?.color,
                 gradient: footerStyle?.gradient,
@@ -72,6 +73,7 @@ class FooterComponent extends StatelessWidget {
               //         ],
               //       ),
               //     ),
+              
               //     ButtonComponent(
               //       btnTitle: 'Proceed',
               //       btnStyle: const BoxDecoration(

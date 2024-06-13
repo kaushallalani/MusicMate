@@ -11,7 +11,6 @@ import 'package:musicmate/models/user.dart';
 import 'package:musicmate/navigation/app_navigation.dart';
 import 'package:musicmate/pages/dashboard/bloc/dashboard_bloc.dart';
 import 'package:provider/provider.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -46,13 +45,35 @@ class _HomePageState extends State<HomePage> {
     context.push(NAVIGATION.songsPage);
   }
 
+  void onListenTogether() {
+    // showDialog(
+    //   context: context,
+    //   builder: (context) => AlertDialog(
+    //     title: Text('hello'),
+    //     content: TextComponent(text: 'This is the alert box for testing'),
+    //     actions: <Widget>[
+    //       ButtonComponent(
+    //         btnStyle: BoxDecoration(
+    //           color: Colors.blue[600],
+    //         ),
+    //         btnTitle: 'ok',
+    //         onPressed: () => Navigator.of(context).pop(),
+    //       ),
+    //     ],
+    //   ),
+    // );
+    GoRouter.of(context).push(NAVIGATION.listenTogether);
+    // Timer(Duration(seconds: 2), () {
+    // });
+  }
+
   @override
   Widget build(BuildContext context) {
     return BlocConsumer<DashboardBloc, DashboardState>(
       listener: (context, state) {
         if (state is DashboardInitial) {}
         if (state is DashboardLoadingState) {
-          Timer(const Duration(milliseconds: 1000), () {
+          Timer(const Duration(milliseconds: 2000), () {
             setState(() {
               isLoading = state.isLoading;
             });
@@ -64,8 +85,7 @@ class _HomePageState extends State<HomePage> {
           });
         }
 
-        if (state is DashboardFailureState) {
-        }
+        if (state is DashboardFailureState) {}
       },
       builder: (context, state) {
         Logger().d(isLoading);
@@ -93,86 +113,199 @@ class _HomePageState extends State<HomePage> {
                     )
                   : SizedBox(
                       height: double.infinity,
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Expanded(
-                            flex: 0,
-                            child: Padding(
-                              padding: EdgeInsets.symmetric(
-                                  horizontal: Metrics.width(context) * 0.04),
-                              child: ListView.separated(
-                                padding: EdgeInsets.symmetric(
-                                    vertical: Metrics.width(context) * 0.04),
-                                shrinkWrap: true,
-                                itemCount: playlist.length,
-                                itemBuilder: (context, index) {
-                                  //get individual song
-                                  final Song song = playlist[index];
-
-                                  //return ist tile ui
-
-                                  return CustomSongTile(
-                                    songs: song,
-                                    onTap: () => goToSong(index, context),
-                                  );
-                                },
-                                separatorBuilder:
-                                    (BuildContext context, int index) {
-                                  return Padding(
-                                      padding: EdgeInsets.all(
-                                          Metrics.width(context) * 0.02));
-                                },
+                      child: Padding(
+                        padding: EdgeInsets.symmetric(
+                            horizontal: Metrics.width(context) * 0.04),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Align(
+                              alignment: Alignment.topRight,
+                              child: ButtonComponent(
+                                btnTitle: 'Listen Together',
+                                btnSize: SizedBox(
+                                  width: Metrics.width(context) * 0.4,
+                                ),
+                                onPressed: onListenTogether,
+                                btnStyle: BoxDecoration(
+                                    color: AppColor.white,
+                                    borderRadius: BorderRadius.circular(5),
+                                    border: Border.all(
+                                        color: AppColor.headerBorder)),
                               ),
                             ),
-                          ),
-                          FooterComponent(
-                            footerMargin: const EdgeInsets.all(10),
-                            footerSize: SizedBox(
-                              height: Metrics.height(context) * 0.1,
-                            ),
-                            footerStyle: const BoxDecoration(
-                                color: Colors.red,
-                                borderRadius:
-                                    BorderRadius.all(Radius.circular(10))),
-                            child: Column(
-                              children: [
-                                Expanded(
-                                  child: Container(
-                                    width: double.infinity,
-                                    color: Colors.blue,
-                                    child: const Row(),
-                                  ),
+                            Expanded(
+                              flex: 0,
+                              child: Padding(
+                                padding:
+                                    const EdgeInsets.symmetric(horizontal: 0),
+                                child: ListView.separated(
+                                  padding: EdgeInsets.symmetric(
+                                      vertical: Metrics.width(context) * 0.04),
+                                  shrinkWrap: true,
+                                  itemCount: playlist.length,
+                                  itemBuilder: (context, index) {
+                                    //get individual song
+                                    final Song song = playlist[index];
+
+                                    //return ist tile ui
+
+                                    return CustomSongTile(
+                                      songs: song,
+                                      onTap: () => goToSong(index, context),
+                                    );
+                                  },
+                                  separatorBuilder:
+                                      (BuildContext context, int index) {
+                                    return Padding(
+                                        padding: EdgeInsets.all(
+                                            Metrics.width(context) * 0.02));
+                                  },
                                 ),
-                                Expanded(
-                                  child: Container(
-                                    width: double.infinity,
-                                    color: Colors.amber,
-                                    child: SliderTheme(
-                                      data: SliderTheme.of(context)
-                                          .copyWith(trackHeight: 5),
-                                      child: Slider(
-                                        min: 0,
-                                        max: 3.05,
-                                        value: sliderValue,
-                                        activeColor: Colors.green,
-                                        onChanged: (value) {
-                                          setState(() {
-                                            sliderValue = value;
-                                          });
-                                        },
-                                        onChangeEnd: (double double) {
-                                          // slading has finished go to that position in the song
-                                          // value.seek(Duration(seconds: double.toInt()));
-                                        },
+                              ),
+                            ),
+                            FooterComponent(
+                              footerMargin:
+                                  const EdgeInsets.symmetric(vertical: 10),
+                              // footerPadding: const EdgeInsets.all(5),
+                              footerSize: SizedBox(
+                                height: Metrics.height(context) * 0.1,
+                              ),
+                              footerStyle: const BoxDecoration(
+                                  color: Colors.red,
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(10))),
+                              child: Column(
+                                children: [
+                                  Expanded(
+                                    flex: 0,
+                                    child: Container(
+                                      padding: EdgeInsets.all(
+                                          Metrics.width(context) * 0.02),
+                                      width: double.infinity,
+                                      // color: Colors.blue,
+                                      child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceAround,
+                                        children: [
+                                          ClipRRect(
+                                            borderRadius:
+                                                const BorderRadius.all(
+                                                    Radius.circular(5)),
+                                            child: Image.asset(
+                                              'assets/images/Lae_Dooba.jpg',
+                                              height:
+                                                  Metrics.width(context) * 0.15,
+                                              width:
+                                                  Metrics.width(context) * 0.15,
+                                              fit: BoxFit.fill,
+                                            ),
+                                          ),
+                                          Container(
+                                            width: Metrics.width(context) * 0.4,
+                                            padding: EdgeInsets.symmetric(
+                                                horizontal:
+                                                    Metrics.width(context) *
+                                                        0.02),
+                                            child: const Column(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.start,
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
+                                              children: [
+                                                TextComponent(
+                                                  text: "songName",
+                                                  textAlign: TextAlign.left,
+                                                  textStyle: TextStyle(
+                                                    fontWeight: FontWeight.w700,
+                                                  ),
+                                                ),
+                                                TextComponent(
+                                                  text: "artistName",
+                                                  textAlign: TextAlign.left,
+                                                  textStyle: TextStyle(
+                                                      color: Colors.green),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                          Expanded(
+                                            flex: 0,
+                                            child: IconButton(
+                                              padding: const EdgeInsets.all(0),
+                                              onPressed: () {},
+                                              icon: const Icon(
+                                                Icons.speaker,
+                                                size: 25,
+                                                color: Colors.white,
+                                              ),
+                                            ),
+                                          ),
+                                          Expanded(
+                                            //  flex: 0,
+                                            child: IconButton(
+                                                padding:
+                                                    const EdgeInsets.all(0),
+                                                onPressed: () {},
+                                                icon: const Icon(
+                                                  Iconic.pause,
+                                                  size: 25,
+                                                  color: Colors.white,
+                                                )),
+                                          ),
+                                          Expanded(
+                                            flex: 0,
+                                            child: IconButton(
+                                                padding:
+                                                    const EdgeInsets.all(0),
+                                                onPressed: () {},
+                                                icon: const Icon(
+                                                  Iconic.plus_circle,
+                                                  size: 25,
+                                                  color: Colors.white,
+                                                )),
+                                          )
+                                        ],
                                       ),
                                     ),
                                   ),
-                                )
-                              ],
-                            ),
-                          )
-                        ],
+                                  Expanded(
+                                    child: Container(
+                                      width: double.infinity,
+                                      child: SliderTheme(
+                                        data: SliderTheme.of(context).copyWith(
+                                            trackHeight: 5,
+                                            trackShape:
+                                                const RectangularSliderTrackShape(),
+                                            thumbShape:
+                                                const RoundSliderThumbShape(
+                                                    elevation: 0,
+                                                    pressedElevation: 0,
+                                                    enabledThumbRadius: 0.0)),
+                                        child: Slider(
+                                          min: 0,
+                                          max: 3.05,
+                                          value: sliderValue,
+                                          activeColor: Colors.green,
+                                          thumbColor: Colors.transparent,
+                                          onChanged: (value) {
+                                            // setState(() {
+                                            //   sliderValue = value;
+                                            // });
+                                          },
+                                          onChangeEnd: (double double) {
+                                            // slading has finished go to that position in the song
+                                            // value.seek(Duration(seconds: double.toInt()));
+                                          },
+                                        ),
+                                      ),
+                                    ),
+                                  )
+                                ],
+                              ),
+                            )
+                          ],
+                        ),
                       ),
                     ));
             },
@@ -182,99 +315,3 @@ class _HomePageState extends State<HomePage> {
     );
   }
 }
-
-
-//  Column(
-//                   children: [
-//                     Flexible(
-//                       child: Container(
-//                         height: 50,
-//                         color: Colors.amber,
-//                         child: Row(
-//                           mainAxisAlignment: MainAxisAlignment.start,
-//                           crossAxisAlignment: CrossAxisAlignment.center,
-//                           children: [
-//                             Flexible(
-//                               child: Container(
-//                                 width: Metrics.width(context) * 0.15,
-//                                 height: Metrics.width(context) * 0.2,
-//                                 child: ClipRRect(
-//                                   borderRadius: const BorderRadius.all(
-//                                       Radius.circular(5)),
-//                                   child: Image.asset(
-//                                     'assets/images/Lae_Dooba.jpg',
-//                                     height: Metrics.width(context) * 0.2,
-//                                     width: Metrics.width(context) * 0.15,
-//                                     fit: BoxFit.fill,
-//                                   ),
-//                                 ),
-//                               ),
-//                             ),
-//                             Flexible(
-//                               child: Container(
-//                                 // width: Metrics.width(context) * 0.5,
-
-//                                 margin: EdgeInsets.symmetric(
-//                                     horizontal: Metrics.width(context) * 0.04),
-//                                 child: const Column(
-//                                   mainAxisAlignment: MainAxisAlignment.start,
-//                                   crossAxisAlignment: CrossAxisAlignment.start,
-//                                   children: [
-//                                     Expanded(
-//                                       flex: 0,
-//                                       child: TextComponent(
-//                                         text: "songName",
-//                                         textAlign: TextAlign.left,
-//                                         textStyle: TextStyle(
-//                                           fontWeight: FontWeight.w700,
-//                                         ),
-//                                       ),
-//                                     ),
-//                                     Expanded(
-//                                       child: TextComponent(
-//                                         text: "artistName",
-//                                         textAlign: TextAlign.left,
-//                                         textStyle:
-//                                             TextStyle(color: Colors.green),
-//                                       ),
-//                                     ),
-//                                   ],
-//                                 ),
-//                               ),
-//                             ),
-//                             Expanded(
-//                               flex: 1,
-//                               child: Row(
-//                                 crossAxisAlignment: CrossAxisAlignment.end,
-//                                 mainAxisAlignment: MainAxisAlignment.end,
-//                                 children: [
-//                                   IconButton(
-//                                     icon: const Icon(FontAwesome.heart_empty),
-//                                     onPressed: () {},
-//                                   ),
-//                                   IconButton(
-//                                     icon: const Icon(FontAwesome.play),
-//                                     onPressed: () {},
-//                                   )
-//                                 ],
-//                               ),
-//                             )
-//                           ],
-//                         ),
-//                       ),
-//                     ),
-//                     Slider(
-//                       min: 0,
-//                       max: 3.05,
-//                       value: 1.05,
-//                       activeColor: Colors.green,
-//                       onChanged: (value) {
-//                         // during when the user is liding around
-//                       },
-//                       onChangeEnd: (double double) {
-//                         // slading has finished go to that position in the song
-//                         // value.seek(Duration(seconds: double.toInt()));
-//                       },
-//                     ),
-//                   ],
-//                 ),

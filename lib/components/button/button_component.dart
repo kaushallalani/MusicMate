@@ -1,3 +1,4 @@
+import 'package:logger/logger.dart';
 import 'package:musicmate/components/index.dart';
 import 'package:musicmate/constants/theme.dart';
 import 'package:flutter/material.dart';
