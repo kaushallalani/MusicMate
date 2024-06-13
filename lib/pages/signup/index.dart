@@ -2,24 +2,22 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:logger/logger.dart';
-import 'package:musicmate/components/button/button_component.dart';
 import 'package:musicmate/components/snackbar.dart';
 import 'package:musicmate/constants/theme.dart';
 import 'package:musicmate/navigation/app_navigation.dart';
 import 'package:musicmate/pages/authentication/bloc/authentication_bloc.dart';
 
-class LoginScreen extends StatefulWidget {
-  const LoginScreen({super.key});
+class SignupScreen extends StatefulWidget {
+  const SignupScreen({Key? key}) : super(key: key);
 
   @override
-  _LoginScreenState createState() => _LoginScreenState();
+  _SignupScreenState createState() => _SignupScreenState();
 }
 
-class _LoginScreenState extends State<LoginScreen> {
-  final TextEditingController _emailController =
-      TextEditingController(text: 'test@gmail.com');
-  final TextEditingController _passwordController =
-      TextEditingController(text: 'Test@223133');
+class _SignupScreenState extends State<SignupScreen> {
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+  final TextEditingController _nameConroller = TextEditingController();
 
   bool isLoading = false;
   bool passwordVisible = false;
@@ -30,77 +28,45 @@ class _LoginScreenState extends State<LoginScreen> {
     super.dispose();
     _emailController.dispose();
     _passwordController.dispose();
+    _nameConroller.dispose();
   }
 
-  void loginUser() async {
-    BlocProvider.of<AuthenticationBloc>(context).add(SigninUser(
-        email: _emailController.text, password: _passwordController.text));
+  void registerUser() async {
+    if (_emailController.text.isEmpty &&
+        _passwordController.text.isEmpty &&
+        _nameConroller.text.isEmpty) {
+      showSnackBar(context, 'Fields cannot be empty');
+    } else {
+      BlocProvider.of<AuthenticationBloc>(context).add(SignupUser(
+          email: _emailController.text,
+          password: _passwordController.text,
+          name: _nameConroller.text));
+    }
   }
-  // void loginUser() async {
-  //   setState(() {
-  //     isLoading = true;
-  //   });
 
-  //   Future.delayed(const Duration(seconds: 1), () async {
-  //     String res = await AuthServices().loginUser(
-  //         email: _emailController.text, password: _passwordController.text);
-
-  //     log.d(res);
-  //     if (res == "Success") {
-  //       setState(() {
-  //         isLoading = false;
-  //       });
-  //     } else {
-  //       setState(() {
-  //         isLoading = false;
-  //       });
-
-  //       // showSnackBar(context, res);
-  //     }
-
-  //     context.push(NAVIGATION.dashboard);
-  //   });
-  // }
-
-  void signInWithGoogle() async {
-    BlocProvider.of<AuthenticationBloc>(context).add(const GoogleSignIn());
-    // setState(() {
-    //   isLoading == true;
-    // });
-
-    // Future.delayed(const Duration(seconds: 1), () async {
-    //   String res = await AuthServices().signInWithGoogle();
-    //   if (res == "Success") {
-    //     context.push(NAVIGATION.dashboard);
-    //   } else {
-    //     showSnackBar(context, res);
-    //     setState(() {
-    //       isLoading = false;
-    //     });
-    //   }
-    // });
+  void signupWithGoogle() async {
+    BlocProvider.of<AuthenticationBloc>(context).add(const GoogleSignUp());
   }
 
   @override
   Widget build(BuildContext context) {
     return BlocConsumer<AuthenticationBloc, AuthenticationState>(
       listener: (context, state) {
-        if (state is AuthenticationSuccessState) {
+        if (state is AuthenticationSignUpSuccessState) {
           context.push(NAVIGATION.dashboard);
         } else if (state is AuthenticationLoadingState) {
           setState(() {
             isLoading = state.isLoading;
           });
-        } else if (state is AuthenticationFailureState) {
+        } else if (state is AuthenticationSignUpFailureState) {
           showSnackBar(context, state.errorMessage);
         }
       },
       builder: (context, state) {
-        print(isLoading);
         return Scaffold(
           appBar: AppBar(
             title: const Text(
-              'Login',
+              'Sign Up',
               style: TextStyle(color: Colors.white),
             ),
             centerTitle: true,
@@ -112,6 +78,17 @@ class _LoginScreenState extends State<LoginScreen> {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
+                    SizedBox(
+                      width: Metrics.width(context) * 0.85,
+                      child: TextField(
+                        controller: _nameConroller,
+                        decoration:
+                            const InputDecoration(hintText: 'Full Name'),
+                      ),
+                    ),
+                    const SizedBox(
+                      height: 30.0,
+                    ),
                     SizedBox(
                       width: Metrics.width(context) * 0.85,
                       child: TextField(
@@ -150,9 +127,9 @@ class _LoginScreenState extends State<LoginScreen> {
                     SizedBox(
                       width: Metrics.width(context) * 0.85,
                       child: ElevatedButton(
-                        onPressed: loginUser,
+                        onPressed: registerUser,
                         child: const Text(
-                          'Login',
+                          'Register',
                           style: TextStyle(color: Colors.black),
                         ),
                       ),
@@ -160,7 +137,6 @@ class _LoginScreenState extends State<LoginScreen> {
                     const SizedBox(
                       height: 30.0,
                     ),
-                
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
@@ -174,7 +150,6 @@ class _LoginScreenState extends State<LoginScreen> {
                           width: MediaQuery.of(context).size.width * 0.15,
                           child: const Center(child: Text("Or")),
                         ),
-                       
                         SizedBox(
                           width: MediaQuery.of(context).size.width * 0.3,
                           child: const Divider(
@@ -188,7 +163,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         minWidth: MediaQuery.of(context).size.width * 0.07,
                         padding: const EdgeInsets.only(
                             top: Metrics.doubleBaseMargin),
-                        onPressed: signInWithGoogle,
+                        onPressed: signupWithGoogle,
                         child: Image.asset(
                           'assets/images/google.png',
                           fit: BoxFit.contain,
@@ -203,18 +178,16 @@ class _LoginScreenState extends State<LoginScreen> {
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          const Text("Not A User ?"),
+                          const Text('Already have an account ?'),
                           Padding(
                             padding:
                                 const EdgeInsets.only(left: 5.0, right: 5.0),
                             child: GestureDetector(
-                              child: const Text('Register Now',
+                              child: const Text('Sign In',
                                   style: TextStyle(
                                       color: Colors.blue,
                                       fontWeight: FontWeight.bold)),
-                              onTap: () {
-                                context.push(NAVIGATION.signup);
-                              },
+                              onTap: () => context.pop(),
                             ),
                           ),
                         ],

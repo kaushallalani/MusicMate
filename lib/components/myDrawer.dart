@@ -64,7 +64,7 @@ class Mydrawer extends StatelessWidget {
               leading: const Icon(Icons.logout),
               onTap: () async {
                 BlocProvider.of<AuthenticationBloc>(context).add(SignoutUser());
-                context.pushReplacement(NAVIGATION.login);
+                context.go(NAVIGATION.login);
 
                 // await AuthServices().signOut();
                 // final SharedPreferences prefs =

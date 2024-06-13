@@ -5,6 +5,7 @@ import 'package:musicmate/pages/listenTogether/index.dart';
 import 'package:musicmate/pages/login/index.dart';
 import 'package:musicmate/pages/search/index.dart';
 import 'package:musicmate/pages/settings/index.dart';
+import 'package:musicmate/pages/signup/index.dart';
 import 'package:musicmate/pages/songsPage/index.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -20,6 +21,7 @@ class NAVIGATION {
   static const String login = '/login';
   static const String splash = '/splash';
   static const String listenTogether='/';
+  static const String signup = '/signup';
 }
 
 List<Map<String, dynamic>> stackNavigation = [
@@ -68,6 +70,12 @@ List<Map<String, dynamic>> stackNavigation = [
     "component": (BuildContext context, GoRouterState state) =>
         const SplashScreen(),
     "options": {"path": NAVIGATION.splash}
+  },
+  {
+    "name": NAVIGATION.signup,
+    "component": (BuildContext context, GoRouterState state) =>
+        const SignupScreen(),
+    "options": {"path": NAVIGATION.signup}
   },
     {
     "name": NAVIGATION.listenTogether,
