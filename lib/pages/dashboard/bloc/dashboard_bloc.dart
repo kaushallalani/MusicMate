@@ -5,7 +5,6 @@ import 'package:musicmate/models/user.dart';
 import 'package:musicmate/repositories/firebase_repository.dart';
 
 import '../../../repositories/user_repository.dart';
-import '../../../services/auth.dart';
 
 part 'dashboard_event.dart';
 part 'dashboard_state.dart';
@@ -14,7 +13,6 @@ class DashboardBloc extends Bloc<DashboardEvent, DashboardState> {
   final UserRepository userRepository;
   final FirebaseRepository firebaseRepository;
 
-  final AuthenticationService authenticationService = AuthenticationService();
   DashboardBloc(this.userRepository, this.firebaseRepository)
       : super(DashboardInitial()) {
     on<DashboardEvent>((event, emit) {});
@@ -31,12 +29,14 @@ class DashboardBloc extends Bloc<DashboardEvent, DashboardState> {
           emit(DashboardFailureState(
               errorMessage: 'Error fetching userdetails'));
         }
-        emit (DashboardLoadingState(isLoading: false));
-      } catch (e) {}
+        emit(DashboardLoadingState(isLoading: false));
+      } on Exception catch (e) {
+        print('fetch error');
+        print(e.toString());
+      }
     });
 
     on<GetUserDetails>((event, emit) async {
-      print('event called');
       emit(DashboardLoadingState(isLoading: true));
       try {
         final userData = userRepository.userDataModel;
@@ -47,18 +47,6 @@ class DashboardBloc extends Bloc<DashboardEvent, DashboardState> {
           emit(DashboardFailureState(
               errorMessage: 'Error fetching userdetails'));
         }
-
-        // final String userId = await authenticationService.getCurrentUserId();
-        // if (userId != null) {
-        //   final UserModel userDetails =
-        //       await authenticationService.userDetailsGet(id: userId);
-
-        //   if (userDetails != null) {
-        //     emit(DashboardSuccessState(currentUser: userDetails));
-        //   } else {
-        //     emit(DashboardFailureState(
-        //         errorMessage: 'Error fetching userdetails'));
-        //   }
 
         emit(DashboardLoadingState(isLoading: false));
       } on Exception catch (e) {

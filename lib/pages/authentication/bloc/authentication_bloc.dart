@@ -4,7 +4,6 @@ import 'package:meta/meta.dart';
 import 'package:musicmate/models/user.dart';
 import 'package:musicmate/repositories/firebase_repository.dart';
 import 'package:musicmate/repositories/user_repository.dart';
-import 'package:musicmate/services/auth.dart';
 
 part 'authentication_event.dart';
 part 'authentication_state.dart';
@@ -14,7 +13,6 @@ class AuthenticationBloc
   final FirebaseRepository firebaseRepository;
   final UserRepository userRepository;
 
-  final AuthenticationService authenticationService = AuthenticationService();
   AuthenticationBloc(this.firebaseRepository, this.userRepository)
       : super(AuthenticationInitial()) {
     on<AuthenticationEvent>((event, emit) {});
@@ -23,11 +21,11 @@ class AuthenticationBloc
       emit(AuthenticationLoadingState(isLoading: true));
 
       try {
-        final UserModel? user =
-            await authenticationService.signupUser(event.email, event.password);
+        final User? user =
+            await firebaseRepository.signUp(event.email, event.password);
 
         if (user != null) {
-          emit(AuthenticationSuccessState(user));
+          emit(AuthenticationSuccessState(userRepository.userDataModel));
         } else {
           emit(AuthenticationFailureState('create user failed'));
         }
@@ -76,10 +74,10 @@ class AuthenticationBloc
     on<GoogleSignIn>((event, emit) async {
       emit(AuthenticationLoadingState(isLoading: true));
       try {
-        final user = await authenticationService.signInWithGoogle();
+        final User? user = await firebaseRepository.googleSignInUser();
 
         if (user != null) {
-          emit(AuthenticationSuccessState(user));
+          emit(AuthenticationSuccessState(userRepository.userDataModel));
         } else {
           emit(AuthenticationFailureState('error'));
         }

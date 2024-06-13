@@ -1,7 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
-import 'package:logger/logger.dart';
 import 'package:musicmate/models/user.dart';
 
 class AuthenticationService {
@@ -44,7 +43,7 @@ class AuthenticationService {
 
       if (firebaseUser != null) {
         final UserModel? userDetail =
-            await userDetailsGet(id: firebaseUser!.uid);
+            await userDetailsGet(id: firebaseUser.uid);
         return userDetail;
       }
     } on FirebaseException catch (e) {
@@ -89,7 +88,7 @@ class AuthenticationService {
   Future<dynamic> getCurrentUserId() async {
     try {
       print('called');
-      final uid = await _firebaseAuth.currentUser?.uid;
+      final uid = _firebaseAuth.currentUser?.uid;
       if (uid != null) {
         return uid;
       }
@@ -101,7 +100,7 @@ class AuthenticationService {
   Future<dynamic> userDetailsGet({required String id}) async {
     try {
       final document =
-          await FirebaseFirestore.instance.collection("users").doc('$id');
+          FirebaseFirestore.instance.collection("users").doc(id);
       final snapshot = await document.get();
       final data = snapshot.data();
       final transformedData = transformData(data!);

@@ -42,7 +42,7 @@ class FirebaseRepositoryImpl extends FirebaseRepository {
         return firebaseUser;
       }
     } on FirebaseAuthException catch (e) {
-      print('Exception googleSignin => ${e}');
+      print('Exception googleSignin => $e');
       return Future.error(e);
     }
     return null;
@@ -55,7 +55,7 @@ class FirebaseRepositoryImpl extends FirebaseRepository {
       final User? firebaseUser = data!.user;
       return firebaseUser;
     } on FirebaseAuthException catch (e) {
-      print('Exception signin => ${e}');
+      print('Exception signin => $e');
       return Future.error(e);
     }
   }
@@ -65,7 +65,7 @@ class FirebaseRepositoryImpl extends FirebaseRepository {
     try {
       await firebaseService.signOutUser();
     } on FirebaseAuthException catch (e) {
-      print('Exception signout => ${e}');
+      print('Exception signout => $e');
     }
   }
 
@@ -76,7 +76,7 @@ class FirebaseRepositoryImpl extends FirebaseRepository {
       final User? firebaseUser = data!.user;
       return firebaseUser;
     } on FirebaseAuthException catch (e) {
-      print('Exception signup => ${e}');
+      print('Exception signup => $e');
       return Future.error(e);
     }
   }

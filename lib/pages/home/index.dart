@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -10,7 +9,6 @@ import 'package:musicmate/models/playlistProvider.dart';
 import 'package:musicmate/models/song.dart';
 import 'package:musicmate/models/user.dart';
 import 'package:musicmate/navigation/app_navigation.dart';
-import 'package:musicmate/pages/authentication/bloc/authentication_bloc.dart';
 import 'package:musicmate/pages/dashboard/bloc/dashboard_bloc.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -27,37 +25,16 @@ class _HomePageState extends State<HomePage> {
   late final dynamic playlistProvider;
   int currentIndex = 0;
   double sliderValue = 0;
-  bool isLoading = false;
+  bool isLoading = true;
   late UserModel? _userDetails;
 
   @override
   void initState() {
     super.initState();
-// get playlist provider
     playlistProvider = Provider.of<Playlistprovider>(context, listen: false);
     _userDetails = UserModel();
-
-    // Timer(Duration(milliseconds: 500), () {
-    //   setState(() {
-    //     // isLoading = !isLoading;
-    //   });
-    // });
-
     context.read<DashboardBloc>().add(GetUserDetails());
     // getUserDetail();
-  }
-
-  void getUserDetail() async {
-    final SharedPreferences prefs = await SharedPreferences.getInstance();
-    var user = prefs.getString('user');
-
-    print("objectfsdfdsff userrr");
-    print(user);
-    if (user != null) {
-      setState(() {
-        // _user = jsonDecode(user);
-      });
-    }
   }
 
 // go to a song
@@ -73,13 +50,12 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return BlocConsumer<DashboardBloc, DashboardState>(
       listener: (context, state) {
-        if (state is DashboardInitial) {
-          // Logger().d('init');
-        }
+        if (state is DashboardInitial) {}
         if (state is DashboardLoadingState) {
-
-          setState(() {
-            isLoading = state.isLoading;
+          Timer(const Duration(milliseconds: 1000), () {
+            setState(() {
+              isLoading = state.isLoading;
+            });
           });
         }
         if (state is DashboardSuccessState) {
@@ -89,7 +65,6 @@ class _HomePageState extends State<HomePage> {
         }
 
         if (state is DashboardFailureState) {
-          // Logger().d('fail');
         }
       },
       builder: (context, state) {
@@ -116,7 +91,7 @@ class _HomePageState extends State<HomePage> {
                         ),
                       ),
                     )
-                  : Container(
+                  : SizedBox(
                       height: double.infinity,
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -166,7 +141,7 @@ class _HomePageState extends State<HomePage> {
                                   child: Container(
                                     width: double.infinity,
                                     color: Colors.blue,
-                                    child: Row(),
+                                    child: const Row(),
                                   ),
                                 ),
                                 Expanded(
@@ -185,7 +160,6 @@ class _HomePageState extends State<HomePage> {
                                           setState(() {
                                             sliderValue = value;
                                           });
-                                          // during when the user is liding around
                                         },
                                         onChangeEnd: (double double) {
                                           // slading has finished go to that position in the song

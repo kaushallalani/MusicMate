@@ -22,7 +22,7 @@ class ThemeProvider extends ChangeNotifier {
 
   _initPrefs() async {
     print(prefs);
-    if (prefs == null) prefs = await SharedPreferences.getInstance();
+    prefs ??= await SharedPreferences.getInstance();
   }
 
   loadFromPrefs() async {

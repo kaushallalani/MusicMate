@@ -25,13 +25,13 @@ void main() async {
         ChangeNotifierProvider(create: (context) => ThemeProvider()),
         ChangeNotifierProvider(create: (context) => Playlistprovider())
       ],
-      child: TranslationProvider(child: MyApp()),
+      child: TranslationProvider(child: const MyApp()),
     ),
   );
 }
 
 class MyApp extends StatefulWidget {
-  MyApp({super.key});
+  const MyApp({super.key});
 
   @override
   State<MyApp> createState() => _MyAppState();

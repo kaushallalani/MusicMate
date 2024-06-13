@@ -9,10 +9,10 @@ class UserModel {
   final String? createdAt;
   final String? updatedAt;
 
-  factory UserModel.fromJson(Map<String, dynamic?> json) =>
+  factory UserModel.fromJson(Map<String, dynamic> json) =>
       _$UserModelFromJson(json);
 
-  Map<String, dynamic?> toJson() => _$UserModelToJson(this);
+  Map<String, dynamic> toJson() => _$UserModelToJson(this);
 
   UserModel(
       {this.id, this.email, this.fullName, this.createdAt, this.updatedAt});

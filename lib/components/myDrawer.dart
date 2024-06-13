@@ -3,11 +3,8 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:musicmate/navigation/app_navigation.dart';
-import 'package:musicmate/pages/login/index.dart';
 import 'package:musicmate/pages/settings/index.dart';
 import 'package:flutter/material.dart';
-import 'package:musicmate/services/authentication.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 import '../pages/authentication/bloc/authentication_bloc.dart';
 

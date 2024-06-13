@@ -28,7 +28,6 @@ class _SettingsPageState extends State<SettingsPage> {
 
   @override
   Widget build(BuildContext context) {
-
     return BlocConsumer<DashboardBloc, DashboardState>(
       // bloc: settingsBloc,
       listener: (context, state) {
@@ -53,9 +52,7 @@ class _SettingsPageState extends State<SettingsPage> {
       builder: (context, state) {
         print('settings');
         Logger().d(state);
-        if(state is DashboardLoadingState){
-          print('isLoadinggg00');
-        }
+        if (state is DashboardLoadingState) {}
         return Scaffold(
           appBar: AppBar(
             title: const Text('S E T T I N G S'),
