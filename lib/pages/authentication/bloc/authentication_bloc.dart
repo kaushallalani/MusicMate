@@ -2,7 +2,7 @@ import 'package:bloc/bloc.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:meta/meta.dart';
 import 'package:musicmate/models/user.dart';
-import 'package:musicmate/repositories/firebase_repository.dart';
+import 'package:musicmate/repositories/auth_repository.dart';
 import 'package:musicmate/repositories/user_repository.dart';
 
 part 'authentication_event.dart';

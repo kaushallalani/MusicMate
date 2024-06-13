@@ -1,8 +1,8 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:musicmate/models/user.dart';
-import 'package:musicmate/repositories/firebase_repository.dart';
-import 'package:musicmate/services/firebase_service.dart';
+import 'package:musicmate/repositories/auth_repository.dart';
+import 'package:musicmate/services/auth_service.dart';
 
 class FirebaseRepositoryImpl extends FirebaseRepository {
   final FirebaseService firebaseService = FirebaseService();
