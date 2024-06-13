@@ -1,7 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
-import 'package:logger/logger.dart';
 import 'package:musicmate/models/user.dart';
 
 class AuthenticationService {
@@ -15,6 +14,9 @@ class AuthenticationService {
               email: email.trim(), password: password.trim());
       final User? firebaseUser = userCredential.user;
       if (firebaseUser != null) {
+        final UserModel? userDetails =
+            await userDetailsGet(id: firebaseUser.uid);
+        return userDetails;
         // return UserModel(id: firebaseUser.uid, email: firebaseUser.email!);
       }
     } on FirebaseException catch (e) {
@@ -38,12 +40,11 @@ class AuthenticationService {
           await _firebaseAuth.signInWithEmailAndPassword(
               email: email.trim(), password: password.trim());
       final User? firebaseUser = userCredential.user;
-      final userDetail = await userDetailsGet(id: firebaseUser!.uid);
+
       if (firebaseUser != null) {
-        Logger().d(userDetail["email"]);
-        return UserModel(userDetail["fullName"], userDetail["createdAt"],
-            userDetail["updatedAt"],
-            id: firebaseUser.uid, email: userDetail["email"]);
+        final UserModel? userDetail =
+            await userDetailsGet(id: firebaseUser.uid);
+        return userDetail;
       }
     } on FirebaseException catch (e) {
       print('loginn error');
@@ -74,10 +75,9 @@ class AuthenticationService {
         return;
       } else {
         final User? firebaseUser = response.user;
-        final userDetail = await userDetailsGet(id: firebaseUser!.uid);
-        return UserModel(userDetail["fullName"], userDetail["createdAt"],
-            userDetail["updatedAt"],
-            id: firebaseUser.uid, email: userDetail["email"]);
+        final UserModel? userDetail =
+            await userDetailsGet(id: firebaseUser!.uid);
+        return userDetail!;
       }
     } on Exception catch (e) {
       print('exception->$e');
@@ -85,31 +85,55 @@ class AuthenticationService {
     }
   }
 
+  Future<dynamic> getCurrentUserId() async {
+    try {
+      print('called');
+      final uid = _firebaseAuth.currentUser?.uid;
+      if (uid != null) {
+        return uid;
+      }
+    } catch (e) {
+      print(e);
+    }
+  }
+
   Future<dynamic> userDetailsGet({required String id}) async {
     try {
       final document =
-          await FirebaseFirestore.instance.collection("users").doc('$id');
+          FirebaseFirestore.instance.collection("users").doc(id);
       final snapshot = await document.get();
       final data = snapshot.data();
-      print("objectfsdfdsff");
-      print(data);
-      final finalData = data!.map((key, value) {
-        if (value is Timestamp) {
-          return MapEntry(
-              key,
-              value
-                  .toDate()
-                  .toString()); // Convert to DateTime and then to String
-        } else {
-          return MapEntry(key, value);
-        }
-      });
-      return finalData;
+      final transformedData = transformData(data!);
+      final jsonData = UserModel.fromJson(transformedData);
+
+      // final finalData = data!.map((key, value) {
+      //   if (value is Timestamp) {
+      //     return MapEntry(
+      //         key,
+      //         value
+      //             .toDate()
+      //             .toString()); // Convert to DateTime and then to String
+      //   } else {
+      //     return MapEntry(key, value);
+      //   }
+      // });
+
+      return jsonData;
       // final SharedPreferences prefs = await SharedPreferences.getInstance();
       // await prefs.setString('user', jsonEncode(finalData));
       // await prefs.setBool('isLogin', true);
     } catch (e) {
       return e.toString();
     }
+  }
+
+  Map<String, dynamic> transformData(Map<String, dynamic> data) {
+    return data.map((key, value) {
+      if (value is Timestamp) {
+        return MapEntry(key, value.toDate().toString());
+      } else {
+        return MapEntry(key, value);
+      }
+    });
   }
 }

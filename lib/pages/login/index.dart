@@ -6,10 +6,9 @@ import 'package:musicmate/components/snackbar.dart';
 import 'package:musicmate/constants/theme.dart';
 import 'package:musicmate/navigation/app_navigation.dart';
 import 'package:musicmate/pages/authentication/bloc/authentication_bloc.dart';
-import 'package:musicmate/services/authentication.dart';
 
 class LoginScreen extends StatefulWidget {
-  const LoginScreen({Key? key}) : super(key: key);
+  const LoginScreen({super.key});
 
   @override
   _LoginScreenState createState() => _LoginScreenState();
@@ -63,7 +62,7 @@ class _LoginScreenState extends State<LoginScreen> {
   // }
 
   void signInWithGoogle() async {
-    BlocProvider.of<AuthenticationBloc>(context).add(GoogleSignIn());
+    BlocProvider.of<AuthenticationBloc>(context).add(const GoogleSignIn());
     // setState(() {
     //   isLoading == true;
     // });

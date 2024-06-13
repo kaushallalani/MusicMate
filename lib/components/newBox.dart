@@ -15,7 +15,7 @@ class NewBox extends StatelessWidget {
     bool isDarkMode = Provider.of<ThemeProvider>(context).darkTheme;
     return Container(
       decoration: BoxDecoration(
-          color: Theme.of(context).colorScheme.background,
+          color: Theme.of(context).colorScheme.surface,
           borderRadius: BorderRadius.circular(12),
           boxShadow: [
             //Darker
