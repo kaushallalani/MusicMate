@@ -26,3 +26,18 @@ class AuthenticationFailureState extends AuthenticationState {
   @override
   List<Object> get props => [errorMessage];
 }
+
+class AuthenticationSignUpSuccessState extends AuthenticationState {
+  final UserModel? user;
+  AuthenticationSignUpSuccessState(this.user);
+  @override
+  List<Object> get props => [user!];
+}
+
+class AuthenticationSignUpFailureState extends AuthenticationState {
+  final String errorMessage;
+
+  AuthenticationSignUpFailureState(this.errorMessage);
+  @override
+  List<Object> get props => [errorMessage];
+}

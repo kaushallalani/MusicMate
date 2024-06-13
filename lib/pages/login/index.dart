@@ -193,6 +193,30 @@ class _LoginScreenState extends State<LoginScreen> {
                         ),
                       ),
                     ),
+                    Padding(
+                      padding: const EdgeInsets.only(
+                          top: Metrics.doubleBaseMargin,
+                          bottom: Metrics.doubleBaseMargin),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          const Text("Not A User ?"),
+                          Padding(
+                            padding:
+                                const EdgeInsets.only(left: 5.0, right: 5.0),
+                            child: GestureDetector(
+                              child: const Text('Register Now',
+                                  style: TextStyle(
+                                      color: Colors.blue,
+                                      fontWeight: FontWeight.bold)),
+                              onTap: () {
+                                context.push(NAVIGATION.signup);
+                              },
+                            ),
+                          ),
+                        ],
+                      ),
+                    )
                   ],
                 ),
               ),

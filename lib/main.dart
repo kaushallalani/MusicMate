@@ -84,7 +84,7 @@ class _MyAppState extends State<MyApp> {
           ],
           child: MaterialApp.router(
             debugShowCheckedModeBanner: false,
-            title: 'Provider Theme Changer',
+            title: 'MusicMate',
             theme: value.darkTheme == false ? lightMode : darkMode,
             supportedLocales: {const Locale('en', '')},
             restorationScopeId: 'app',
