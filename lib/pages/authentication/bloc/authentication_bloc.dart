@@ -2,7 +2,7 @@ import 'package:bloc/bloc.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:meta/meta.dart';
 import 'package:musicmate/models/user.dart';
-import 'package:musicmate/repositories/firebase_repository.dart';
+import 'package:musicmate/repositories/auth_repository.dart';
 import 'package:musicmate/repositories/user_repository.dart';
 
 part 'authentication_event.dart';
@@ -21,8 +21,8 @@ class AuthenticationBloc
       emit(AuthenticationLoadingState(isLoading: true));
 
       try {
-        final User? user =
-            await firebaseRepository.signUp(event.email, event.password);
+        final User? user = await firebaseRepository.signUp(
+            event.email, event.password, event.name);
 
         if (user != null) {
           emit(AuthenticationSuccessState(userRepository.userDataModel));
@@ -60,7 +60,7 @@ class AuthenticationBloc
         // await authenticationService.signinUser(event.email, event.password);
 
         if (user != null) {
-          emit(AuthenticationSuccessState(userRepository.userDataModel!));
+          emit(AuthenticationSuccessState(userRepository.userDataModel));
         } else {
           emit(AuthenticationFailureState('User Signin failed'));
         }
@@ -79,10 +79,28 @@ class AuthenticationBloc
         if (user != null) {
           emit(AuthenticationSuccessState(userRepository.userDataModel));
         } else {
-          emit(AuthenticationFailureState('error'));
+          emit(AuthenticationFailureState('Please select an account'));
         }
       } on Exception catch (e) {
         emit(AuthenticationFailureState(e.toString()));
+      }
+      emit(AuthenticationLoadingState(isLoading: false));
+    });
+
+    on<GoogleSignUp>((event, emit) async {
+      emit(AuthenticationLoadingState(isLoading: true));
+      try {
+        final dynamic user = await firebaseRepository.googleSignUpUser();
+
+        if (user == true) {
+          emit(AuthenticationSignUpSuccessState(userRepository.userDataModel));
+        } else if (user == false) {
+          emit(AuthenticationSignUpFailureState("User already exist"));
+        } else {
+          emit(AuthenticationSignUpFailureState("Please select an account"));
+        }
+      } on Exception catch (e) {
+        emit(AuthenticationSignUpFailureState(e.toString()));
       }
       emit(AuthenticationLoadingState(isLoading: false));
     });
