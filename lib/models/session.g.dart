@@ -12,7 +12,7 @@ SessionModel _$SessionModelFromJson(Map<String, dynamic> json) => SessionModel(
       ownerId: json['ownerId'] as String?,
       currentSongId: json['currentSongId'] as String?,
       allUsers: (json['allUsers'] as List<dynamic>?)
-          ?.map((e) => UserModel.fromJson(e as Map<String, dynamic>))
+          ?.map((e) => e as String)
           .toList(),
       createdAt: json['createdAt'] as String?,
       updatedAt: json['updatedAt'] as String?,

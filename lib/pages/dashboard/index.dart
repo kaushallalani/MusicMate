@@ -4,7 +4,7 @@ import 'package:logger/logger.dart';
 import 'package:musicmate/components/index.dart';
 import 'package:musicmate/constants/i18n/strings.g.dart';
 import 'package:musicmate/constants/theme.dart';
-import 'package:musicmate/pages/dashboard/bloc/dashboard_bloc.dart';
+import 'package:musicmate/bloc/dashboard/dashboard_bloc.dart';
 import 'package:musicmate/pages/home/index.dart';
 import 'package:musicmate/pages/library/index.dart';
 import 'package:musicmate/pages/search/index.dart';

@@ -10,7 +10,7 @@ class SessionModel {
   final String? sessionName;
   final String? ownerId;
   final String? currentSongId;
-  final List<UserModel>? allUsers;
+  final List<String>? allUsers;
   final String? createdAt;
   final String? updatedAt;
 

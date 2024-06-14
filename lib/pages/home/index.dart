@@ -10,7 +10,7 @@ import 'package:musicmate/models/playlistProvider.dart';
 import 'package:musicmate/models/song.dart';
 import 'package:musicmate/models/user.dart';
 import 'package:musicmate/navigation/app_navigation.dart';
-import 'package:musicmate/pages/dashboard/bloc/dashboard_bloc.dart';
+import 'package:musicmate/bloc/dashboard/dashboard_bloc.dart';
 import 'package:provider/provider.dart';
 
 class HomePage extends StatefulWidget {
@@ -71,8 +71,8 @@ class _HomePageState extends State<HomePage> {
         if (state is DashboardFailureState) {}
       },
       builder: (context, state) {
-        Logger().d(isLoading);
-        print(_userDetails!.email);
+        // Logger().d(isLoading);
+        // print(_userDetails!.email);
         return WillPopScope(
           onWillPop: () async {
             return exit(0); // Exit the app
@@ -80,7 +80,12 @@ class _HomePageState extends State<HomePage> {
           child: Scaffold(
             backgroundColor: Theme.of(context).colorScheme.surface,
             appBar: AppBar(
-              title: Text('Welcome ${_userDetails!.fullName}'),
+              leadingWidth: 0,
+              title: Padding(
+                padding: EdgeInsets.symmetric(
+                    horizontal: Metrics.width(context) * 0.06),
+                child: Text('Welcome ${_userDetails!.fullName}'),
+              ),
             ),
             drawer: const Mydrawer(),
             body: Consumer<Playlistprovider>(

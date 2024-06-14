@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:musicmate/bloc/session/session_bloc.dart';
 import 'package:musicmate/constants/i18n/strings.g.dart';
 import 'package:musicmate/firebase_options.dart';
 import 'package:musicmate/models/playlistProvider.dart';
 import 'package:musicmate/navigation/app_navigation.dart';
 import 'package:musicmate/navigation/navigation.dart';
-import 'package:musicmate/pages/authentication/bloc/authentication_bloc.dart';
-import 'package:musicmate/pages/dashboard/bloc/dashboard_bloc.dart';
+import 'package:musicmate/bloc/dashboard/dashboard_bloc.dart';
 import 'package:musicmate/themes/dark_mode.dart';
 import 'package:musicmate/themes/light_mode.dart';
 import 'package:musicmate/themes/theme_provider.dart';
@@ -14,6 +14,8 @@ import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import './injectionContainer/injection_container.dart' as di;
 import 'package:firebase_core/firebase_core.dart';
+
+import 'bloc/authentication/authentication_bloc.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -80,7 +82,10 @@ class _MyAppState extends State<MyApp> {
                     di.serviceLocater<AuthenticationBloc>()),
             BlocProvider<DashboardBloc>(
                 create: (BuildContext context) =>
-                    di.serviceLocater<DashboardBloc>())
+                    di.serviceLocater<DashboardBloc>()),
+            BlocProvider<SessionBloc>(
+                create: (BuildContext context) =>
+                    di.serviceLocater<SessionBloc>())
           ],
           child: MaterialApp.router(
             debugShowCheckedModeBanner: false,

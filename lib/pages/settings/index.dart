@@ -1,7 +1,7 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:logger/logger.dart';
 import 'package:musicmate/models/user.dart';
-import 'package:musicmate/pages/dashboard/bloc/dashboard_bloc.dart';
+import 'package:musicmate/bloc/dashboard/dashboard_bloc.dart';
 import 'package:musicmate/themes/theme_provider.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';

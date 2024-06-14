@@ -7,7 +7,7 @@ class TextFormFieldComponent extends StatelessWidget {
   final TextEditingController controller;
   final TextInputType? keyboardType;
   final FocusNode? focusNode;
-  final VoidCallback? onFieldSubmitted;
+  final void Function(String)? onFieldSubmitted;
   final String? hintText;
   final String? labelText;
   final TextStyle? labelStyle;
@@ -63,7 +63,7 @@ class TextFormFieldComponent extends StatelessWidget {
         textInputAction: textInputAction,
         obscureText: obscureText ?? false,
         cursorColor: AppColor.black,
-        onFieldSubmitted: (value) => {onFieldSubmitted!()},
+        onFieldSubmitted: onFieldSubmitted,
         validator: validator,
         decoration: InputDecoration(
             hintText: hintText,
