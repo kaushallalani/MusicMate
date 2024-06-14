@@ -166,6 +166,17 @@ class FirebaseService {
     }
   }
 
+  Future<dynamic> updateUserDetail(
+      {required String id, required Map<Object, Object?> data}) async {
+    try {
+      final document = FirebaseFirestore.instance.collection("users").doc(id);
+      final response = await document.update(data);
+      return response;
+    } catch (e) {
+      return Future.error(e);
+    }
+  }
+
   Map<String, dynamic> transformData(Map<String, dynamic> data) {
     return data.map((key, value) {
       if (value is Timestamp) {
