@@ -80,10 +80,10 @@ class _HomePageState extends State<HomePage> {
           child: Scaffold(
             backgroundColor: Theme.of(context).colorScheme.surface,
             appBar: AppBar(
-              leadingWidth: 0,
+              leadingWidth: 25,
               title: Padding(
                 padding: EdgeInsets.symmetric(
-                    horizontal: Metrics.width(context) * 0.06),
+                    horizontal: Metrics.width(context) * 0),
                 child: Text('Welcome ${_userDetails!.fullName}'),
               ),
             ),

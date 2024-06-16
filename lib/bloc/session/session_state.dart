@@ -20,8 +20,12 @@ class SessionLoading extends SessionInitial {
 
 class SessionSuccessState extends SessionInitial {
   final SessionModel? sessionData;
+  final List<UserModel?> sessionUsers;
 
-  SessionSuccessState({super.sessionModel, required this.sessionData});
+  SessionSuccessState(
+      {super.sessionModel,
+      required this.sessionData,
+      required this.sessionUsers});
   @override
   List<Object?> get props => [sessionData];
 }

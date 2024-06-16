@@ -59,10 +59,12 @@ class _ListenTogetherState extends State<ListenTogether> {
     final isValidated = _formKey.currentState!.validate();
     Logger().d(isValidated);
     if (isValidated == true) {
+      final code = generateSessionCode();
       final sessionData = SessionModel(
           sessionName: nameController.text,
           currentSongId: '',
           allUsers: [userDetails!.id!],
+          sessionCode: code,
           ownerId: userDetails!.id,
           createdAt: DateTime.now().toString(),
           updatedAt: DateTime.now().toString());
@@ -82,6 +84,21 @@ class _ListenTogetherState extends State<ListenTogether> {
       BlocProvider.of<DashboardBloc>(context)
           .add(FetchUserSessions(id: userDetails!.id!));
     });
+  }
+
+  String generateSessionCode({int length = 9}) {
+    final characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'.toLowerCase();
+    final random = Random();
+    StringBuffer buffer = StringBuffer();
+
+    for (int i = 0; i < length; i++) {
+      if (i > 0 && i % 3 == 0) {
+        buffer.write('-');
+      }
+      buffer.write(characters[random.nextInt(characters.length)]);
+    }
+
+    return buffer.toString();
   }
 
   @override
@@ -127,7 +144,8 @@ class _ListenTogetherState extends State<ListenTogether> {
 
         return Scaffold(
           appBar: AppBar(
-            leadingWidth: 0,
+            leadingWidth: 30,
+            automaticallyImplyLeading: false,
             bottom: PreferredSize(
               preferredSize: Size.zero,
               child: Container(
@@ -137,21 +155,17 @@ class _ListenTogetherState extends State<ListenTogether> {
               ),
             ),
             leading: IconButton(
-              padding: EdgeInsets.symmetric(
-                  horizontal: Metrics.width(context) * 0),
               icon: const Icon(
                 Entypo.left_open_big,
                 size: 20,
               ),
               onPressed: () {
+                print('pressed');
                 context.pop();
               },
             ),
-            title: Padding(
-              padding: EdgeInsets.symmetric(
-                  horizontal: Metrics.width(context) * 0),
-              child: const TextComponent(text: 'Sessions'),
-            ),
+            titleSpacing: 0,
+            title: const TextComponent(text: 'Sessions'),
           ),
           body: isLoading == true
               ? Container(
@@ -169,16 +183,17 @@ class _ListenTogetherState extends State<ListenTogether> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      SizedBox(
-                        height: 10,
-                      ),
                       Expanded(
                         flex: 0,
-                        child: const TextComponent(
-                          text: 'Your Sessions',
-                          textStyle: TextStyle(
-                              fontSize: FontSize.medium,
-                              fontWeight: FontWeight.w700),
+                        child: Padding(
+                          padding: EdgeInsets.symmetric(
+                              vertical: Metrics.width(context) * 0.04),
+                          child: const TextComponent(
+                            text: 'Your Sessions',
+                            textStyle: TextStyle(
+                                fontSize: FontSize.medium,
+                                fontWeight: FontWeight.w700),
+                          ),
                         ),
                       ),
                       userSessions.length != 0
@@ -236,6 +251,8 @@ class _ListenTogetherState extends State<ListenTogether> {
                                           trailing: InkWell(
                                               onTap: () {
                                                 print('pressed');
+                                                Logger()
+                                                    .d(generateSessionCode());
                                                 BlocProvider.of<DashboardBloc>(
                                                         context)
                                                     .add(SetCurrentSession(
@@ -298,7 +315,83 @@ class _ListenTogetherState extends State<ListenTogether> {
                                     width: Metrics.width(context) * 0.4,
                                   ),
                                   onPressed: () {
-                                    Logger().d(' create pressed');
+                                    showModalBottomSheet(
+                                        context: context,
+                                        isScrollControlled: true,
+                                        builder: (context) {
+                                          return Container(
+                                            width: double.infinity,
+                                            padding: EdgeInsets.only(
+                                                bottom: MediaQuery.of(context)
+                                                    .viewInsets
+                                                    .bottom,
+                                                top: Metrics.width(context) *
+                                                    0.04,
+                                                left: Metrics.width(context) *
+                                                    0.04,
+                                                right: Metrics.width(context) *
+                                                    0.04),
+                                            child: Form(
+                                              key: _formKey,
+                                              child: Column(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment.start,
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.start,
+                                                mainAxisSize: MainAxisSize.min,
+                                                children: [
+                                                  const TextComponent(
+                                                    text: 'Add Session Details',
+                                                    textStyle: TextStyle(
+                                                        fontWeight:
+                                                            FontWeight.w700,
+                                                        fontSize:
+                                                            FontSize.xmedium),
+                                                  ),
+                                                  TextFormFieldComponent(
+                                                    controller: nameController,
+                                                    hintText:
+                                                        'Enter Session Name',
+                                                    validator: (value) {
+                                                      if (value!.isEmpty) {
+                                                        return 'Session name cannot be empty';
+                                                      }
+                                                      // Return null if the input is valid
+                                                      return null;
+                                                    },
+                                                    focusedBorder:
+                                                        const UnderlineInputBorder(
+                                                            borderSide: BorderSide(
+                                                                color: AppColor
+                                                                    .aquaBlue)),
+                                                  ),
+                                                  Center(
+                                                    child: Padding(
+                                                      padding: EdgeInsets.symmetric(
+                                                          vertical:
+                                                              Metrics.width(
+                                                                      context) *
+                                                                  0.04),
+                                                      child: ButtonComponent(
+                                                        btnTitle: 'Create',
+                                                        btnPadding:
+                                                            const EdgeInsets
+                                                                .all(5),
+                                                        btnStyle:
+                                                            Styles.sessionBtn,
+                                                        btnTextStyle:
+                                                            Styles.btnTextStyle,
+                                                        onPressed: () {
+                                                          handleOnCreateSession();
+                                                        },
+                                                      ),
+                                                    ),
+                                                  )
+                                                ],
+                                              ),
+                                            ),
+                                          );
+                                        });
                                   },
                                   btnTextStyle: Styles.btnTextStyle),
                             ),
@@ -337,7 +430,7 @@ class _ListenTogetherState extends State<ListenTogether> {
                                               mainAxisSize: MainAxisSize.min,
                                               children: [
                                                 const TextComponent(
-                                                  text: 'Add Session Details',
+                                                  text: 'Join Session ',
                                                   textStyle: TextStyle(
                                                       fontWeight:
                                                           FontWeight.w700,
@@ -347,10 +440,10 @@ class _ListenTogetherState extends State<ListenTogether> {
                                                 TextFormFieldComponent(
                                                   controller: nameController,
                                                   hintText:
-                                                      'Enter Session Name',
+                                                      'Enter Session Code',
                                                   validator: (value) {
                                                     if (value!.isEmpty) {
-                                                      return 'Session name cannot be empty';
+                                                      return 'Session code cannot be empty';
                                                     }
                                                     // Return null if the input is valid
                                                     return null;
@@ -368,7 +461,7 @@ class _ListenTogetherState extends State<ListenTogether> {
                                                                 context) *
                                                             0.04),
                                                     child: ButtonComponent(
-                                                      btnTitle: 'Create',
+                                                      btnTitle: 'Join',
                                                       btnPadding:
                                                           const EdgeInsets.all(
                                                               5),
@@ -376,9 +469,7 @@ class _ListenTogetherState extends State<ListenTogether> {
                                                           Styles.sessionBtn,
                                                       btnTextStyle:
                                                           Styles.btnTextStyle,
-                                                      onPressed: () {
-                                                        handleOnCreateSession();
-                                                      },
+                                                      onPressed: () {},
                                                     ),
                                                   ),
                                                 )

@@ -14,6 +14,7 @@ SessionModel _$SessionModelFromJson(Map<String, dynamic> json) => SessionModel(
       allUsers: (json['allUsers'] as List<dynamic>?)
           ?.map((e) => e as String)
           .toList(),
+      sessionCode: json['sessionCode'] as String?,
       createdAt: json['createdAt'] as String?,
       updatedAt: json['updatedAt'] as String?,
     );
@@ -25,6 +26,7 @@ Map<String, dynamic> _$SessionModelToJson(SessionModel instance) =>
       'ownerId': instance.ownerId,
       'currentSongId': instance.currentSongId,
       'allUsers': instance.allUsers,
+      'sessionCode': instance.sessionCode,
       'createdAt': instance.createdAt,
       'updatedAt': instance.updatedAt,
     };

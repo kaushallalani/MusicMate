@@ -11,6 +11,7 @@ class SessionModel {
   final String? ownerId;
   final String? currentSongId;
   final List<String>? allUsers;
+  final String? sessionCode;
   final String? createdAt;
   final String? updatedAt;
 
@@ -20,8 +21,10 @@ class SessionModel {
     this.ownerId,
     this.currentSongId,
     this.allUsers,
+    this.sessionCode,
     this.createdAt,
     this.updatedAt,
+    
   });
 
   factory SessionModel.fromJson(Map<String, dynamic> json) =>
