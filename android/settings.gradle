@@ -25,5 +25,5 @@ plugins {
     // END: FlutterFire Configuration
 }
 
-include ":spotify-app-remote"
 include ":app"
+include ":spotify-app-remote"

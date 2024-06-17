@@ -37,6 +37,7 @@ android {
     }
 
     defaultConfig {
+        manifestPlaceholders = [redirectSchemeName: "musicmate", redirectHostName: "host"]
         // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
         applicationId "com.musicmate"
         // You can update the following values to match your application needs.
@@ -48,11 +49,7 @@ android {
     }
 
     buildTypes {
-        debug {
-             manifestPlaceholders = [redirectSchemeName: "musicmate", redirectHostName: "debug.musicmate.com"]
-        }
         release {
-            manifestPlaceholders = [redirectSchemeName: "musicmate", redirectHostName: "musicmate.com"]
             // TODO: Add your own signing config for the release build.
             // Signing with the debug keys for now, so `flutter run --release` works.
             signingConfig = signingConfigs.debug

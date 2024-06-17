@@ -12,12 +12,14 @@ import 'package:musicmate/themes/light_mode.dart';
 import 'package:musicmate/themes/theme_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:spotify_sdk/spotify_sdk.dart';
 import './injectionContainer/injection_container.dart' as di;
 import 'package:firebase_core/firebase_core.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  await SpotifySdk.connectToSpotifyRemote(clientId: '3222f0dac2e24c908781642f43c8506d', redirectUrl: 'musicmate://callback');
   await di.init();
   runApp(
     MultiProvider(
