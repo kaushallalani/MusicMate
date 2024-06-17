@@ -12,10 +12,10 @@ import 'package:musicmate/themes/light_mode.dart';
 import 'package:musicmate/themes/theme_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import './injectionContainer/injection_container.dart' as di;
+import 'package:musicmate/injectionContainer/injection_container.dart' as di;
 import 'package:firebase_core/firebase_core.dart';
 
-import 'bloc/authentication/authentication_bloc.dart';
+import 'package:musicmate/bloc/authentication/authentication_bloc.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();

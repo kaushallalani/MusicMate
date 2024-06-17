@@ -172,7 +172,7 @@ class _SessionState extends State<Session> {
                                           color: Colors.primaries[Random()
                                               .nextInt(
                                                   Colors.primaries.length)]),
-                                                  child: Icon(Icons.person,color: AppColor.white, size: 20,),
+                                                  child: const Icon(Icons.person,color: AppColor.white, size: 20,),
                                       // child: sessionUsers.isNotEmpty
                                       //     ? TextComponent(
                                       //         text:

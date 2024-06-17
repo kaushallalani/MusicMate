@@ -66,11 +66,11 @@ class AuthServices {
     try {
       final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
       if(googleUser != null) {
-        final GoogleSignInAuthentication? googleAuth = 
+        final GoogleSignInAuthentication googleAuth = 
             await googleUser.authentication;
         final credential = GoogleAuthProvider.credential(
-          accessToken: googleAuth?.accessToken,
-          idToken: googleAuth?.idToken,
+          accessToken: googleAuth.accessToken,
+          idToken: googleAuth.idToken,
         );
         var response = await _auth.signInWithCredential(credential);
         if (response.additionalUserInfo!.isNewUser) {
@@ -123,7 +123,7 @@ class AuthServices {
   Future<dynamic> createUser(userId, email,name) async{
     String res = "Some Error Occured";
     try {
-      final document = await _firestore.collection("users").doc(userId);
+      final document = _firestore.collection("users").doc(userId);
       final snapshot = await document.set({
         "id" : userId,
         "email": email,

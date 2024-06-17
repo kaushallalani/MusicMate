@@ -1,14 +1,12 @@
 import 'package:bloc/bloc.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:logger/logger.dart';
-import 'package:meta/meta.dart';
 import 'package:musicmate/models/session.dart';
 import 'package:musicmate/models/user.dart';
 import 'package:musicmate/repositories/auth_repository.dart';
 import 'package:musicmate/repositories/dashboard_repository.dart';
 
-import '../../repositories/user_repository.dart';
+import 'package:musicmate/repositories/user_repository.dart';
 
 part 'dashboard_event.dart';
 part 'dashboard_state.dart';
@@ -28,15 +26,10 @@ class DashboardBloc extends Bloc<DashboardEvent, DashboardState> {
       try {
         final UserModel? userData = await firebaseRepository.getCurrentUser();
         Logger().d(userData!.activeSessionId);
-        if (userData != null) {
-          userRepository.saveUserData(userData);
-          emit(
-              DashboardSuccessState(currentUser: userRepository.userDataModel));
-        } else {
-          emit(DashboardFailureState(
-              errorMessage: 'Error fetching userdetails'));
-        }
-        emit(DashboardLoadingState(isLoading: false));
+        userRepository.saveUserData(userData);
+        emit(
+            DashboardSuccessState(currentUser: userRepository.userDataModel));
+              emit(DashboardLoadingState(isLoading: false));
       } on Exception catch (e) {
         print('fetch error');
         print(e.toString());
@@ -72,11 +65,11 @@ class DashboardBloc extends Bloc<DashboardEvent, DashboardState> {
         final sessionData =
             await dashboardRepository.fetchCurrentSessionDetails(sessionId);
         Logger().d(sessionData!.allUsers);
-        userRepository.saveSessionData(sessionData!);
+        userRepository.saveSessionData(sessionData);
         emit(SessionLoadingSuccessState(
             sessionId: sessionId,
             sessionData: userRepository.sessionDataModel,
-            userSessions: []));
+            userSessions: const []));
 
         emit(DashboardLoadingState(isLoading: false));
       } on Exception catch (e) {
@@ -108,7 +101,7 @@ class DashboardBloc extends Bloc<DashboardEvent, DashboardState> {
         // Logger().d(sessionData!.sessionName);
         if (sessionData != null) {
           emit(SessionLoadingSuccessState(
-              sessionId: null, sessionData: sessionData, userSessions: []));
+              sessionId: null, sessionData: sessionData, userSessions: const []));
         } else {
           emit(SessionLoadingErrorState(errorMessage: 'Error fetching userdetails'));
         }
@@ -140,7 +133,7 @@ class DashboardBloc extends Bloc<DashboardEvent, DashboardState> {
         if (sessionData is String) {
           emit(SessionLoadingErrorState(errorMessage: sessionData));
         } else if (sessionData is SessionModel &&
-            sessionData!.ownerId != null) {
+            sessionData.ownerId != null) {
           print('in true');
           add(  SetCurrentSession(sessionModel: sessionData));
         

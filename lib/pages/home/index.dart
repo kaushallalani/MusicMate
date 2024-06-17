@@ -3,7 +3,6 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-import 'package:logger/logger.dart';
 import 'package:musicmate/components/index.dart';
 import 'package:musicmate/constants/theme.dart';
 import 'package:musicmate/models/playlistProvider.dart';
@@ -268,7 +267,7 @@ class _HomePageState extends State<HomePage> {
                                       ),
                                     ),
                                     Expanded(
-                                      child: Container(
+                                      child: SizedBox(
                                         width: double.infinity,
                                         child: SliderTheme(
                                           data: SliderTheme.of(context).copyWith(

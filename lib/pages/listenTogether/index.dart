@@ -24,7 +24,7 @@ class ListenTogether extends StatefulWidget {
 class _ListenTogetherState extends State<ListenTogether> {
   final TextEditingController nameController =
       TextEditingController(text: "mwf-6gy-6i7");
-  GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   late Map<String, dynamic> errors;
   late UserModel? userDetails;
   late List<SessionModel?> userSessions;
@@ -292,7 +292,7 @@ class _ListenTogetherState extends State<ListenTogether> {
                           ),
                         ),
                       ),
-                      userSessions.length != 0
+                      userSessions.isNotEmpty
                           ? Expanded(
                               flex: 1,
                               child: ListView.separated(
@@ -318,8 +318,7 @@ class _ListenTogetherState extends State<ListenTogether> {
                                                 BorderRadius.circular(5),
                                           ),
                                           title: TextComponent(
-                                            text:
-                                                sessionItem?.sessionName ?? '',
+                                            text: sessionItem.sessionName ?? '',
                                             textStyle: const TextStyle(
                                                 color: AppColor.white,
                                                 fontSize: FontSize.xmedium,
@@ -337,7 +336,7 @@ class _ListenTogetherState extends State<ListenTogether> {
                                                     const EdgeInsets.symmetric(
                                                         horizontal: 10),
                                                 child: TextComponent(
-                                                  text: sessionItem!
+                                                  text: sessionItem
                                                       .allUsers!.length
                                                       .toString(),
                                                   textStyle: const TextStyle(
@@ -373,14 +372,10 @@ class _ListenTogetherState extends State<ListenTogether> {
                                     );
                                   },
                                   itemCount: userSessions.length))
-                          : Expanded(
-                              child: Container(
-                                // color: Colors.red,
-                                // height: double.infinity,
-                                child: Center(
-                                  child: TextComponent(
-                                    text: 'No Sessions Found',
-                                  ),
+                          : const Expanded(
+                              child: Center(
+                                child: TextComponent(
+                                  text: 'No Sessions Found',
                                 ),
                               ),
                             ),

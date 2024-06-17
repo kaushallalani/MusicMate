@@ -11,7 +11,7 @@ class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
 
   @override
-  _LoginScreenState createState() => _LoginScreenState();
+  State<LoginScreen> createState() => _LoginScreenState();
 }
 
 class _LoginScreenState extends State<LoginScreen> {
@@ -159,7 +159,6 @@ class _LoginScreenState extends State<LoginScreen> {
                     const SizedBox(
                       height: 30.0,
                     ),
-                
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
@@ -173,7 +172,6 @@ class _LoginScreenState extends State<LoginScreen> {
                           width: MediaQuery.of(context).size.width * 0.15,
                           child: const Center(child: Text("Or")),
                         ),
-                       
                         SizedBox(
                           width: MediaQuery.of(context).size.width * 0.3,
                           child: const Divider(
