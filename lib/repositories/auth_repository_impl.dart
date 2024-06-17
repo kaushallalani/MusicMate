@@ -1,8 +1,10 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:musicmate/models/user.dart';
 import 'package:musicmate/repositories/auth_repository.dart';
 import 'package:musicmate/services/auth_service.dart';
+import 'package:unique_identifier/unique_identifier.dart';
 
 class FirebaseRepositoryImpl extends FirebaseRepository {
   final FirebaseService firebaseService = FirebaseService();
@@ -40,6 +42,13 @@ class FirebaseRepositoryImpl extends FirebaseRepository {
           await FirebaseAuth.instance.currentUser!.delete();
         } else {
           final User? firebaseUser = data.user;
+          final deviceId = await UniqueIdentifier.serial;
+          UserModel? user = UserModel(
+              deviceUniqueId: deviceId,
+              updatedAt: FieldValue.serverTimestamp());
+          Map<Object, Object?> updateData = user.toMapWithoutNulls();
+          await firebaseService.updateUserDetail(
+              id: firebaseUser!.uid, data: updateData);
           return firebaseUser;
         }
       } else {
@@ -57,6 +66,12 @@ class FirebaseRepositoryImpl extends FirebaseRepository {
     try {
       final data = await firebaseService.signinUser(email, password);
       final User? firebaseUser = data!.user;
+      final deviceId = await UniqueIdentifier.serial;
+      UserModel? user = UserModel(
+          deviceUniqueId: deviceId, updatedAt: FieldValue.serverTimestamp());
+      Map<Object, Object?> updateData = user.toMapWithoutNulls();
+      await firebaseService.updateUserDetail(
+          id: firebaseUser!.uid, data: updateData);
       return firebaseUser;
     } on FirebaseAuthException catch (e) {
       print('Exception signin => $e');
