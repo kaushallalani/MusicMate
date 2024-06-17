@@ -43,10 +43,10 @@ class FirebaseRepositoryImpl extends FirebaseRepository {
         } else {
           final User? firebaseUser = data.user;
           final deviceId = await UniqueIdentifier.serial;
-          Map<Object, Object?> updateData = {
-            "deviceUniqueId": deviceId,
-            "updatedAt": FieldValue.serverTimestamp(),
-          };
+          UserModel? user = UserModel(
+              deviceUniqueId: deviceId,
+              updatedAt: FieldValue.serverTimestamp());
+          Map<Object, Object?> updateData = user.toMapWithoutNulls();
           await firebaseService.updateUserDetail(
               id: firebaseUser!.uid, data: updateData);
           return firebaseUser;
@@ -67,10 +67,9 @@ class FirebaseRepositoryImpl extends FirebaseRepository {
       final data = await firebaseService.signinUser(email, password);
       final User? firebaseUser = data!.user;
       final deviceId = await UniqueIdentifier.serial;
-      Map<Object, Object?> updateData = {
-        "deviceUniqueId": deviceId,
-        "updatedAt": FieldValue.serverTimestamp(),
-      };
+      UserModel? user = UserModel(
+          deviceUniqueId: deviceId, updatedAt: FieldValue.serverTimestamp());
+      Map<Object, Object?> updateData = user.toMapWithoutNulls();
       await firebaseService.updateUserDetail(
           id: firebaseUser!.uid, data: updateData);
       return firebaseUser;
