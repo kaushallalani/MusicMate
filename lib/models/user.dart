@@ -6,6 +6,7 @@ class UserModel {
   final String? id;
   final String? email;
   final String? fullName;
+  final String? activeSessionId;
   final String? createdAt;
   final String? updatedAt;
 
@@ -15,5 +16,10 @@ class UserModel {
   Map<String, dynamic> toJson() => _$UserModelToJson(this);
 
   UserModel(
-      {this.id, this.email, this.fullName, this.createdAt, this.updatedAt});
+      {this.id,
+      this.email,
+      this.fullName,
+      this.activeSessionId,
+      this.createdAt,
+      this.updatedAt});
 }

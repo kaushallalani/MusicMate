@@ -27,6 +27,7 @@ class DashboardBloc extends Bloc<DashboardEvent, DashboardState> {
       emit(DashboardLoadingState(isLoading: true));
       try {
         final UserModel? userData = await firebaseRepository.getCurrentUser();
+        Logger().d(userData!.activeSessionId);
         if (userData != null) {
           userRepository.saveUserData(userData);
           emit(
@@ -68,19 +69,14 @@ class DashboardBloc extends Bloc<DashboardEvent, DashboardState> {
             await dashboardRepository.createSession(event.sessionModel);
         Logger().d('sessionId');
         Logger().d(sessionId);
-        if (sessionId != null) {
-          final sessionData =
-              await dashboardRepository.fetchCurrentSessionDetails(sessionId);
-          Logger().d(sessionData!.allUsers);
-          userRepository.saveSessionData(sessionData!);
-          emit(SessionSuccessState(
-              sessionId: sessionId,
-              sessionData: userRepository.sessionDataModel,
-              userSessions: []));
-        } else {
-          emit(SessionErrorState(
-              errorMessage: 'Error adding session to database'));
-        }
+        final sessionData =
+            await dashboardRepository.fetchCurrentSessionDetails(sessionId);
+        Logger().d(sessionData!.allUsers);
+        userRepository.saveSessionData(sessionData!);
+        emit(SessionLoadingSuccessState(
+            sessionId: sessionId,
+            sessionData: userRepository.sessionDataModel,
+            userSessions: []));
 
         emit(DashboardLoadingState(isLoading: false));
       } on Exception catch (e) {
@@ -96,13 +92,8 @@ class DashboardBloc extends Bloc<DashboardEvent, DashboardState> {
             await dashboardRepository.fetchAllUserSessions(event.id);
         Logger().d('sessionData');
         Logger().d(userSessions);
-        if (userSessions != null) {
-          emit(SessionSuccessState(
-              sessionId: null, sessionData: null, userSessions: userSessions));
-        } else {
-          emit(SessionErrorState(
-              errorMessage: 'Error fetching all user sessions'));
-        }
+        emit(SessionLoadingSuccessState(
+            sessionId: null, sessionData: null, userSessions: userSessions));
         emit(DashboardLoadingState(isLoading: false));
       } on Exception catch (e) {
         print('create session error');
@@ -116,10 +107,10 @@ class DashboardBloc extends Bloc<DashboardEvent, DashboardState> {
         final sessionData = userRepository.sessionDataModel;
         // Logger().d(sessionData!.sessionName);
         if (sessionData != null) {
-          emit(SessionSuccessState(
+          emit(SessionLoadingSuccessState(
               sessionId: null, sessionData: sessionData, userSessions: []));
         } else {
-          emit(SessionErrorState(errorMessage: 'Error fetching userdetails'));
+          emit(SessionLoadingErrorState(errorMessage: 'Error fetching userdetails'));
         }
 
         emit(DashboardLoadingState(isLoading: false));
@@ -131,9 +122,40 @@ class DashboardBloc extends Bloc<DashboardEvent, DashboardState> {
 
     on<SetCurrentSession>((event, emit) async {
       try {
+        print('in set sessiinnn');
         userRepository.saveSessionData(event.sessionModel);
       } on Exception catch (e) {
         print('set error');
+        print(e.toString());
+      }
+    });
+
+    on<JoinSession>((event, emit) async {
+      emit(DashboardLoadingState(isLoading: true));
+
+      try {
+        final dynamic sessionData =
+            await dashboardRepository.joinSession(event.code, event.userId);
+        Logger().d(sessionData);
+        if (sessionData is String) {
+          emit(SessionLoadingErrorState(errorMessage: sessionData));
+        } else if (sessionData is SessionModel &&
+            sessionData!.ownerId != null) {
+          print('in true');
+          add(  SetCurrentSession(sessionModel: sessionData));
+        
+          emit(SessionLoadingSuccessState(
+            sessionId: sessionData.id,
+            sessionData: sessionData,
+          ));
+        } else {
+          print('in error');
+          emit(SessionLoadingErrorState(errorMessage: 'Invalid Session Code'));
+        }
+
+        emit(DashboardLoadingState(isLoading: false));
+      } catch (e) {
+        print('join user session error ');
         print(e.toString());
       }
     });

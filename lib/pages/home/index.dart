@@ -56,11 +56,13 @@ class _HomePageState extends State<HomePage> {
       listener: (context, state) {
         if (state is DashboardInitial) {}
         if (state is DashboardLoadingState) {
-          Timer(const Duration(milliseconds: 2000), () {
-            setState(() {
-              isLoading = state.isLoading;
+          if (mounted) {
+            Timer(const Duration(seconds: 1), () {
+              setState(() {
+                isLoading = state.isLoading;
+              });
             });
-          });
+          }
         }
         if (state is DashboardSuccessState) {
           setState(() {
@@ -72,7 +74,7 @@ class _HomePageState extends State<HomePage> {
       },
       builder: (context, state) {
         // Logger().d(isLoading);
-        // print(_userDetails!.email);
+        print(_userDetails!.activeSessionId);
         return WillPopScope(
           onWillPop: () async {
             return exit(0); // Exit the app

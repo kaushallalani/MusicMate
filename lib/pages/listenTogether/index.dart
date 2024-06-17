@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'dart:math';
 
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -12,6 +11,7 @@ import 'package:musicmate/models/session.dart';
 import 'package:musicmate/models/user.dart';
 import 'package:musicmate/navigation/app_navigation.dart';
 import 'package:musicmate/bloc/dashboard/dashboard_bloc.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'styles.dart';
 
 class ListenTogether extends StatefulWidget {
@@ -22,7 +22,8 @@ class ListenTogether extends StatefulWidget {
 }
 
 class _ListenTogetherState extends State<ListenTogether> {
-  final TextEditingController nameController = TextEditingController();
+  final TextEditingController nameController =
+      TextEditingController(text: "mwf-6gy-6i7");
   GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   late Map<String, dynamic> errors;
   late UserModel? userDetails;
@@ -37,6 +38,12 @@ class _ListenTogetherState extends State<ListenTogether> {
     userSessions = [];
     isLoading = true;
     fetchUserSessions();
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    nameController.dispose();
   }
 
   bool handleValidation() {
@@ -73,8 +80,18 @@ class _ListenTogetherState extends State<ListenTogether> {
           .add(CreateSession(sessionModel: sessionData));
 
       context.pop();
+    }
+  }
 
-      // context.push(NAVIGATION.session);
+  void handleOnJoinSession() {
+    final isValidated = _formKey.currentState!.validate();
+
+    if (isValidated) {
+      BlocProvider.of<DashboardBloc>(context).add(JoinSession(
+        userDetails!.id!,
+        code: nameController.text,
+      ));
+      context.pop();
     }
   }
 
@@ -101,6 +118,69 @@ class _ListenTogetherState extends State<ListenTogether> {
     return buffer.toString();
   }
 
+  Future<dynamic> openDialog(
+      BuildContext context,
+      String btnTitle,
+      String heading,
+      String hintText,
+      String errorText,
+      VoidCallback onPressed) {
+    return showModalBottomSheet(
+        context: context,
+        isScrollControlled: true,
+        builder: (context) {
+          return Container(
+            width: double.infinity,
+            padding: EdgeInsets.only(
+                bottom: MediaQuery.of(context).viewInsets.bottom,
+                top: Metrics.width(context) * 0.04,
+                left: Metrics.width(context) * 0.04,
+                right: Metrics.width(context) * 0.04),
+            child: Form(
+              key: _formKey,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  TextComponent(
+                    text: heading,
+                    textStyle: const TextStyle(
+                        fontWeight: FontWeight.w700,
+                        fontSize: FontSize.xmedium),
+                  ),
+                  TextFormFieldComponent(
+                    controller: nameController,
+                    hintText: hintText,
+                    validator: (value) {
+                      if (value!.isEmpty) {
+                        return errorText;
+                      }
+                      // Return null if the input is valid
+                      return null;
+                    },
+                    focusedBorder: const UnderlineInputBorder(
+                        borderSide: BorderSide(color: AppColor.aquaBlue)),
+                  ),
+                  Center(
+                    child: Padding(
+                      padding: EdgeInsets.symmetric(
+                          vertical: Metrics.width(context) * 0.04),
+                      child: ButtonComponent(
+                          btnTitle: btnTitle,
+                          btnPadding: const EdgeInsets.all(5),
+                          btnStyle: Styles.sessionBtn,
+                          btnTextStyle: Styles.btnTextStyle,
+                          onPressed: onPressed),
+                    ),
+                  )
+                ],
+              ),
+            ),
+          );
+        });
+  }
+
   @override
   Widget build(BuildContext context) {
     Logger().d(errors);
@@ -110,36 +190,52 @@ class _ListenTogetherState extends State<ListenTogether> {
           // Logger().d(state.currentUser!.id);
         }
         if (state is DashboardLoadingState) {
-          // Logger().d(state.currentUser!.id);
+          Logger().d(state.isLoading);
+          // setState(() {
+          //   isLoading=state.isLoading;
+          // });
         }
-        if (state is DashboardInitial) {
-          Logger().d('init listen');
-        }
+        if (state is DashboardInitial) {}
         if (state is DashboardSuccessState) {
           setState(() {
             userDetails = state.currentUser!;
           });
         }
-        if (state is SessionSuccessState) {
+        if (state is SessionLoadingSuccessState) {
           setState(() {
-            userSessions = state.userSessions;
             isLoading = false;
           });
+          if (state.userSessions != null && state.userSessions!.isNotEmpty) {
+            setState(() {
+              userSessions = state.userSessions!;
+              isLoading = false;
+            });
+          }
 
+          Logger().d(state.sessionId);
           if (state.sessionId != null) {
+            print('inid');
+
             context.pushNamed(
               NAVIGATION.session,
             );
           }
         }
+        if (state is SessionLoadingErrorState) {
+          Logger().d(state.errorMessage);
+          Fluttertoast.showToast(
+              msg: state.errorMessage!,
+              backgroundColor: AppColor.headerBorder,
+              textColor: Colors.black);
+        }
       },
       builder: (context, state) {
-        Logger().d(userDetails!.email);
+        Logger().d(userDetails!.activeSessionId);
         if (state is DashboardInitial) {
-          Logger().d(state.sessionData);
+          // Logger().d(state.sessionData);
         }
         if (state is DashboardLoadingState) {
-          Logger().d(state.currentUser);
+          Logger().d(state.isLoading);
         }
 
         return Scaffold(
@@ -204,6 +300,8 @@ class _ListenTogetherState extends State<ListenTogether> {
                                   itemBuilder: (context, index) {
                                     SessionModel? sessionItem =
                                         userSessions[index];
+
+                                    Logger().d(sessionItem!.sessionName);
                                     return Material(
                                       elevation: 2,
                                       borderRadius: const BorderRadius.all(
@@ -220,7 +318,8 @@ class _ListenTogetherState extends State<ListenTogether> {
                                                 BorderRadius.circular(5),
                                           ),
                                           title: TextComponent(
-                                            text: sessionItem!.sessionName!,
+                                            text:
+                                                sessionItem?.sessionName ?? '',
                                             textStyle: const TextStyle(
                                                 color: AppColor.white,
                                                 fontSize: FontSize.xmedium,
@@ -238,7 +337,7 @@ class _ListenTogetherState extends State<ListenTogether> {
                                                     const EdgeInsets.symmetric(
                                                         horizontal: 10),
                                                 child: TextComponent(
-                                                  text: sessionItem
+                                                  text: sessionItem!
                                                       .allUsers!.length
                                                       .toString(),
                                                   textStyle: const TextStyle(
@@ -251,16 +350,12 @@ class _ListenTogetherState extends State<ListenTogether> {
                                           trailing: InkWell(
                                               onTap: () {
                                                 print('pressed');
-                                                Logger()
-                                                    .d(generateSessionCode());
                                                 BlocProvider.of<DashboardBloc>(
                                                         context)
-                                                    .add(SetCurrentSession(
-                                                        sessionModel:
-                                                            sessionItem));
-                                                context.pushNamed(
-                                                  NAVIGATION.session,
-                                                );
+                                                    .add(JoinSession(
+                                                        userDetails!.id!,
+                                                        code: sessionItem
+                                                            .sessionCode!));
                                               },
                                               child: const TextComponent(
                                                 text: 'Join',
@@ -293,7 +388,6 @@ class _ListenTogetherState extends State<ListenTogether> {
                         flex: 0,
                         footerMargin: EdgeInsets.symmetric(
                             vertical: Metrics.width(context) * 0.04),
-                        // footerPadding: const EdgeInsets.all(5),
                         footerSize: SizedBox(
                           height: Metrics.height(context) * 0.05,
                         ),
@@ -315,83 +409,14 @@ class _ListenTogetherState extends State<ListenTogether> {
                                     width: Metrics.width(context) * 0.4,
                                   ),
                                   onPressed: () {
-                                    showModalBottomSheet(
-                                        context: context,
-                                        isScrollControlled: true,
-                                        builder: (context) {
-                                          return Container(
-                                            width: double.infinity,
-                                            padding: EdgeInsets.only(
-                                                bottom: MediaQuery.of(context)
-                                                    .viewInsets
-                                                    .bottom,
-                                                top: Metrics.width(context) *
-                                                    0.04,
-                                                left: Metrics.width(context) *
-                                                    0.04,
-                                                right: Metrics.width(context) *
-                                                    0.04),
-                                            child: Form(
-                                              key: _formKey,
-                                              child: Column(
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment.start,
-                                                crossAxisAlignment:
-                                                    CrossAxisAlignment.start,
-                                                mainAxisSize: MainAxisSize.min,
-                                                children: [
-                                                  const TextComponent(
-                                                    text: 'Add Session Details',
-                                                    textStyle: TextStyle(
-                                                        fontWeight:
-                                                            FontWeight.w700,
-                                                        fontSize:
-                                                            FontSize.xmedium),
-                                                  ),
-                                                  TextFormFieldComponent(
-                                                    controller: nameController,
-                                                    hintText:
-                                                        'Enter Session Name',
-                                                    validator: (value) {
-                                                      if (value!.isEmpty) {
-                                                        return 'Session name cannot be empty';
-                                                      }
-                                                      // Return null if the input is valid
-                                                      return null;
-                                                    },
-                                                    focusedBorder:
-                                                        const UnderlineInputBorder(
-                                                            borderSide: BorderSide(
-                                                                color: AppColor
-                                                                    .aquaBlue)),
-                                                  ),
-                                                  Center(
-                                                    child: Padding(
-                                                      padding: EdgeInsets.symmetric(
-                                                          vertical:
-                                                              Metrics.width(
-                                                                      context) *
-                                                                  0.04),
-                                                      child: ButtonComponent(
-                                                        btnTitle: 'Create',
-                                                        btnPadding:
-                                                            const EdgeInsets
-                                                                .all(5),
-                                                        btnStyle:
-                                                            Styles.sessionBtn,
-                                                        btnTextStyle:
-                                                            Styles.btnTextStyle,
-                                                        onPressed: () {
-                                                          handleOnCreateSession();
-                                                        },
-                                                      ),
-                                                    ),
-                                                  )
-                                                ],
-                                              ),
-                                            ),
-                                          );
-                                        });
+                                    nameController.clear();
+                                    openDialog(
+                                        context,
+                                        'Create',
+                                        'Add Session Details',
+                                        'Enter Session Name',
+                                        'Session name cannot be empty',
+                                        handleOnCreateSession);
                                   },
                                   btnTextStyle: Styles.btnTextStyle),
                             ),
@@ -404,80 +429,15 @@ class _ListenTogetherState extends State<ListenTogether> {
                                 ),
                                 onPressed: () {
                                   Logger().d('join pressed');
-                                  showModalBottomSheet(
-                                      context: context,
-                                      isScrollControlled: true,
-                                      builder: (context) {
-                                        return Container(
-                                          width: double.infinity,
-                                          padding: EdgeInsets.only(
-                                              bottom: MediaQuery.of(context)
-                                                  .viewInsets
-                                                  .bottom,
-                                              top:
-                                                  Metrics.width(context) * 0.04,
-                                              left:
-                                                  Metrics.width(context) * 0.04,
-                                              right: Metrics.width(context) *
-                                                  0.04),
-                                          child: Form(
-                                            key: _formKey,
-                                            child: Column(
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment.start,
-                                              crossAxisAlignment:
-                                                  CrossAxisAlignment.start,
-                                              mainAxisSize: MainAxisSize.min,
-                                              children: [
-                                                const TextComponent(
-                                                  text: 'Join Session ',
-                                                  textStyle: TextStyle(
-                                                      fontWeight:
-                                                          FontWeight.w700,
-                                                      fontSize:
-                                                          FontSize.xmedium),
-                                                ),
-                                                TextFormFieldComponent(
-                                                  controller: nameController,
-                                                  hintText:
-                                                      'Enter Session Code',
-                                                  validator: (value) {
-                                                    if (value!.isEmpty) {
-                                                      return 'Session code cannot be empty';
-                                                    }
-                                                    // Return null if the input is valid
-                                                    return null;
-                                                  },
-                                                  focusedBorder:
-                                                      const UnderlineInputBorder(
-                                                          borderSide: BorderSide(
-                                                              color: AppColor
-                                                                  .aquaBlue)),
-                                                ),
-                                                Center(
-                                                  child: Padding(
-                                                    padding: EdgeInsets.symmetric(
-                                                        vertical: Metrics.width(
-                                                                context) *
-                                                            0.04),
-                                                    child: ButtonComponent(
-                                                      btnTitle: 'Join',
-                                                      btnPadding:
-                                                          const EdgeInsets.all(
-                                                              5),
-                                                      btnStyle:
-                                                          Styles.sessionBtn,
-                                                      btnTextStyle:
-                                                          Styles.btnTextStyle,
-                                                      onPressed: () {},
-                                                    ),
-                                                  ),
-                                                )
-                                              ],
-                                            ),
-                                          ),
-                                        );
-                                      });
+                                  // nameController.clear();
+
+                                  openDialog(
+                                      context,
+                                      'Join',
+                                      'Join Session',
+                                      'Enter Session Code',
+                                      'Session code cannot be empty',
+                                      handleOnJoinSession);
                                 },
                                 btnTextStyle: Styles.btnTextStyle)
                           ],

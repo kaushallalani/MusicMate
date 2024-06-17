@@ -19,6 +19,8 @@ class DashboardRepositoryImpl extends DashboardRepository {
     try {
       final sessionData = await sessionsCollection.add(session!.toJson());
 
+      await sessionData.update({'id': sessionData.id});
+      changeActiveUserSession(session.ownerId!, sessionData.id);
       return sessionData.id;
     } on FirebaseException catch (e) {
       print('Exception create session => $e');
@@ -33,6 +35,7 @@ class DashboardRepositoryImpl extends DashboardRepository {
           await sessionsCollection.doc(id).get();
       if (sessionSnapshot.data() != null) {
         final jsonData = sessionSnapshot.data() as Map<String, dynamic>;
+
         return SessionModel.fromJson(jsonData);
       }
 
@@ -51,6 +54,7 @@ class DashboardRepositoryImpl extends DashboardRepository {
       print('Exception fetch data session => $e');
       return Future.error(e);
     }
+    return null;
   }
 
   @override
@@ -105,5 +109,68 @@ class DashboardRepositoryImpl extends DashboardRepository {
         return MapEntry(key, value);
       }
     });
+  }
+
+  @override
+  Future<dynamic> joinSession(String code, String userId) async {
+    try {
+      final QuerySnapshot validSession = await sessionsCollection
+          .where('sessionCode', isEqualTo: code)
+          .limit(1)
+          .get();
+      if (validSession.docs.isNotEmpty) {
+        final docData = validSession.docs.first;
+        Logger().d(docData.id);
+
+        final data =
+            SessionModel.fromJson(docData.data() as Map<String, dynamic>);
+        changeActiveUserSession(userId, docData.id);
+        if (data.allUsers!.contains(userId)) {
+        } else {
+          updateSessionData(data, userId, docData.id);
+        }
+        return data;
+      } else {
+        return null;
+      }
+    } on FirebaseException catch (e) {
+      return Future.error(e);
+    }
+  }
+
+  @override
+  Future<void> updateSessionData(
+      SessionModel sessionData, String userId, String sessionId) async {
+    try {
+      final List<String> newUsers = sessionData.allUsers!;
+      newUsers.add(userId);
+
+      final updatedData = SessionModel(
+          id: sessionId,
+          sessionCode: sessionData.sessionCode,
+          sessionName: sessionData.sessionName,
+          allUsers: newUsers,
+          ownerId: sessionData.ownerId,
+          currentSongId: sessionData.currentSongId,
+          createdAt: sessionData.createdAt,
+          updatedAt: DateTime.now().toString());
+
+      final isUpdated =
+          await sessionsCollection.doc(sessionId).update(updatedData.toJson());
+    } on FirebaseException catch (e) {
+      print(e);
+    }
+  }
+
+  @override
+  Future changeActiveUserSession(String userId, String sessionId) async {
+    try {
+      final userActiveSession = await usersCollection.doc(userId).update({
+        'activeSessionId': sessionId,
+        'updatedAt': DateTime.now().toString()
+      });
+    } on FirebaseException catch (e) {
+      return Future.error(e);
+    }
   }
 }

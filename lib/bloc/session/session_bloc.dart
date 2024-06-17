@@ -22,6 +22,7 @@ class SessionBloc extends Bloc<SessionEvent, SessionState> {
       emit(SessionLoading(isLoading: true));
       try {
         final SessionModel? sessionData = userRepository.sessionDataModel;
+        
         if (sessionData != null) {
           emit(SessionSuccessState(sessionData: sessionData, sessionUsers: []));
         } else {
@@ -52,5 +53,7 @@ class SessionBloc extends Bloc<SessionEvent, SessionState> {
         print(e.toString());
       }
     });
+
+   
   }
 }

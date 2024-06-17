@@ -10,3 +10,5 @@ class FetchSessionUserDetails extends SessionEvent {
 
   FetchSessionUserDetails(this.userIds);
 }
+
+

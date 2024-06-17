@@ -14,7 +14,7 @@ class UserRepository {
   }
 
   void saveSessionData(SessionModel sessionData) {
-    Logger().d(sessionData.sessionName);
+    Logger().d('save session => ${sessionData.sessionName}');
     _sessionModel = sessionData;
   }
 }

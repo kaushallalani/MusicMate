@@ -8,4 +8,7 @@ abstract class DashboardRepository {
   Future<SessionModel?> fetchDataFromSession(String id, Query query);
   Future<List<SessionModel?>> fetchAllUserSessions(String id);
   Future<List<UserModel?>> fetchSessionUsers(List<String> userId);
+  Future<dynamic> joinSession(String code, String userId);
+  Future<void> updateSessionData(SessionModel sessionData, String userId, String sessionId);
+  Future<void> changeActiveUserSession(String userId, String sessionId);
 }

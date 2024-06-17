@@ -7,10 +7,7 @@ class DashboardInitial extends DashboardState {
   final UserModel? currentUser;
   final SessionModel? sessionData;
 
-  DashboardInitial({
-    this.currentUser,
-    this.sessionData
-  });
+  DashboardInitial({this.currentUser, this.sessionData});
   List<Object?> get props => [currentUser];
 }
 
@@ -36,24 +33,24 @@ class DashboardFailureState extends DashboardInitial {
   List<Object?> get props => [];
 }
 
-class SessionSuccessState extends DashboardInitial {
+class SessionLoadingSuccessState extends DashboardInitial {
   final String? sessionId;
-  final SessionModel? sessionData;
-  final List<SessionModel?> userSessions;
+  final List<SessionModel?>? userSessions;
 
-  SessionSuccessState(
+  SessionLoadingSuccessState(
       {super.currentUser,
+      super.sessionData,
       required this.sessionId,
-      required this.sessionData,
-      required this.userSessions});
+      this.userSessions});
+
   @override
   List<Object?> get props => [currentUser, sessionId, sessionData];
 }
 
-class SessionErrorState extends DashboardInitial {
+class SessionLoadingErrorState extends DashboardInitial {
   final String? errorMessage;
 
-  SessionErrorState({super.currentUser, required this.errorMessage});
+  SessionLoadingErrorState({super.currentUser, required this.errorMessage});
 
   @override
   List<Object?> get props => [];
