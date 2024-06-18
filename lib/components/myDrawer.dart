@@ -6,7 +6,8 @@ import 'package:musicmate/navigation/app_navigation.dart';
 import 'package:musicmate/pages/settings/index.dart';
 import 'package:flutter/material.dart';
 
-import '../pages/authentication/bloc/authentication_bloc.dart';
+import 'package:musicmate/bloc/authentication/authentication_bloc.dart';
+
 
 class Mydrawer extends StatelessWidget {
   const Mydrawer({super.key});

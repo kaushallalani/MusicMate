@@ -1,8 +1,10 @@
 import 'package:musicmate/pages/dashboard/index.dart';
 import 'package:musicmate/pages/home/index.dart';
 import 'package:musicmate/pages/library/index.dart';
+import 'package:musicmate/pages/listenTogether/index.dart';
 import 'package:musicmate/pages/login/index.dart';
 import 'package:musicmate/pages/search/index.dart';
+import 'package:musicmate/pages/session/index.dart';
 import 'package:musicmate/pages/settings/index.dart';
 import 'package:musicmate/pages/signup/index.dart';
 import 'package:musicmate/pages/songsPage/index.dart';
@@ -19,7 +21,9 @@ class NAVIGATION {
   static const String library = '/library';
   static const String login = '/login';
   static const String splash = '/';
+  static const String listenTogether = '/listenTogether';
   static const String signup = '/signup';
+  static const String session = '/session';
 }
 
 List<Map<String, dynamic>> stackNavigation = [
@@ -74,5 +78,16 @@ List<Map<String, dynamic>> stackNavigation = [
     "component": (BuildContext context, GoRouterState state) =>
         const SignupScreen(),
     "options": {"path": NAVIGATION.signup}
+  },
+  {
+    "name": NAVIGATION.listenTogether,
+    "component": (BuildContext context, GoRouterState state) =>
+        const ListenTogether(),
+    "options": {"path": NAVIGATION.listenTogether}
+  },
+  {
+    "name": NAVIGATION.session,
+    "component": (BuildContext context, GoRouterState state) => const Session(),
+    "options": {"path": NAVIGATION.session}
   }
 ];

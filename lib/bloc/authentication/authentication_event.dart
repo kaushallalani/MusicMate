@@ -40,3 +40,4 @@ class GoogleSignUp extends AuthenticationEvent {
 }
 
 class SignoutUser extends AuthenticationEvent {}
+

@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:logger/logger.dart';
 import 'package:musicmate/models/user.dart';
 import 'package:musicmate/repositories/auth_repository.dart';
 import 'package:musicmate/services/auth_service.dart';
@@ -14,6 +15,7 @@ class FirebaseRepositoryImpl extends FirebaseRepository {
     try {
       final uid = await getCurrentUserId();
       final data = await firebaseService.userDetailsGet(id: uid);
+      Logger().d(data.fullName);
       return data;
     } on Exception catch (e) {
       print('Exception curentUserId => $e');

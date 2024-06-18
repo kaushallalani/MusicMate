@@ -9,8 +9,8 @@ class Styles {
     borderRadius: BorderRadius.zero,
   );
 
-  // static final btnStyle = ElevatedButton.styleFrom(
-  //     backgroundColor: AppColor.grey,
-  //     padding: const EdgeInsets.all(5),
-  //     shape: const RoundedRectangleBorder(side: BorderSide.none));
+  static final btnstyle = ElevatedButton.styleFrom(
+      backgroundColor: AppColor.grey,
+      padding: const EdgeInsets.all(5),
+      shape: const RoundedRectangleBorder(side: BorderSide.none));
 }

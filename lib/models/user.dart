@@ -8,6 +8,7 @@ class UserModel {
   final String? id;
   final String? email;
   final String? fullName;
+  final String? activeSessionId;
   final String? deviceUniqueId;
   @FieldValueConverter()
   final FieldValue? createdAt;
@@ -49,9 +50,14 @@ class UserModel {
 
   UserModel(
       {this.id,
+     
       this.email,
+     
       this.fullName,
+     
+      this.activeSessionId,
       this.createdAt,
+     
       this.updatedAt,
       this.deviceUniqueId});
 }

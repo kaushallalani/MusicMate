@@ -5,13 +5,14 @@ import 'package:logger/logger.dart';
 import 'package:musicmate/components/snackbar.dart';
 import 'package:musicmate/constants/theme.dart';
 import 'package:musicmate/navigation/app_navigation.dart';
-import 'package:musicmate/pages/authentication/bloc/authentication_bloc.dart';
+
+import 'package:musicmate/bloc/authentication/authentication_bloc.dart';
 
 class SignupScreen extends StatefulWidget {
-  const SignupScreen({Key? key}) : super(key: key);
+  const SignupScreen({super.key});
 
   @override
-  _SignupScreenState createState() => _SignupScreenState();
+  State<SignupScreen> createState() => _SignupScreenState();
 }
 
 class _SignupScreenState extends State<SignupScreen> {
