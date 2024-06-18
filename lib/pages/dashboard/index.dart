@@ -1,14 +1,20 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import 'package:logger/logger.dart';
 import 'package:musicmate/components/index.dart';
 import 'package:musicmate/constants/i18n/strings.g.dart';
 import 'package:musicmate/constants/theme.dart';
+import 'package:musicmate/navigation/app_navigation.dart';
 import 'package:musicmate/bloc/dashboard/dashboard_bloc.dart';
+import 'package:musicmate/bloc/authentication/authentication_bloc.dart';
 import 'package:musicmate/pages/home/index.dart';
 import 'package:musicmate/pages/library/index.dart';
 import 'package:musicmate/pages/search/index.dart';
 import 'package:musicmate/pages/settings/index.dart';
+import 'package:unique_identifier/unique_identifier.dart';
 
 class Dashboard extends StatefulWidget {
   const Dashboard({super.key});
@@ -19,6 +25,12 @@ class Dashboard extends StatefulWidget {
 
 class _DashboardState extends State<Dashboard> {
   int pageIndex = 0;
+  String? deviceId;
+  final Stream<DocumentSnapshot<Map<String, dynamic>>> _userStream =
+      FirebaseFirestore.instance
+          .collection("users")
+          .doc(FirebaseAuth.instance.currentUser!.uid)
+          .snapshots();
 
   List<Widget> pages = [
     const HomePage(),
@@ -55,23 +67,50 @@ class _DashboardState extends State<Dashboard> {
   @override
   void initState() {
     super.initState();
+    getDeviceId();
     Logger().d('dashboard called');
     BlocProvider.of<DashboardBloc>(context).add(FetchUserDataFromFirebase());
   }
 
+  void getDeviceId() async {
+    String? id = await UniqueIdentifier.serial;
+    setState(() {
+      deviceId = id;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      bottomNavigationBar: CustomBottomNavigation(
-        pageItems: pageItems,
-        onTap: _onItemTapped,
-        pageIndex: pageIndex,
-        bottomBarStyle: const BoxDecoration(
-            color: AppColor.white,
-            border: Border(
-                top: BorderSide(width: 1, color: AppColor.headerBorder))),
-      ),
-      body: pages[pageIndex],
-    );
+    return StreamBuilder<Object>(
+        stream: _userStream,
+        builder: (context, AsyncSnapshot snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          }
+          if (snapshot.connectionState == ConnectionState.active) {
+            final data = snapshot.data!.data() as Map<String, dynamic>;
+            if (data['deviceUniqueId'] != deviceId) {
+              WidgetsBinding.instance.addPostFrameCallback((_) {
+                BlocProvider.of<AuthenticationBloc>(context).add(SignoutUser());
+                context.go(NAVIGATION.login);
+              });
+            } else {
+              return Scaffold(
+                bottomNavigationBar: CustomBottomNavigation(
+                  pageItems: pageItems,
+                  onTap: _onItemTapped,
+                  pageIndex: pageIndex,
+                  bottomBarStyle: const BoxDecoration(
+                      color: AppColor.white,
+                      border: Border(
+                          top: BorderSide(
+                              width: 1, color: AppColor.headerBorder))),
+                ),
+                body: pages[pageIndex],
+              );
+            }
+          }
+          return const Center(child: Text('Something went wrong'));
+        });
   }
 }

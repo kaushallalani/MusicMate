@@ -152,14 +152,26 @@ class FirebaseService {
     try {
       final document = FirebaseFirestore.instance.collection("users").doc(id);
       final deviceId = await UniqueIdentifier.serial;
-      final response = await document.set({
-        "id": id,
-        "email": email,
-        "fullName": name,
-        "deviceUniqueId": deviceId,
-        "createdAt": FieldValue.serverTimestamp(),
-        "updatedAt": FieldValue.serverTimestamp(),
-      });
+      UserModel? user = UserModel(
+          id: id,
+          email: email,
+          fullName: name,
+          deviceUniqueId: deviceId,
+          updatedAt: FieldValue.serverTimestamp(),
+          createdAt: FieldValue.serverTimestamp());
+      Map<String, dynamic> finalData = user.toMapWithoutNulls();
+      final response = await document.set(finalData);
+      return response;
+    } catch (e) {
+      return Future.error(e);
+    }
+  }
+
+  Future<dynamic> updateUserDetail(
+      {required String id, required Map<Object, Object?> data}) async {
+    try {
+      final document = FirebaseFirestore.instance.collection("users").doc(id);
+      final response = await document.update(data);
       return response;
     } catch (e) {
       return Future.error(e);
