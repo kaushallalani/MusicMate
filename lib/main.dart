@@ -94,6 +94,7 @@ class _MyAppState extends State<MyApp> {
             supportedLocales: {const Locale('en', '')},
             restorationScopeId: 'app',
             routerConfig: routeConfig.router,
+            
           ),
         ),
       ),

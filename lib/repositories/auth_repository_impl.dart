@@ -15,7 +15,7 @@ class FirebaseRepositoryImpl extends FirebaseRepository {
     try {
       final uid = await getCurrentUserId();
       final data = await firebaseService.userDetailsGet(id: uid);
-      Logger().d(data.fullName);
+      Logger().d(data.activeSessionId);
       return data;
     } on Exception catch (e) {
       print('Exception curentUserId => $e');

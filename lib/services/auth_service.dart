@@ -1,11 +1,14 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:logger/logger.dart';
 import 'package:musicmate/models/user.dart';
+import 'package:musicmate/services/spotify_authentication.dart';
 import 'package:unique_identifier/unique_identifier.dart';
 
 class FirebaseService {
   final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
+  final SpotifyAuthentication spotifyAuthentication = SpotifyAuthentication();
 
   ///create a user
   Future<UserCredential?> signupUser(
@@ -40,7 +43,7 @@ class FirebaseService {
       final UserCredential userCredential =
           await _firebaseAuth.signInWithEmailAndPassword(
               email: email.trim(), password: password.trim());
-
+      spotifyAuthentication.fetchTracks();
       return userCredential;
     } on FirebaseException catch (e) {
       return Future.error(e);
@@ -127,6 +130,8 @@ class FirebaseService {
       final transformedData = transformData(data!);
       final jsonData = UserModel.fromJson(transformedData);
 
+      Logger().d(jsonData.activeSessionId);
+
       // final finalData = data!.map((key, value) {
       //   if (value is Timestamp) {
       //     return MapEntry(
@@ -157,6 +162,7 @@ class FirebaseService {
           email: email,
           fullName: name,
           deviceUniqueId: deviceId,
+          activeSessionId: null,
           updatedAt: FieldValue.serverTimestamp(),
           createdAt: FieldValue.serverTimestamp());
       Map<String, dynamic> finalData = user.toMapWithoutNulls();

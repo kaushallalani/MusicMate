@@ -18,7 +18,7 @@ Future<void> init() async {
         () => AuthenticationBloc(serviceLocater.call(), serviceLocater.call()))
     ..registerFactory(() => DashboardBloc(
         serviceLocater.call(), serviceLocater.call(), serviceLocater.call()))
-    ..registerFactory(() => SessionBloc(serviceLocater.call(), serviceLocater.call()))
+    ..registerFactory(() => SessionBloc(serviceLocater.call(), serviceLocater.call(), serviceLocater.call()))
     ..registerLazySingleton<FirebaseRepository>(() => FirebaseRepositoryImpl())
     ..registerLazySingleton<UserRepository>(() => UserRepository())
     ..registerLazySingleton<DashboardRepository>(() =>

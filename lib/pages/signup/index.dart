@@ -73,138 +73,143 @@ class _SignupScreenState extends State<SignupScreen> {
             centerTitle: true,
             backgroundColor: Colors.blue,
           ),
-          body: Stack(
-            children: [
-              Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    SizedBox(
-                      width: Metrics.width(context) * 0.85,
-                      child: TextField(
-                        controller: _nameConroller,
-                        decoration:
-                            const InputDecoration(hintText: 'Full Name'),
-                      ),
-                    ),
-                    const SizedBox(
-                      height: 30.0,
-                    ),
-                    SizedBox(
-                      width: Metrics.width(context) * 0.85,
-                      child: TextField(
-                        controller: _emailController,
-                        decoration: const InputDecoration(hintText: 'Email'),
-                      ),
-                    ),
-                    const SizedBox(
-                      height: 30.0,
-                    ),
-                    SizedBox(
-                      width: Metrics.width(context) * 0.85,
-                      child: TextField(
-                        controller: _passwordController,
-                        obscureText: !passwordVisible,
-                        decoration: InputDecoration(
-                          suffixIcon: IconButton(
-                            icon: Icon(
-                              passwordVisible
-                                  ? Icons.visibility
-                                  : Icons.visibility_off,
-                            ),
-                            onPressed: () {
-                              setState(() {
-                                passwordVisible = !passwordVisible;
-                              });
-                            },
-                          ),
-                          hintText: 'Password',
-                        ),
-                      ),
-                    ),
-                    const SizedBox(
-                      height: 30.0,
-                    ),
-                    SizedBox(
-                      width: Metrics.width(context) * 0.85,
-                      child: ElevatedButton(
-                        onPressed: registerUser,
-                        child: const Text(
-                          'Register',
-                          style: TextStyle(color: Colors.black),
-                        ),
-                      ),
-                    ),
-                    const SizedBox(
-                      height: 30.0,
-                    ),
-                    Row(
+          body: Container(
+            alignment: Alignment.center,
+            child: SingleChildScrollView(
+              child: Stack(
+                children: [
+                  Center(
+                    child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         SizedBox(
-                          width: MediaQuery.of(context).size.width * 0.3,
-                          child: const Divider(
-                            color: Colors.grey,
+                          width: Metrics.width(context) * 0.85,
+                          child: TextField(
+                            controller: _nameConroller,
+                            decoration:
+                                const InputDecoration(hintText: 'Full Name'),
                           ),
                         ),
-                        SizedBox(
-                          width: MediaQuery.of(context).size.width * 0.15,
-                          child: const Center(child: Text("Or")),
+                        const SizedBox(
+                          height: 30.0,
                         ),
                         SizedBox(
-                          width: MediaQuery.of(context).size.width * 0.3,
-                          child: const Divider(
-                            color: Colors.grey,
+                          width: Metrics.width(context) * 0.85,
+                          child: TextField(
+                            controller: _emailController,
+                            decoration: const InputDecoration(hintText: 'Email'),
                           ),
                         ),
-                      ],
-                    ),
-                    Center(
-                      child: MaterialButton(
-                        minWidth: MediaQuery.of(context).size.width * 0.07,
-                        padding: const EdgeInsets.only(
-                            top: Metrics.doubleBaseMargin),
-                        onPressed: signupWithGoogle,
-                        child: Image.asset(
-                          'assets/images/google.png',
-                          fit: BoxFit.contain,
-                          width: MediaQuery.of(context).size.width * 0.09,
+                        const SizedBox(
+                          height: 30.0,
                         ),
-                      ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.only(
-                          top: Metrics.doubleBaseMargin,
-                          bottom: Metrics.doubleBaseMargin),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          const Text('Already have an account ?'),
-                          Padding(
-                            padding:
-                                const EdgeInsets.only(left: 5.0, right: 5.0),
-                            child: GestureDetector(
-                              child: const Text('Sign In',
-                                  style: TextStyle(
-                                      color: Colors.blue,
-                                      fontWeight: FontWeight.bold)),
-                              onTap: () => context.pop(),
+                        SizedBox(
+                          width: Metrics.width(context) * 0.85,
+                          child: TextField(
+                            controller: _passwordController,
+                            obscureText: !passwordVisible,
+                            decoration: InputDecoration(
+                              suffixIcon: IconButton(
+                                icon: Icon(
+                                  passwordVisible
+                                      ? Icons.visibility
+                                      : Icons.visibility_off,
+                                ),
+                                onPressed: () {
+                                  setState(() {
+                                    passwordVisible = !passwordVisible;
+                                  });
+                                },
+                              ),
+                              hintText: 'Password',
                             ),
                           ),
-                        ],
-                      ),
-                    )
-                  ],
-                ),
-              ),
-              if (isLoading)
-                Container(
-                  color: Colors.black.withOpacity(0.5),
-                  child: const Center(
-                    child: CircularProgressIndicator(),
+                        ),
+                        const SizedBox(
+                          height: 30.0,
+                        ),
+                        SizedBox(
+                          width: Metrics.width(context) * 0.85,
+                          child: ElevatedButton(
+                            onPressed: registerUser,
+                            child: const Text(
+                              'Register',
+                              style: TextStyle(color: Colors.black),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(
+                          height: 30.0,
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            SizedBox(
+                              width: MediaQuery.of(context).size.width * 0.3,
+                              child: const Divider(
+                                color: Colors.grey,
+                              ),
+                            ),
+                            SizedBox(
+                              width: MediaQuery.of(context).size.width * 0.15,
+                              child: const Center(child: Text("Or")),
+                            ),
+                            SizedBox(
+                              width: MediaQuery.of(context).size.width * 0.3,
+                              child: const Divider(
+                                color: Colors.grey,
+                              ),
+                            ),
+                          ],
+                        ),
+                        Center(
+                          child: MaterialButton(
+                            minWidth: MediaQuery.of(context).size.width * 0.07,
+                            padding: const EdgeInsets.only(
+                                top: Metrics.doubleBaseMargin),
+                            onPressed: signupWithGoogle,
+                            child: Image.asset(
+                              'assets/images/google.png',
+                              fit: BoxFit.contain,
+                              width: MediaQuery.of(context).size.width * 0.09,
+                            ),
+                          ),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.only(
+                              top: Metrics.doubleBaseMargin,
+                              bottom: Metrics.doubleBaseMargin),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              const Text('Already have an account ?'),
+                              Padding(
+                                padding:
+                                    const EdgeInsets.only(left: 5.0, right: 5.0),
+                                child: GestureDetector(
+                                  child: const Text('Sign In',
+                                      style: TextStyle(
+                                          color: Colors.blue,
+                                          fontWeight: FontWeight.bold)),
+                                  onTap: () => context.pop(),
+                                ),
+                              ),
+                            ],
+                          ),
+                        )
+                      ],
+                    ),
                   ),
-                ),
-            ],
+                  if (isLoading)
+                    Container(
+                      color: Colors.black.withOpacity(0.5),
+                      child: const Center(
+                        child: CircularProgressIndicator(),
+                      ),
+                    ),
+                ],
+              ),
+            ),
           ),
         );
       },

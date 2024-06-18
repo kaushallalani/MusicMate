@@ -27,9 +27,8 @@ class DashboardBloc extends Bloc<DashboardEvent, DashboardState> {
         final UserModel? userData = await firebaseRepository.getCurrentUser();
         Logger().d(userData!.activeSessionId);
         userRepository.saveUserData(userData);
-        emit(
-            DashboardSuccessState(currentUser: userRepository.userDataModel));
-              emit(DashboardLoadingState(isLoading: false));
+        emit(DashboardSuccessState(currentUser: userRepository.userDataModel));
+        emit(DashboardLoadingState(isLoading: false));
       } on Exception catch (e) {
         print('fetch error');
         print(e.toString());
@@ -62,11 +61,14 @@ class DashboardBloc extends Bloc<DashboardEvent, DashboardState> {
             await dashboardRepository.createSession(event.sessionModel);
         Logger().d('sessionId');
         Logger().d(sessionId);
+        final currentUserData = await firebaseRepository.getCurrentUser();
         final sessionData =
             await dashboardRepository.fetchCurrentSessionDetails(sessionId);
-        Logger().d(sessionData!.allUsers);
-        userRepository.saveSessionData(sessionData);
+        Logger().d(currentUserData!.activeSessionId);
+        userRepository.saveSessionData(sessionData!);
+        userRepository.saveUserData(currentUserData!);
         emit(SessionLoadingSuccessState(
+            currentUser: userRepository.userDataModel,
             sessionId: sessionId,
             sessionData: userRepository.sessionDataModel,
             userSessions: const []));
@@ -83,8 +85,6 @@ class DashboardBloc extends Bloc<DashboardEvent, DashboardState> {
       try {
         final userSessions =
             await dashboardRepository.fetchAllUserSessions(event.id);
-        Logger().d('sessionData');
-        Logger().d(userSessions);
         emit(SessionLoadingSuccessState(
             sessionId: null, sessionData: null, userSessions: userSessions));
         emit(DashboardLoadingState(isLoading: false));
@@ -101,9 +101,12 @@ class DashboardBloc extends Bloc<DashboardEvent, DashboardState> {
         // Logger().d(sessionData!.sessionName);
         if (sessionData != null) {
           emit(SessionLoadingSuccessState(
-              sessionId: null, sessionData: sessionData, userSessions: const []));
+              sessionId: null,
+              sessionData: sessionData,
+              userSessions: const []));
         } else {
-          emit(SessionLoadingErrorState(errorMessage: 'Error fetching userdetails'));
+          emit(SessionLoadingErrorState(
+              errorMessage: 'Error fetching userdetails'));
         }
 
         emit(DashboardLoadingState(isLoading: false));
@@ -129,15 +132,18 @@ class DashboardBloc extends Bloc<DashboardEvent, DashboardState> {
       try {
         final dynamic sessionData =
             await dashboardRepository.joinSession(event.code, event.userId);
-        Logger().d(sessionData);
+        final currentUserData = await firebaseRepository.getCurrentUser();
+        Logger().d(currentUserData!.activeSessionId);
+        userRepository.saveUserData(currentUserData!);
+
         if (sessionData is String) {
           emit(SessionLoadingErrorState(errorMessage: sessionData));
-        } else if (sessionData is SessionModel &&
-            sessionData.ownerId != null) {
+        } else if (sessionData is SessionModel && sessionData.ownerId != null) {
           print('in true');
-          add(  SetCurrentSession(sessionModel: sessionData));
-        
+          add(SetCurrentSession(sessionModel: sessionData));
+
           emit(SessionLoadingSuccessState(
+            currentUser: userRepository.userDataModel,
             sessionId: sessionData.id,
             sessionData: sessionData,
           ));

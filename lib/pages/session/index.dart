@@ -145,7 +145,7 @@ class _SessionState extends State<Session> {
                               ),
                               TextComponent(
                                 text: sessionUsers.isNotEmpty
-                                    ? 'Created on ${DateFormat('dd/MM/yy').format(DateTime.parse(sessionUsers[0]!.createdAt!))}'
+                                    ? 'Created on ${DateFormat('dd/MM/yy').format(DateTime.parse(currentSession!.createdAt!))}'
                                     : '',
                                 textStyle: const TextStyle(
                                     color: AppColor.grey,
@@ -164,27 +164,29 @@ class _SessionState extends State<Session> {
                                 mainAxisAlignment: MainAxisAlignment.start,
                                 children: [
                                   Container(
-                                      height: 25,
-                                      width: 25,
-                                      alignment: Alignment.center,
-                                      decoration: BoxDecoration(
-                                          shape: BoxShape.circle,
-                                          color: Colors.primaries[Random()
-                                              .nextInt(
-                                                  Colors.primaries.length)]),
-                                                  child: const Icon(Icons.person,color: AppColor.white, size: 20,),
-                                      // child: sessionUsers.isNotEmpty
-                                      //     ? TextComponent(
-                                      //         text:
-                                      //             sessionUsers[0]!.fullName![0],
-                                      //         textStyle: const TextStyle(
-                                      //             color: AppColor.white,
-                                      //             fontWeight: FontWeight.w500,
-                                      //             fontSize: FontSize.small),
-                                      //       )
-                                      //     : null
-                                          
-                                          ),
+                                    height: 25,
+                                    width: 25,
+                                    alignment: Alignment.center,
+                                    decoration: BoxDecoration(
+                                        shape: BoxShape.circle,
+                                        color: Colors.primaries[Random()
+                                            .nextInt(Colors.primaries.length)]),
+                                    child: const Icon(
+                                      Icons.person,
+                                      color: AppColor.white,
+                                      size: 20,
+                                    ),
+                                    // child: sessionUsers.isNotEmpty
+                                    //     ? TextComponent(
+                                    //         text:
+                                    //             sessionUsers[0]!.fullName![0],
+                                    //         textStyle: const TextStyle(
+                                    //             color: AppColor.white,
+                                    //             fontWeight: FontWeight.w500,
+                                    //             fontSize: FontSize.small),
+                                    //       )
+                                    //     : null
+                                  ),
                                   TextComponent(
                                     text: ' : ${sessionUsers.length} users',
                                     textStyle: const TextStyle(

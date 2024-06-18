@@ -8,7 +8,7 @@ class NavigationConfig {
 
   List<GoRoute> _buildRoutes(List<Map<String, dynamic>> routesConfig) {
     return routesConfig.map((route) {
-      final name= route["name"];
+      final name = route["name"];
       final path = route["options"]["path"];
       final component = route['component'];
 
@@ -21,19 +21,3 @@ class NavigationConfig {
     }).toList();
   }
 }
-
-
-
-//  CustomTransitionPage(
-//                   child: component(context, state),
-//                   transitionDuration: const Duration(milliseconds: 150),
-//                   transitionsBuilder: (BuildContext context,
-//                       Animation<double> animation,
-//                       Animation<double> secondaryAnimation,
-//                       Widget child) {
-//                     return FadeTransition(
-//                       opacity: CurveTween(curve: Curves.bounceIn)
-//                           .animate(animation),
-//                       child: child,
-//                     );
-//                   })

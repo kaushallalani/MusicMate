@@ -103,6 +103,11 @@ class _ListenTogetherState extends State<ListenTogether> {
     });
   }
 
+  void reinitializeState() {
+    isLoading = true;
+    fetchUserSessions();
+  }
+
   String generateSessionCode({int length = 9}) {
     final characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'.toLowerCase();
     final random = Random();
@@ -197,6 +202,7 @@ class _ListenTogetherState extends State<ListenTogether> {
         }
         if (state is DashboardInitial) {}
         if (state is DashboardSuccessState) {
+          Logger().d(state.currentUser!.activeSessionId);
           setState(() {
             userDetails = state.currentUser!;
           });
@@ -216,9 +222,14 @@ class _ListenTogetherState extends State<ListenTogether> {
           if (state.sessionId != null) {
             print('inid');
 
-            context.pushNamed(
+            context
+                .pushNamed(
               NAVIGATION.session,
-            );
+            )
+                .then((val) {
+              print('listen called');
+              reinitializeState();
+            });
           }
         }
         if (state is SessionLoadingErrorState) {
@@ -257,7 +268,7 @@ class _ListenTogetherState extends State<ListenTogether> {
               ),
               onPressed: () {
                 print('pressed');
-                context.pop();
+                context.pop(context);
               },
             ),
             titleSpacing: 0,
@@ -313,6 +324,14 @@ class _ListenTogetherState extends State<ListenTogether> {
                                             gradient: LinearGradient(
                                                 colors: AppColor.blueGradient)),
                                         child: ListTile(
+                                          onTap: () {
+                                            BlocProvider.of<DashboardBloc>(
+                                                    context)
+                                                .add(JoinSession(
+                                                    userDetails!.id!,
+                                                    code: sessionItem
+                                                        .sessionCode!));
+                                          },
                                           shape: RoundedRectangleBorder(
                                             borderRadius:
                                                 BorderRadius.circular(5),
@@ -346,22 +365,15 @@ class _ListenTogetherState extends State<ListenTogether> {
                                               ),
                                             ],
                                           ),
-                                          trailing: InkWell(
-                                              onTap: () {
-                                                print('pressed');
-                                                BlocProvider.of<DashboardBloc>(
-                                                        context)
-                                                    .add(JoinSession(
-                                                        userDetails!.id!,
-                                                        code: sessionItem
-                                                            .sessionCode!));
-                                              },
-                                              child: const TextComponent(
-                                                text: 'Join',
-                                                textStyle: TextStyle(
-                                                    color: AppColor.white,
-                                                    fontSize: FontSize.normal),
-                                              )),
+                                          trailing: TextComponent(
+                                            text: sessionItem.id ==
+                                                    userDetails!.activeSessionId
+                                                ? 'View'
+                                                : 'Join',
+                                            textStyle: TextStyle(
+                                                color: AppColor.white,
+                                                fontSize: FontSize.normal),
+                                          ),
                                         ),
                                       ),
                                     );

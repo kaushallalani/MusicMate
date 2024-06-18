@@ -3,6 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:meta/meta.dart';
 import 'package:musicmate/models/session.dart';
 import 'package:musicmate/models/user.dart';
+import 'package:musicmate/repositories/auth_repository.dart';
 import 'package:musicmate/repositories/dashboard_repository.dart';
 import 'package:musicmate/repositories/user_repository.dart';
 
@@ -12,8 +13,9 @@ part 'session_state.dart';
 class SessionBloc extends Bloc<SessionEvent, SessionState> {
   final UserRepository userRepository;
   final DashboardRepository dashboardRepository;
+  final FirebaseRepository firebaseRepository;
 
-  SessionBloc(this.userRepository, this.dashboardRepository)
+  SessionBloc(this.userRepository, this.dashboardRepository, this.firebaseRepository)
       : super(SessionInitial()) {
     on<SessionEvent>((event, emit) {});
 

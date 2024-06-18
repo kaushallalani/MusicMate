@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:logger/logger.dart';
 import 'package:musicmate/components/index.dart';
 import 'package:musicmate/constants/theme.dart';
 import 'package:musicmate/models/playlistProvider.dart';
@@ -30,10 +31,17 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     super.initState();
+    print('in homee');
     playlistProvider = Provider.of<Playlistprovider>(context, listen: false);
     _userDetails = UserModel();
     context.read<DashboardBloc>().add(GetUserDetails());
     // getUserDetail();
+  }
+
+  void reinitializeState() {
+    // playlistProvider = Provider.of<Playlistprovider>(context, listen: false);
+    // _userDetails = UserModel();
+    context.read<DashboardBloc>().add(GetUserDetails());
   }
 
 // go to a song
@@ -46,7 +54,9 @@ class _HomePageState extends State<HomePage> {
   }
 
   void onListenTogether() {
-    GoRouter.of(context).push(NAVIGATION.listenTogether);
+    GoRouter.of(context)
+        .push(NAVIGATION.listenTogether)
+        .then((val) => {print('back to home'), reinitializeState()});
   }
 
   @override
@@ -72,8 +82,7 @@ class _HomePageState extends State<HomePage> {
         if (state is DashboardFailureState) {}
       },
       builder: (context, state) {
-        // Logger().d(isLoading);
-        print(_userDetails!.activeSessionId);
+        print(_userDetails!.toJson());
         return WillPopScope(
           onWillPop: () async {
             return exit(0); // Exit the app

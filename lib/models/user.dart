@@ -1,6 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:json_annotation/json_annotation.dart';
-import 'fieldvalue_converter.dart';
+import 'package:musicmate/models/fieldvalue_converter.dart';
 part 'user.g.dart';
 
 @JsonSerializable()
@@ -23,6 +23,7 @@ class UserModel {
       id: map['id'] as String,
       fullName: map['fullName'] as String,
       email: map['email'] as String,
+      activeSessionId: map['activeSessionId'] as String,
       deviceUniqueId: map['deviceUniqueId'] as String,
       createdAt: map['createdAt'] as FieldValue,
       updatedAt: map['updatedAt'] as FieldValue,
@@ -34,6 +35,7 @@ class UserModel {
       'id': id,
       'fullName': fullName,
       'email': email,
+      'activeSessionId':activeSessionId,
       'deviceUniqueId': deviceUniqueId,
       'createdAt': createdAt,
       'updatedAt': updatedAt
