@@ -8,6 +8,8 @@ import 'package:musicmate/components/index.dart';
 import 'package:musicmate/constants/theme.dart';
 import 'package:musicmate/models/playlistProvider.dart';
 import 'package:musicmate/models/song.dart';
+import 'package:musicmate/models/spotify/albumsData.dart';
+import 'package:musicmate/models/spotify/browseCategories.dart';
 import 'package:musicmate/models/user.dart';
 import 'package:musicmate/navigation/app_navigation.dart';
 import 'package:musicmate/bloc/dashboard/dashboard_bloc.dart';
@@ -27,6 +29,7 @@ class _HomePageState extends State<HomePage> {
   double sliderValue = 0;
   bool isLoading = true;
   late UserModel? _userDetails;
+  Albums? albumsData;
 
   @override
   void initState() {
@@ -35,6 +38,10 @@ class _HomePageState extends State<HomePage> {
     playlistProvider = Provider.of<Playlistprovider>(context, listen: false);
     _userDetails = UserModel();
     context.read<DashboardBloc>().add(GetUserDetails());
+
+    Timer(const Duration(seconds: 2), () {
+      context.read<DashboardBloc>().add(GetToken());
+    });
     // getUserDetail();
   }
 
@@ -74,15 +81,33 @@ class _HomePageState extends State<HomePage> {
           }
         }
         if (state is DashboardSuccessState) {
-          setState(() {
-            _userDetails = state.currentUser!;
-          });
+          if (state.currentUser != null) {
+            setState(() {
+              _userDetails = state.currentUser!;
+            });
+          }
+
+          if (state.accessToken != null) {
+            BlocProvider.of<DashboardBloc>(context).add(GetBrowseCategories());
+
+            BlocProvider.of<DashboardBloc>(context).add(GetNewReleases());
+          }
+          if (state.albumsData != null) {
+            print('in thisss');
+            setState(() {
+              albumsData = state.albumsData;
+            });
+          }
         }
 
         if (state is DashboardFailureState) {}
       },
       builder: (context, state) {
         print(_userDetails!.toJson());
+        Logger().d(albumsData);
+        if (albumsData != null) {
+          Logger().d('category home => ${albumsData!.limit}');
+        }
         return WillPopScope(
           onWillPop: () async {
             return exit(0); // Exit the app
@@ -139,33 +164,114 @@ class _HomePageState extends State<HomePage> {
                               Expanded(
                                 flex: 0,
                                 child: Padding(
-                                  padding:
-                                      const EdgeInsets.symmetric(horizontal: 0),
-                                  child: ListView.separated(
-                                    padding: EdgeInsets.symmetric(
-                                        vertical:
-                                            Metrics.width(context) * 0.04),
-                                    shrinkWrap: true,
-                                    itemCount: playlist.length,
-                                    itemBuilder: (context, index) {
-                                      //get individual song
-                                      final Song song = playlist[index];
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 0),
+                                    child: albumsData != null
+                                        ? ListView.separated(
+                                            padding: EdgeInsets.symmetric(
+                                                vertical:
+                                                    Metrics.width(context) *
+                                                        0.04),
+                                            shrinkWrap: true,
+                                            itemCount: 5,
+                                            itemBuilder: (context, index) {
+                                              //get individual song
+                                              // final Song song = playlist[index];
+                                              final AlbumItem albumItem =
+                                                  albumsData!.items[index];
 
-                                      //return ist tile ui
+                                              //return ist tile ui
 
-                                      return CustomSongTile(
-                                        songs: song,
-                                        onTap: () => goToSong(index, context),
-                                      );
-                                    },
-                                    separatorBuilder:
-                                        (BuildContext context, int index) {
-                                      return Padding(
-                                          padding: EdgeInsets.all(
-                                              Metrics.width(context) * 0.02));
-                                    },
-                                  ),
-                                ),
+                                              return InkWell(
+                                                onTap: () {},
+                                                child: Row(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment.start,
+                                                  crossAxisAlignment:
+                                                      CrossAxisAlignment.center,
+                                                  children: [
+                                                    Container(
+                                                      decoration: BoxDecoration(
+                                                        border: Border.all(),
+                                                      ),
+                                                      width: Metrics.width(
+                                                              context) *
+                                                          0.15,
+                                                      height: Metrics.width(
+                                                              context) *
+                                                          0.15,
+                                                      child: Image.network(
+                                                        albumItem.images[1].url,
+                                                        height: Metrics.width(
+                                                                context) *
+                                                            0.15,
+                                                        width: Metrics.width(
+                                                                context) *
+                                                            0.15,
+                                                        fit: BoxFit.fill,
+                                                      ),
+                                                    ),
+                                                    Expanded(
+                                                      child: Container(
+                                                        margin: EdgeInsets.symmetric(
+                                                            horizontal:
+                                                                Metrics.width(
+                                                                        context) *
+                                                                    0.04),
+                                                        child: Column(
+                                                          mainAxisAlignment:
+                                                              MainAxisAlignment
+                                                                  .start,
+                                                          crossAxisAlignment:
+                                                              CrossAxisAlignment
+                                                                  .start,
+                                                          children: [
+                                                            TextComponent(
+                                                              text: albumItem
+                                                                  .name,
+                                                              textAlign:
+                                                                  TextAlign
+                                                                      .left,
+                                                              textStyle:
+                                                                  const TextStyle(
+                                                                fontWeight:
+                                                                    FontWeight
+                                                                        .w700,
+                                                                fontSize:
+                                                                    FontSize
+                                                                        .xmedium,
+                                                              ),
+                                                            ),
+                                                            TextComponent(
+                                                              text: albumItem
+                                                                  .artists[0]
+                                                                  .name,
+                                                              textAlign:
+                                                                  TextAlign
+                                                                      .left,
+                                                              textStyle:
+                                                                  const TextStyle(
+                                                                      color: AppColor
+                                                                          .grey),
+                                                            ),
+                                                          ],
+                                                        ),
+                                                      ),
+                                                    )
+                                                  ],
+                                                ),
+                                              );
+                                            },
+                                            separatorBuilder:
+                                                (BuildContext context,
+                                                    int index) {
+                                              return Padding(
+                                                  padding: EdgeInsets.all(
+                                                      Metrics.width(context) *
+                                                          0.02));
+                                            },
+                                          )
+                                        : Container()),
                               ),
                               FooterComponent(
                                 footerMargin:

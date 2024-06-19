@@ -33,9 +33,18 @@ class SetCurrentSession extends DashboardEvent {
 
   SetCurrentSession({required this.sessionModel});
 }
+
 class JoinSession extends DashboardEvent {
   final String code;
   final String userId;
 
   JoinSession(this.userId, {required this.code});
 }
+
+class GenerateAccessToken extends DashboardEvent {}
+
+class GetToken extends DashboardEvent {}
+
+class GetBrowseCategories extends DashboardEvent {}
+
+class GetNewReleases extends DashboardEvent {}

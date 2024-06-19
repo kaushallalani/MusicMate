@@ -2,9 +2,12 @@ import 'package:bloc/bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:logger/logger.dart';
 import 'package:musicmate/models/session.dart';
+import 'package:musicmate/models/spotify/albumsData.dart';
+import 'package:musicmate/models/spotify/browseCategories.dart';
 import 'package:musicmate/models/user.dart';
 import 'package:musicmate/repositories/auth_repository.dart';
 import 'package:musicmate/repositories/dashboard_repository.dart';
+import 'package:musicmate/repositories/spotify_repository.dart';
 
 import 'package:musicmate/repositories/user_repository.dart';
 
@@ -15,9 +18,10 @@ class DashboardBloc extends Bloc<DashboardEvent, DashboardState> {
   final UserRepository userRepository;
   final FirebaseRepository firebaseRepository;
   final DashboardRepository dashboardRepository;
+  final SpotifyRepository spotifyRepository;
 
-  DashboardBloc(
-      this.userRepository, this.firebaseRepository, this.dashboardRepository)
+  DashboardBloc(this.userRepository, this.firebaseRepository,
+      this.dashboardRepository, this.spotifyRepository)
       : super(DashboardInitial()) {
     on<DashboardEvent>((event, emit) {});
 
@@ -36,7 +40,7 @@ class DashboardBloc extends Bloc<DashboardEvent, DashboardState> {
     });
 
     on<GetUserDetails>((event, emit) async {
-      emit(DashboardLoadingState(isLoading: true));
+      // emit(DashboardLoadingState(isLoading: true));
       try {
         final userData = userRepository.userDataModel;
         Logger().d(userData);
@@ -47,7 +51,7 @@ class DashboardBloc extends Bloc<DashboardEvent, DashboardState> {
               errorMessage: 'Error fetching userdetails'));
         }
 
-        emit(DashboardLoadingState(isLoading: false));
+        // emit(DashboardLoadingState(isLoading: false));
       } on Exception catch (e) {
         print('get error');
         print(e.toString());
@@ -156,6 +160,71 @@ class DashboardBloc extends Bloc<DashboardEvent, DashboardState> {
       } catch (e) {
         print('join user session error ');
         print(e.toString());
+      }
+    });
+
+    on<GetToken>((event, emit) async {
+      try {
+        final token = await spotifyRepository.getAccessToken();
+        if (token != null) {
+          emit(DashboardSuccessState(
+              currentUser: userRepository.userDataModel, accessToken: token));
+        } else {
+          emit(DashboardFailureState(
+              errorMessage: 'Error fetching access token'));
+        }
+      } catch (e) {
+        print(e.toString());
+      }
+    });
+    on<GenerateAccessToken>((event, emit) async {
+      try {
+        if (userRepository.accessToken == null ||
+            DateTime.now().isAfter(userRepository.tokenExpirationTime!)) {
+          await spotifyRepository.generateAccessToken();
+        }
+        Logger().d('Saved Token => ${userRepository.accessToken}');
+      } catch (e) {
+        print('error generating token');
+      }
+    });
+
+    on<GetBrowseCategories>((event, emit) async {
+      // emit(DashboardLoadingState(isLoading: true));
+      try {
+        final categories = await spotifyRepository.getBrowseCategories();
+
+        Logger().d(categories!.total);
+        if (categories != null) {
+          print('inn suceess');
+          emit(DashboardSuccessState(categoriesData: categories));
+        } else {
+          emit(
+              DashboardFailureState(errorMessage: 'Error Fetching Categories'));
+        }
+
+        emit(DashboardLoadingState(isLoading: false));
+      } catch (e) {
+        print('error fetching  categories');
+      }
+    });
+
+    on<GetNewReleases>((event, emit) async {
+      // emit(DashboardLoadingState(isLoading: true));
+      try {
+        final albums = await spotifyRepository.getLatestReleases();
+
+        Logger().d(albums!.total);
+        if (albums != null) {
+          print('inn albumsss');
+          emit(DashboardSuccessState(albumsData: albums));
+        } else {
+          emit(DashboardFailureState(errorMessage: 'Error Fetching Albums'));
+        }
+
+        emit(DashboardLoadingState(isLoading: false));
+      } catch (e) {
+        print('error fetching albums');
       }
     });
   }

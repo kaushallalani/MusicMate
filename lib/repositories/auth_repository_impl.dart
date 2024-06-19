@@ -5,16 +5,20 @@ import 'package:logger/logger.dart';
 import 'package:musicmate/models/user.dart';
 import 'package:musicmate/repositories/auth_repository.dart';
 import 'package:musicmate/services/auth_service.dart';
+import 'package:musicmate/services/spotify_authentication.dart';
 import 'package:unique_identifier/unique_identifier.dart';
 
 class FirebaseRepositoryImpl extends FirebaseRepository {
   final FirebaseService firebaseService = FirebaseService();
+  final SpotifyAuthentication spotifyAuthentication = SpotifyAuthentication();
 
   @override
   Future<UserModel?> getCurrentUser() async {
     try {
       final uid = await getCurrentUserId();
       final data = await firebaseService.userDetailsGet(id: uid);
+      // spotifyAuthentication.fetchTracks();
+
       Logger().d(data.activeSessionId);
       return data;
     } on Exception catch (e) {

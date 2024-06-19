@@ -8,7 +8,6 @@ import 'package:unique_identifier/unique_identifier.dart';
 
 class FirebaseService {
   final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
-  final SpotifyAuthentication spotifyAuthentication = SpotifyAuthentication();
 
   ///create a user
   Future<UserCredential?> signupUser(
@@ -43,7 +42,6 @@ class FirebaseService {
       final UserCredential userCredential =
           await _firebaseAuth.signInWithEmailAndPassword(
               email: email.trim(), password: password.trim());
-      spotifyAuthentication.fetchTracks();
       return userCredential;
     } on FirebaseException catch (e) {
       return Future.error(e);
@@ -64,21 +62,10 @@ class FirebaseService {
 
         var response =
             await FirebaseAuth.instance.signInWithCredential(credential);
-
         return response;
       } else {
         return null;
       }
-      // if (response.additionalUserInfo!.isNewUser) {
-      //   await GoogleSignIn().signOut();
-      //   await FirebaseAuth.instance.currentUser!.delete();
-      //   return;
-      // } else {
-      //   final User? firebaseUser = response.user;
-      //   final UserModel? userDetail =
-      //       await userDetailsGet(id: firebaseUser!.uid);
-      //   return userDetail!;
-      // }
     } on Exception catch (e) {
       print('exception->$e');
     }

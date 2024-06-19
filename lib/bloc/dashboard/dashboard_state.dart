@@ -17,12 +17,19 @@ class DashboardLoadingState extends DashboardInitial {
 }
 
 class DashboardSuccessState extends DashboardInitial {
-  DashboardSuccessState({super.currentUser});
+  final String? accessToken;
+  final Categories? categoriesData;
+  final Albums? albumsData;
+
+  DashboardSuccessState(
+      {super.currentUser,
+      this.accessToken,
+      this.categoriesData,
+      this.albumsData});
 
   @override
-  List<Object?> get props => [
-        currentUser,
-      ];
+  List<Object?> get props =>
+      [currentUser, accessToken, categoriesData, albumsData];
 }
 
 class DashboardFailureState extends DashboardInitial {

@@ -1,13 +1,19 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:logger/logger.dart';
+import 'package:musicmate/controllers/dio.dart';
 import 'package:musicmate/models/session.dart';
 import 'package:musicmate/models/user.dart';
 import 'package:musicmate/repositories/dashboard_repository.dart';
+import 'package:musicmate/repositories/user_repository.dart';
+import 'package:musicmate/services/spotify_authentication.dart';
 
 class DashboardRepositoryImpl extends DashboardRepository {
   final FirebaseFirestore firebaseFirestore;
+  final SpotifyAuthentication spotifyAuthentication;
+  final UserRepository userRepository;
 
-  DashboardRepositoryImpl({required this.firebaseFirestore});
+  DashboardRepositoryImpl(this.spotifyAuthentication, this.userRepository,
+      {required this.firebaseFirestore});
 
   final CollectionReference sessionsCollection =
       FirebaseFirestore.instance.collection('sessions');
@@ -163,7 +169,7 @@ class DashboardRepositoryImpl extends DashboardRepository {
   }
 
   @override
-  Future changeActiveUserSession(String userId, String sessionId) async {
+  Future<void> changeActiveUserSession(String userId, String sessionId) async {
     try {
       final userActiveSession = await usersCollection.doc(userId).update({
         'activeSessionId': sessionId,
@@ -173,4 +179,6 @@ class DashboardRepositoryImpl extends DashboardRepository {
       return Future.error(e);
     }
   }
+
+ 
 }

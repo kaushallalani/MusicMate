@@ -23,9 +23,10 @@ class Dashboard extends StatefulWidget {
   State<Dashboard> createState() => _DashboardState();
 }
 
-class _DashboardState extends State<Dashboard> {
+class _DashboardState extends State<Dashboard> with WidgetsBindingObserver {
   int pageIndex = 0;
   String? deviceId;
+  AppLifecycleState? appLifecycleState;
   final Stream<DocumentSnapshot<Map<String, dynamic>>> _userStream =
       FirebaseFirestore.instance
           .collection("users")
@@ -69,7 +70,24 @@ class _DashboardState extends State<Dashboard> {
     super.initState();
     getDeviceId();
     Logger().d('dashboard called');
+    WidgetsBinding.instance.addObserver(this);
+    BlocProvider.of<DashboardBloc>(context).add(GenerateAccessToken());
     BlocProvider.of<DashboardBloc>(context).add(FetchUserDataFromFirebase());
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    super.didChangeAppLifecycleState(state);
+    setState(() {
+      appLifecycleState = state;
+    });
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+
+    super.dispose();
   }
 
   void getDeviceId() async {
@@ -81,6 +99,7 @@ class _DashboardState extends State<Dashboard> {
 
   @override
   Widget build(BuildContext context) {
+    Logger().d('appstate => ${appLifecycleState}');
     return StreamBuilder<Object>(
         stream: _userStream,
         builder: (context, AsyncSnapshot snapshot) {

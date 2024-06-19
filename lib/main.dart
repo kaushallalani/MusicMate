@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:logger/logger.dart';
 import 'package:musicmate/bloc/session/session_bloc.dart';
 import 'package:musicmate/constants/i18n/strings.g.dart';
 import 'package:musicmate/firebase_options.dart';
@@ -14,13 +15,13 @@ import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:musicmate/injectionContainer/injection_container.dart' as di;
 import 'package:firebase_core/firebase_core.dart';
-
 import 'package:musicmate/bloc/authentication/authentication_bloc.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   await di.init();
+  Logger().d('main called');
   runApp(
     MultiProvider(
       providers: [
@@ -38,7 +39,7 @@ class MyApp extends StatefulWidget {
   @override
   State<MyApp> createState() => _MyAppState();
 }
-
+  
 class _MyAppState extends State<MyApp> {
   bool isLogin = false;
   final routeConfig = NavigationConfig(stackNavigation);
