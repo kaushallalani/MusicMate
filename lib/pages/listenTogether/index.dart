@@ -15,7 +15,8 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'styles.dart';
 
 class ListenTogether extends StatefulWidget {
-  const ListenTogether({super.key});
+  final String id;
+  const ListenTogether({super.key, required this.id});
 
   @override
   State<ListenTogether> createState() => _ListenTogetherState();
@@ -38,6 +39,7 @@ class _ListenTogetherState extends State<ListenTogether> {
     userSessions = [];
     isLoading = true;
     fetchUserSessions();
+    Logger().d('id => ${widget.id}');
   }
 
   @override

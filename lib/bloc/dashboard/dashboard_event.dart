@@ -48,3 +48,9 @@ class GetToken extends DashboardEvent {}
 class GetBrowseCategories extends DashboardEvent {}
 
 class GetNewReleases extends DashboardEvent {}
+
+class FetchMoreReleases extends DashboardEvent {
+  final String nextUrl;
+
+  FetchMoreReleases({required this.nextUrl});
+}

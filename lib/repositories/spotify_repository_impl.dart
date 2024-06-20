@@ -1,7 +1,7 @@
 import 'dart:convert';
 
 import 'package:logger/logger.dart';
-import 'package:musicmate/models/spotify/albumsData.dart';
+import 'package:musicmate/models/spotify/albums_data.dart';
 import 'package:musicmate/models/spotify/browseCategories.dart';
 import 'package:musicmate/repositories/spotify_repository.dart';
 import 'package:musicmate/repositories/user_repository.dart';
@@ -65,12 +65,31 @@ class SpotifyRepositoryImpl extends SpotifyRepository {
   @override
   Future<Albums?>? getLatestReleases() async {
     try {
-      final albumData = await spotifyAuthentication
-          .fetchNewReleases(userRepository.accessToken!);
+      final albumData = await spotifyAuthentication.fetchNewReleases(
+          userRepository.accessToken!,
+          'https://api.spotify.com/v1/browse/new-releases');
+      if (albumData!.isNotEmpty) {
+        final jsonData = AlbumData.fromJson(albumData);
+        return jsonData.albums;
+      }
+    } on Exception catch (e) {
+      return Future.error(e);
+    }
+
+    return null;
+  }
+
+  @override
+  Future<Albums?>? getMoreRelease(String nextUrl) async {
+    try {
+
+      Logger().d('urlll => ${nextUrl}');
+      final albumData = await spotifyAuthentication.fetchNewReleases(
+          userRepository.accessToken!, nextUrl);
       if (albumData!.isNotEmpty) {
         Logger().d('Albums => ${albumData}');
-        final jsonData = AlbumsData.fromJson(albumData);
-          Logger().d('Albums => ${jsonData}');
+        final jsonData = AlbumData.fromJson(albumData);
+        Logger().d('New Albums => ${jsonData.albums.next}');
         return jsonData.albums;
       }
     } on Exception catch (e) {

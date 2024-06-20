@@ -36,7 +36,6 @@ class _SettingsPageState extends State<SettingsPage> {
         }
         if (state is DashboardLoadingState) {
           Logger().d('loadinggg');
-          // Logger().d(state.currentUser!.email);
         }
         if (state is DashboardSuccessState) {
           Logger().d('success');

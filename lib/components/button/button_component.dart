@@ -27,7 +27,6 @@ class ButtonComponent extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // final Logger log = Logger();
 
     return InkWell(
       onTap: onPressed,

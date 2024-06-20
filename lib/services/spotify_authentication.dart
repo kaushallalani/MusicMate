@@ -44,11 +44,11 @@ class SpotifyAuthentication {
     return null;
   }
 
-  Future<Map<String, dynamic>?> fetchNewReleases(String accessToken) async {
-    if (accessToken.isNotEmpty) {
+  Future<Map<String, dynamic>?> fetchNewReleases(String accessToken, String url) async {
+    if (accessToken.isNotEmpty) {     
       final dioResponse = await controller.getController(
           Options(headers: {'authorization': 'Bearer $accessToken'}),
-          'https://api.spotify.com/v1/browse/new-releases');
+          url);
 
       if (dioResponse!.isNotEmpty) {
         return dioResponse;

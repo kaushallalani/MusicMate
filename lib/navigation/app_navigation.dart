@@ -82,7 +82,7 @@ List<Map<String, dynamic>> stackNavigation = [
   {
     "name": NAVIGATION.listenTogether,
     "component": (BuildContext context, GoRouterState state) =>
-        const ListenTogether(),
+         ListenTogether(id: state.uri.queryParameters['id']!,),
     "options": {"path": NAVIGATION.listenTogether}
   },
   {

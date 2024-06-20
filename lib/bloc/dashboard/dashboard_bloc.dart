@@ -2,7 +2,7 @@ import 'package:bloc/bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:logger/logger.dart';
 import 'package:musicmate/models/session.dart';
-import 'package:musicmate/models/spotify/albumsData.dart';
+import 'package:musicmate/models/spotify/albums_data.dart';
 import 'package:musicmate/models/spotify/browseCategories.dart';
 import 'package:musicmate/models/user.dart';
 import 'package:musicmate/repositories/auth_repository.dart';
@@ -26,13 +26,13 @@ class DashboardBloc extends Bloc<DashboardEvent, DashboardState> {
     on<DashboardEvent>((event, emit) {});
 
     on<FetchUserDataFromFirebase>((event, emit) async {
-      emit(DashboardLoadingState(isLoading: true));
+      // emit(DashboardLoadingState(isLoading: true));
       try {
         final UserModel? userData = await firebaseRepository.getCurrentUser();
         Logger().d(userData!.activeSessionId);
         userRepository.saveUserData(userData);
         emit(DashboardSuccessState(currentUser: userRepository.userDataModel));
-        emit(DashboardLoadingState(isLoading: false));
+        // emit(DashboardLoadingState(isLoading: false));
       } on Exception catch (e) {
         print('fetch error');
         print(e.toString());
@@ -64,7 +64,6 @@ class DashboardBloc extends Bloc<DashboardEvent, DashboardState> {
         final sessionId =
             await dashboardRepository.createSession(event.sessionModel);
         Logger().d('sessionId');
-        Logger().d(sessionId);
         final currentUserData = await firebaseRepository.getCurrentUser();
         final sessionData =
             await dashboardRepository.fetchCurrentSessionDetails(sessionId);
@@ -102,7 +101,6 @@ class DashboardBloc extends Bloc<DashboardEvent, DashboardState> {
       emit(DashboardLoadingState(isLoading: true));
       try {
         final sessionData = userRepository.sessionDataModel;
-        // Logger().d(sessionData!.sessionName);
         if (sessionData != null) {
           emit(SessionLoadingSuccessState(
               sessionId: null,
@@ -194,9 +192,7 @@ class DashboardBloc extends Bloc<DashboardEvent, DashboardState> {
       try {
         final categories = await spotifyRepository.getBrowseCategories();
 
-        Logger().d(categories!.total);
         if (categories != null) {
-          print('inn suceess');
           emit(DashboardSuccessState(categoriesData: categories));
         } else {
           emit(
@@ -210,13 +206,14 @@ class DashboardBloc extends Bloc<DashboardEvent, DashboardState> {
     });
 
     on<GetNewReleases>((event, emit) async {
-      // emit(DashboardLoadingState(isLoading: true));
+      emit(DashboardLoadingState(isLoading: true));
       try {
         final albums = await spotifyRepository.getLatestReleases();
 
         Logger().d(albums!.total);
         if (albums != null) {
           print('inn albumsss');
+          userRepository.saveAlbumData(albums);
           emit(DashboardSuccessState(albumsData: albums));
         } else {
           emit(DashboardFailureState(errorMessage: 'Error Fetching Albums'));
@@ -225,6 +222,35 @@ class DashboardBloc extends Bloc<DashboardEvent, DashboardState> {
         emit(DashboardLoadingState(isLoading: false));
       } catch (e) {
         print('error fetching albums');
+      }
+    });
+
+    on<FetchMoreReleases>((event, emit) async {
+      try {
+        final oldAlbumItemsData = userRepository.albumData;
+        Logger().d(oldAlbumItemsData!.items.length);
+
+        Logger().d('next => ${event.nextUrl}');
+        Logger().d(
+            'length reached to total => ${oldAlbumItemsData.items.length == oldAlbumItemsData.total}');
+
+        if (event.nextUrl != 'null') {
+          final moreAlbums =
+              await spotifyRepository.getMoreRelease(event.nextUrl);
+
+          if (moreAlbums!.items != null) {
+            moreAlbums.items!.insertAll(0, oldAlbumItemsData.items);
+            userRepository.saveAlbumData(moreAlbums);
+            emit(DashboardSuccessState(albumsData: moreAlbums));
+          } else {
+            emit(DashboardFailureState(
+                errorMessage: 'Error fetching more data'));
+          }
+        }
+
+        Logger().d("oldAlbumItemsData => ${oldAlbumItemsData.items.length}");
+      } catch (e) {
+        print('error fetching more albums');
       }
     });
   }

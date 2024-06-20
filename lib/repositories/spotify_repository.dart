@@ -1,4 +1,4 @@
-import 'package:musicmate/models/spotify/albumsData.dart';
+import 'package:musicmate/models/spotify/albums_data.dart';
 import 'package:musicmate/models/spotify/browseCategories.dart';
 
 abstract class SpotifyRepository {
@@ -7,4 +7,5 @@ abstract class SpotifyRepository {
   Future<String?> getAccessToken();
   Future<Categories?>? getBrowseCategories();
   Future<Albums?>? getLatestReleases();
+  Future<Albums?>? getMoreRelease(String nextUrl);
 }
