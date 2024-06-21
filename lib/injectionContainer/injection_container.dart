@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:get_it/get_it.dart';
 import 'package:musicmate/bloc/authentication/authentication_bloc.dart';
 import 'package:musicmate/bloc/dashboard/dashboard_bloc.dart';
+import 'package:musicmate/bloc/playback/playback_bloc.dart';
 import 'package:musicmate/bloc/session/session_bloc.dart';
 import 'package:musicmate/controllers/dio.dart';
 import 'package:musicmate/repositories/auth_repository.dart';
@@ -20,10 +21,12 @@ Future<void> init() async {
   serviceLocater
     ..registerFactory(
         () => AuthenticationBloc(serviceLocater.call(), serviceLocater.call()))
-    ..registerFactory(() => DashboardBloc(
-        serviceLocater.call(), serviceLocater.call(), serviceLocater.call(), serviceLocater.call()))
-    ..registerFactory(() => SessionBloc(
+    ..registerFactory(() => DashboardBloc(serviceLocater.call(),
         serviceLocater.call(), serviceLocater.call(), serviceLocater.call()))
+    ..registerFactory(() => SessionBloc(serviceLocater.call(),
+        serviceLocater.call(), serviceLocater.call(), serviceLocater.call()))
+    ..registerFactory(
+        () => PlaybackBloc(serviceLocater.call(), serviceLocater.call()))
     ..registerLazySingleton<FirebaseRepository>(() => FirebaseRepositoryImpl())
     ..registerLazySingleton<UserRepository>(() => UserRepository())
     ..registerLazySingleton<DashboardRepository>(() => DashboardRepositoryImpl(
@@ -46,5 +49,4 @@ Future<void> init() async {
     ..registerLazySingleton(() => googleSignIn)
     ..registerLazySingleton(() => controller)
     ..registerLazySingleton(() => spotifyAuthentication);
-
 }

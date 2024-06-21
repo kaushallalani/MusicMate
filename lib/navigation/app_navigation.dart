@@ -1,8 +1,12 @@
+import 'dart:convert';
+
+import 'package:musicmate/models/spotify/albums_data.dart';
 import 'package:musicmate/pages/dashboard/index.dart';
 import 'package:musicmate/pages/home/index.dart';
 import 'package:musicmate/pages/library/index.dart';
 import 'package:musicmate/pages/listenTogether/index.dart';
 import 'package:musicmate/pages/login/index.dart';
+import 'package:musicmate/pages/playback/index.dart';
 import 'package:musicmate/pages/search/index.dart';
 import 'package:musicmate/pages/session/index.dart';
 import 'package:musicmate/pages/settings/index.dart';
@@ -24,6 +28,7 @@ class NAVIGATION {
   static const String listenTogether = '/listenTogether';
   static const String signup = '/signup';
   static const String session = '/session';
+  static const String playback = '/playback';
 }
 
 List<Map<String, dynamic>> stackNavigation = [
@@ -39,12 +44,12 @@ List<Map<String, dynamic>> stackNavigation = [
         const SettingsPage(),
     "options": {"path": NAVIGATION.settings}
   },
-  {
-    "name": NAVIGATION.songsPage,
-    "component": (BuildContext context, GoRouterState state) =>
-        const SongsPage(),
-    "options": {"path": NAVIGATION.songsPage}
-  },
+  // {
+  //   "name": NAVIGATION.songsPage,
+  //   "component": (BuildContext context, GoRouterState state) =>
+  //       const SongsPage(),
+  //   "options": {"path": NAVIGATION.songsPage}
+  // },
   {
     "name": NAVIGATION.dashboard,
     "component": (BuildContext context, GoRouterState state) =>
@@ -81,13 +86,23 @@ List<Map<String, dynamic>> stackNavigation = [
   },
   {
     "name": NAVIGATION.listenTogether,
-    "component": (BuildContext context, GoRouterState state) =>
-         ListenTogether(id: state.uri.queryParameters['id']!,),
+    "component": (BuildContext context, GoRouterState state) => ListenTogether(
+          id: state.uri.queryParameters['id']!,
+        ),
     "options": {"path": NAVIGATION.listenTogether}
   },
   {
     "name": NAVIGATION.session,
     "component": (BuildContext context, GoRouterState state) => const Session(),
     "options": {"path": NAVIGATION.session}
+  },
+  {
+    "name": NAVIGATION.playback,
+    "component": (BuildContext context, GoRouterState state) {
+      final AlbumItem currentSong = AlbumItem.fromJson(
+          jsonDecode(state.uri.queryParameters['currentSong']!));
+      return Playback(currentSong: currentSong);
+    },
+    "options": {"path": NAVIGATION.playback}
   }
 ];

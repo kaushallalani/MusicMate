@@ -5,12 +5,13 @@ import 'package:logger/logger.dart';
 class DioController {
   final dio = Dio();
 
-  Future<Map<String, dynamic>?> getController(
-      Options options, String url) async {
+  Future<Map<String, dynamic>?> getController(Options? options, String url,
+      Map<String, dynamic>? queryParameters) async {
     try {
       print('in get');
-      final response = await dio.get(url, options: options);
-
+      final response = await dio.get(url,
+          options: options, queryParameters: queryParameters);
+      Logger().d(response);
       if (response.statusCode == 200) {
         return response.data;
       } else {

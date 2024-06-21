@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:logger/logger.dart';
+import 'package:musicmate/bloc/playback/playback_bloc.dart';
 import 'package:musicmate/bloc/session/session_bloc.dart';
 import 'package:musicmate/constants/i18n/strings.g.dart';
 import 'package:musicmate/firebase_options.dart';
@@ -26,7 +27,7 @@ void main() async {
     MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (context) => ThemeProvider()),
-        ChangeNotifierProvider(create: (context) => Playlistprovider())
+        // ChangeNotifierProvider(create: (context) => Playlistprovider())
       ],
       child: TranslationProvider(child: const MyApp()),
     ),
@@ -39,7 +40,7 @@ class MyApp extends StatefulWidget {
   @override
   State<MyApp> createState() => _MyAppState();
 }
-  
+
 class _MyAppState extends State<MyApp> {
   bool isLogin = false;
   final routeConfig = NavigationConfig(stackNavigation);
@@ -86,7 +87,10 @@ class _MyAppState extends State<MyApp> {
                     di.serviceLocater<DashboardBloc>()),
             BlocProvider<SessionBloc>(
                 create: (BuildContext context) =>
-                    di.serviceLocater<SessionBloc>())
+                    di.serviceLocater<SessionBloc>()),
+            BlocProvider<PlaybackBloc>(
+                create: (BuildContext content) =>
+                    di.serviceLocater<PlaybackBloc>())
           ],
           child: MaterialApp.router(
             debugShowCheckedModeBanner: false,
@@ -95,7 +99,6 @@ class _MyAppState extends State<MyApp> {
             supportedLocales: {const Locale('en', '')},
             restorationScopeId: 'app',
             routerConfig: routeConfig.router,
-            
           ),
         ),
       ),

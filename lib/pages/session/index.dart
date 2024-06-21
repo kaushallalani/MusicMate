@@ -63,15 +63,15 @@ class _SessionState extends State<Session> {
             currentSession = state.sessionData!;
           });
 
-          print('sesssion => ${state.sessionUsers.length}');
-          if (state.sessionUsers.isNotEmpty) {
+          print('sesssion => ${state.sessionUsers!.length}');
+          if (state.sessionUsers!.isNotEmpty) {
             setState(
               () {
-                sessionUsers = state.sessionUsers;
+                sessionUsers = state.sessionUsers!;
               },
             );
           }
-          Logger().d(state.sessionUsers.length);
+          Logger().d(state.sessionUsers!.length);
         }
         if (state is SessionErrorState) {
           Logger().d(state.errorMessage);

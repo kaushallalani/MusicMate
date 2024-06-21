@@ -213,6 +213,7 @@ class DashboardBloc extends Bloc<DashboardEvent, DashboardState> {
         Logger().d(albums!.total);
         if (albums != null) {
           print('inn albumsss');
+
           userRepository.saveAlbumData(albums);
           emit(DashboardSuccessState(albumsData: albums));
         } else {
@@ -251,6 +252,22 @@ class DashboardBloc extends Bloc<DashboardEvent, DashboardState> {
         Logger().d("oldAlbumItemsData => ${oldAlbumItemsData.items.length}");
       } catch (e) {
         print('error fetching more albums');
+      }
+    });
+
+    on<OnPlaySong>((event, emit) async {
+      try {
+        final videoId = await spotifyRepository.getVideoId(
+            event.songName, event.artistName);
+
+        if (videoId != null) {
+          userRepository.saveCurrentSongId(videoId);
+          emit(DashboardSuccessState(videoId: videoId));
+        } else {
+          emit(DashboardFailureState(errorMessage: 'Error fetching videoID'));
+        }
+      } catch (e) {
+        print('error fetching video id');
       }
     });
   }

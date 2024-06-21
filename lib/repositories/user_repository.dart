@@ -8,6 +8,7 @@ class UserRepository {
   SessionModel? _sessionModel;
   String? _accessToken;
   DateTime? _tokenExpirationTime;
+  String? _currentSongId;
 
   Albums? _albumData;
 
@@ -16,6 +17,7 @@ class UserRepository {
   String? get accessToken => _accessToken;
   DateTime? get tokenExpirationTime => _tokenExpirationTime;
   Albums? get albumData => _albumData;
+  String? get currentSongId => _currentSongId;
 
   void saveUserData(UserModel userData) {
     _userDataModel = userData;
@@ -33,5 +35,9 @@ class UserRepository {
 
   void saveAlbumData(Albums albumData) {
     _albumData = albumData;
+  }
+
+  void saveCurrentSongId(String currentSongId) {
+    _currentSongId = currentSongId;
   }
 }

@@ -2,10 +2,12 @@ import 'dart:convert';
 import 'package:dio/dio.dart';
 import 'package:logger/logger.dart';
 import 'package:musicmate/controllers/dio.dart';
+import 'package:musicmate/models/spotify/albums_data.dart';
 
 class SpotifyAuthentication {
   final String ClientID = '3222f0dac2e24c908781642f43c8506d';
   final String ClientSecret = '31e95b4c7dd04ee0a7a285d23c4f36be';
+  final String YoutubeApi = 'AIzaSyCizoXiBWYEfnglp5f2vfr1xkSXt77FuUM';
   final DioController controller = DioController();
   final String ENDPOINT = 'https://api.spotify.com/v1';
 
@@ -35,7 +37,8 @@ class SpotifyAuthentication {
       Logger().d(accessToken);
       final dioResponse = await controller.getController(
           Options(headers: {'authorization': 'Bearer $accessToken'}),
-          'https://api.spotify.com/v1/browse/categories');
+          'https://api.spotify.com/v1/browse/categories',
+          null);
 
       if (dioResponse!.isNotEmpty) {
         return dioResponse;
@@ -44,16 +47,67 @@ class SpotifyAuthentication {
     return null;
   }
 
-  Future<Map<String, dynamic>?> fetchNewReleases(String accessToken, String url) async {
-    if (accessToken.isNotEmpty) {     
+  Future<Map<String, dynamic>?> fetchNewReleases(
+      String accessToken, String url) async {
+    if (accessToken.isNotEmpty) {
       final dioResponse = await controller.getController(
           Options(headers: {'authorization': 'Bearer $accessToken'}),
-          url);
+          url,
+          null);
 
       if (dioResponse!.isNotEmpty) {
         return dioResponse;
       }
     }
+    return null;
+  }
+
+  Future<Map<String, dynamic>?>? fetchSearchSong(
+      String songName, List<String> artistName) async {
+    const searchUrl = 'https://www.googleapis.com/youtube/v3/search';
+
+    Logger().d('artisit => ${artistName.join(' ')}');
+
+    final Map<String, dynamic> queryParameters = {
+      'part': 'snippet',
+      'q': '$songName${artistName.join(' ')}',
+      'key': YoutubeApi,
+      'type': 'video',
+      'maxResults': '1'
+    };
+
+    if (songName != null) {
+      final dioResponse =
+          await controller.getController(null, searchUrl, queryParameters);
+      if (dioResponse!.isNotEmpty) {
+        return dioResponse;
+      }
+    }
+    return null;
+  }
+
+  Future<Map<String, dynamic>?>? fetchRecommendedSongs(
+      List<String> artistId, String accessToken) async {
+    const recomendedUrl = 'https://api.spotify.com/v1/recommendations';
+
+    Logger().d('idsss => ${artistId.join(',')}');
+    final Map<String, dynamic> queryParameters = {
+      'seed_artists': artistId.join(','),
+      'album_type': 'SINGLE',
+      'limit': 5
+    };
+    if (accessToken != null) {
+      final dioResponse = await controller.getController(
+          Options(headers: {'authorization': 'Bearer $accessToken'}),
+          recomendedUrl,
+          queryParameters);
+      Logger().d('recomended => $dioResponse');
+
+      if (dioResponse!.isNotEmpty) {
+        return dioResponse;
+      }
+    }
+
     return null;
   }
 }

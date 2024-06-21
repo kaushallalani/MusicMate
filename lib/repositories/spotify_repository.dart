@@ -1,5 +1,6 @@
 import 'package:musicmate/models/spotify/albums_data.dart';
 import 'package:musicmate/models/spotify/browseCategories.dart';
+import 'package:musicmate/models/spotify/recommended_songs.dart';
 
 abstract class SpotifyRepository {
 
@@ -8,4 +9,6 @@ abstract class SpotifyRepository {
   Future<Categories?>? getBrowseCategories();
   Future<Albums?>? getLatestReleases();
   Future<Albums?>? getMoreRelease(String nextUrl);
+  Future<String?> getVideoId(String songName, List<String> artistName);
+  Future<RecommendedSongs?>? getRecommendedSongs(List<String> artistsId);
 }

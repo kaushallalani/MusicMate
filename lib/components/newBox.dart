@@ -1,13 +1,18 @@
-
 import 'package:flutter/material.dart';
+import 'package:musicmate/constants/theme.dart';
 import 'package:musicmate/themes/theme_provider.dart';
 import 'package:provider/provider.dart';
 
 class NewBox extends StatelessWidget {
   final Widget? child;
+  final EdgeInsetsGeometry? boxPadding;
+  final EdgeInsetsGeometry? boxMargin;
+
   const NewBox({
     super.key,
     required this.child,
+    this.boxPadding,
+    this.boxMargin,
   });
 
   @override
@@ -30,7 +35,8 @@ class NewBox extends StatelessWidget {
               offset: const Offset(-4, -4),
             ),
           ]),
-      padding: const EdgeInsets.all(12),
+      padding: boxPadding ?? EdgeInsets.all(Metrics.width(context) * 0.04),
+      margin: boxMargin,
       child: child,
     );
   }

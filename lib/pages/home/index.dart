@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -37,11 +38,11 @@ class _HomePageState extends State<HomePage> {
   void initState() {
     super.initState();
     print('in homee');
-    playlistProvider = Provider.of<Playlistprovider>(context, listen: false);
+    // playlistProvider = Provider.of<Playlistprovider>(context, listen: false);
     _userDetails = UserModel();
     context.read<DashboardBloc>().add(GetUserDetails());
 
-    Timer(const Duration(seconds: 2), () {
+    Timer(const Duration(seconds: 1), () {
       context.read<DashboardBloc>().add(GetToken());
     });
     // getUserDetail();
@@ -54,12 +55,16 @@ class _HomePageState extends State<HomePage> {
   }
 
 // go to a song
-  void goToSong(int songIndex, BuildContext context) {
-// update current song index
-    playlistProvider.currentSongIndex = songIndex;
+  void goToSong(
+      String songName, List<String> artistList, AlbumItem currentItem) {
+    BlocProvider.of<DashboardBloc>(context)
+        .add(OnPlaySong(songName: songName, artistName: artistList));
 
-// navigate to song page
-    context.push(NAVIGATION.songsPage);
+    context.pushNamed(NAVIGATION.playback, queryParameters: {
+      'currentSong': jsonEncode(currentItem.toJson())
+    }).then((onValue) {
+      reinitializeState();
+    });
   }
 
   void onListenTogether() {
@@ -191,84 +196,103 @@ class _HomePageState extends State<HomePage> {
                                       itemBuilder: (context, index) {
                                         final AlbumItem albumItem =
                                             albumsData!.items[index];
-                                        return InkWell(
-                                          onTap: () {},
-                                          child: Row(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.start,
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.center,
-                                            children: [
-                                              Container(
-                                                decoration: BoxDecoration(
-                                                  border: Border.all(),
-                                                ),
-                                                width: Metrics.width(context) *
-                                                    0.15,
-                                                height: Metrics.width(context) *
-                                                    0.15,
-                                                child: Image.network(
-                                                  albumItem.images![1].url,
-                                                  height:
-                                                      Metrics.width(context) *
-                                                          0.15,
+
+                                        final artistList = albumItem.artists
+                                            .map((artist) => artist.name)
+                                            .toList();
+
+                                        if (albumItem.albumType ==
+                                            AlbumTypeEnum.SINGLE) {
+                                          return InkWell(
+                                            onTap: () {
+                                              goToSong(albumItem.name,
+                                                  artistList, albumItem);
+                                            },
+                                            child: Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.start,
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.center,
+                                              children: [
+                                                Container(
+                                                  decoration: BoxDecoration(
+                                                    border: Border.all(),
+                                                  ),
                                                   width:
                                                       Metrics.width(context) *
                                                           0.15,
-                                                  fit: BoxFit.fill,
-                                                ),
-                                              ),
-                                              Expanded(
-                                                child: Container(
-                                                  margin: EdgeInsets.symmetric(
-                                                    horizontal:
+                                                  height:
+                                                      Metrics.width(context) *
+                                                          0.15,
+                                                  child: Image.network(
+                                                    albumItem.images![1].url,
+                                                    height:
                                                         Metrics.width(context) *
-                                                            0.04,
-                                                  ),
-                                                  child: Column(
-                                                    mainAxisAlignment:
-                                                        MainAxisAlignment.start,
-                                                    crossAxisAlignment:
-                                                        CrossAxisAlignment
-                                                            .start,
-                                                    children: [
-                                                      TextComponent(
-                                                        text: albumItem.name!,
-                                                        textAlign:
-                                                            TextAlign.left,
-                                                        textStyle:
-                                                            const TextStyle(
-                                                          fontWeight:
-                                                              FontWeight.w700,
-                                                          fontSize:
-                                                              FontSize.normal,
-                                                        ),
-                                                      ),
-                                                      TextComponent(
-                                                        text: albumItem
-                                                            .artists[0].name,
-                                                        textAlign:
-                                                            TextAlign.left,
-                                                        textStyle:
-                                                            const TextStyle(
-                                                          fontSize:
-                                                              FontSize.small,
-                                                          color: AppColor.grey,
-                                                        ),
-                                                      ),
-                                                    ],
+                                                            0.15,
+                                                    width:
+                                                        Metrics.width(context) *
+                                                            0.15,
+                                                    fit: BoxFit.fill,
                                                   ),
                                                 ),
-                                              ),
-                                              Expanded(
-                                                  flex: 0,
-                                                  child: IconButton(
-                                                    icon: Icon(Icons.more_vert),
-                                                    onPressed: () {},
-                                                  ))
-                                            ],
-                                          ),
-                                        );
+                                                Expanded(
+                                                  child: Container(
+                                                    margin:
+                                                        EdgeInsets.symmetric(
+                                                      horizontal: Metrics.width(
+                                                              context) *
+                                                          0.04,
+                                                    ),
+                                                    child: Column(
+                                                      mainAxisAlignment:
+                                                          MainAxisAlignment
+                                                              .start,
+                                                      crossAxisAlignment:
+                                                          CrossAxisAlignment
+                                                              .start,
+                                                      children: [
+                                                        TextComponent(
+                                                          text: albumItem.name!,
+                                                          textAlign:
+                                                              TextAlign.left,
+                                                          textStyle:
+                                                              const TextStyle(
+                                                            fontWeight:
+                                                                FontWeight.w700,
+                                                            fontSize:
+                                                                FontSize.normal,
+                                                          ),
+                                                        ),
+                                                        TextComponent(
+                                                          text: artistList
+                                                              .join(' | '),
+                                                          textAlign:
+                                                              TextAlign.left,
+                                                          textStyle:
+                                                              const TextStyle(
+                                                            fontSize:
+                                                                FontSize.msmall,
+                                                            color:
+                                                                AppColor.grey,
+                                                          ),
+                                                        ),
+                                                      ],
+                                                    ),
+                                                  ),
+                                                ),
+                                                Expanded(
+                                                    flex: 0,
+                                                    child: IconButton(
+                                                      icon:
+                                                          Icon(Icons.more_vert),
+                                                      onPressed: () {},
+                                                    ))
+                                              ],
+                                            ),
+                                          );
+                                        } else {
+                                          return Container();
+                                        }
                                       },
                                       separatorBuilder: (context, index) {
                                         return Padding(

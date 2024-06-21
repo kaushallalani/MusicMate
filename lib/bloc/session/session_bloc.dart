@@ -5,6 +5,7 @@ import 'package:musicmate/models/session.dart';
 import 'package:musicmate/models/user.dart';
 import 'package:musicmate/repositories/auth_repository.dart';
 import 'package:musicmate/repositories/dashboard_repository.dart';
+import 'package:musicmate/repositories/spotify_repository.dart';
 import 'package:musicmate/repositories/user_repository.dart';
 
 part 'session_event.dart';
@@ -14,8 +15,10 @@ class SessionBloc extends Bloc<SessionEvent, SessionState> {
   final UserRepository userRepository;
   final DashboardRepository dashboardRepository;
   final FirebaseRepository firebaseRepository;
+  final SpotifyRepository spotifyRepository;
 
-  SessionBloc(this.userRepository, this.dashboardRepository, this.firebaseRepository)
+  SessionBloc(this.userRepository, this.dashboardRepository,
+      this.firebaseRepository, this.spotifyRepository)
       : super(SessionInitial()) {
     on<SessionEvent>((event, emit) {});
 
@@ -23,9 +26,10 @@ class SessionBloc extends Bloc<SessionEvent, SessionState> {
       emit(SessionLoading(isLoading: true));
       try {
         final SessionModel? sessionData = userRepository.sessionDataModel;
-        
+
         if (sessionData != null) {
-          emit(SessionSuccessState(sessionData: sessionData, sessionUsers: const []));
+          emit(SessionSuccessState(
+              sessionData: sessionData, sessionUsers: const []));
         } else {
           emit(SessionErrorState(errorMessage: 'Error Loading session'));
         }
@@ -55,6 +59,6 @@ class SessionBloc extends Bloc<SessionEvent, SessionState> {
       }
     });
 
-   
+ 
   }
 }
