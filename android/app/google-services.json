@@ -15,16 +15,20 @@
       },
       "oauth_client": [
         {
-          "client_id": "488111375762-m3nv0n44hs8p3eabrqq440hpmurl7491.apps.googleusercontent.com",
+          "client_id": "488111375762-bqve2hbumf6837o9k15biif1l32qnkec.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.musicmate",
+            "certificate_hash": "694d35e226be132963110f0497161eef43dd0ab8"
+          }
+        },
+        {
+          "client_id": "488111375762-hatp2jjspr1ei05utn0tn8auqa85huus.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
             "package_name": "com.musicmate",
             "certificate_hash": "e5e57944521b89a8b5d32541ba3de450d6366be9"
           }
-        },
-        {
-          "client_id": "488111375762-jim9c3e4r5mfljikej62u6m6jl48mbov.apps.googleusercontent.com",
-          "client_type": 3
         }
       ],
       "api_key": [
@@ -34,19 +38,7 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": [
-            {
-              "client_id": "488111375762-jim9c3e4r5mfljikej62u6m6jl48mbov.apps.googleusercontent.com",
-              "client_type": 3
-            },
-            {
-              "client_id": "488111375762-6lqcuh58kg69q0f8711t9f5bvo71k32v.apps.googleusercontent.com",
-              "client_type": 2,
-              "ios_info": {
-                "bundle_id": "com.musicmate"
-              }
-            }
-          ]
+          "other_platform_oauth_client": []
         }
       }
     }

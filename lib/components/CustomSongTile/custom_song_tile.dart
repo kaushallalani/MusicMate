@@ -23,7 +23,7 @@ class CustomSongTile extends StatelessWidget {
             ),
             width: Metrics.width(context) * 0.15,
             height: Metrics.width(context) * 0.15,
-            child: Image.asset(
+            child: Image.network(
               songs.albumArtImagePath,
               height: Metrics.width(context) * 0.15,
               width: Metrics.width(context) * 0.15,

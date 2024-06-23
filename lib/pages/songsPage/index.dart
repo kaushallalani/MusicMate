@@ -6,25 +6,49 @@ import 'package:provider/provider.dart';
 class SongsPage extends StatelessWidget {
   const SongsPage({super.key});
 
-//convert dru in to min:sec
-
   String formatTime(Duration duration) {
-    String twoDigitSeconds =
-        duration.inSeconds.remainder(60).toString().padLeft(2, '0');
-    String formattedTime = "${duration.inMinutes}:$twoDigitSeconds";
-
-    return formattedTime;
+    String twoDigitSeconds = duration.inSeconds.remainder(60).toString().padLeft(2, '0');
+    return "${duration.inMinutes}:$twoDigitSeconds";
   }
 
   @override
   Widget build(BuildContext context) {
     return Consumer<Playlistprovider>(builder: (context, value, child) {
-      //get playlist
-
       final playlist = value.playlist;
-      // get current song
-      final currentSong = playlist[value.currentSongIndex ?? 0];
-      //return scaffold UI
+      final currentSongIndex = value.currentSongIndex ?? 0;
+
+      if (playlist.isEmpty) {
+        return Scaffold(
+          backgroundColor: Theme.of(context).colorScheme.surface,
+          body: Center(
+            child: Text(
+              'No songs available',
+              style: TextStyle(
+                fontSize: 18,
+                color: Theme.of(context).colorScheme.onSurface,
+              ),
+            ),
+          ),
+        );
+      }
+
+      if (currentSongIndex >= playlist.length) {
+        return Scaffold(
+          backgroundColor: Theme.of(context).colorScheme.surface,
+          body: Center(
+            child: Text(
+              'No song selected',
+              style: TextStyle(
+                fontSize: 18,
+                color: Theme.of(context).colorScheme.onSurface,
+              ),
+            ),
+          ),
+        );
+      }
+
+      final currentSong = playlist[currentSongIndex];
+
       return Scaffold(
         backgroundColor: Theme.of(context).colorScheme.surface,
         body: SafeArea(
@@ -49,116 +73,95 @@ class SongsPage extends StatelessWidget {
                 ),
                 const SizedBox(height: 25),
                 NewBox(
-                  child: Column(
+                  child: Container(
+                    clipBehavior: Clip.hardEdge,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Image.network(
+                      currentSong.albumArtImagePath,
+                      fit: BoxFit.fill,
+                      errorBuilder: (context, error, stackTrace) => Icon(Icons.error),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 25),
+                Text(
+                  currentSong.songName,
+                  style: TextStyle(
+                    fontSize: 24,
+                    color: Theme.of(context).colorScheme.primary,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  currentSong.artistName,
+                  style: TextStyle(
+                    fontSize: 20,
+                    color: Theme.of(context).colorScheme.secondary,
+                  ),
+                ),
+                const SizedBox(height: 25),
+                NewBox(
+                  child: Slider(
+                    activeColor: Colors.green,
+                    inactiveColor: Colors.grey,
+                    value: value.currentDuration.inSeconds.toDouble(),
+                    max: value.totalDuration.inSeconds.toDouble() + 1.0,
+                    onChanged: (newValue) {
+                      value.seek(Duration(seconds: newValue.toInt()));
+                    },
+                  ),
+                ),
+                const SizedBox(height: 15),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 25.0),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      ClipRRect(
-                        borderRadius: BorderRadius.circular(8),
-                        child: Image.asset(currentSong.albumArtImagePath),
+                      Text(
+                        formatTime(value.currentDuration),
+                        style: const TextStyle(fontWeight: FontWeight.bold),
                       ),
-                      Padding(
-                        padding: const EdgeInsets.all(15.0),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  currentSong.songName,
-                                  style: const TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 20,
-                                  ),
-                                ),
-                                Text(currentSong.artistName)
-                              ],
-                            ),
-                            const Icon(
-                              Icons.favorite,
-                              color: Colors.red,
-                            )
-                          ],
-                        ),
-                      )
+                      Text(
+                        formatTime(value.totalDuration),
+                        style: const TextStyle(fontWeight: FontWeight.bold),
+                      ),
                     ],
                   ),
                 ),
                 const SizedBox(height: 25),
-                Column(
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 25.0),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          //start
-                          Text(formatTime(value.currentDuration)),
-                          //shuffle
-                          const Icon(Icons.shuffle),
-                          //repert
-                          const Icon(Icons.repeat),
-                          //end
-                          Text(formatTime(value.totalDuration)),
-                        ],
+                    IconButton(
+                      onPressed: value.currentSongIndex! > 0
+                          ? () {
+                              value.playPreviousSong();
+                            }
+                          : null,
+                      icon: const Icon(Icons.skip_previous, size: 40),
+                    ),
+                    IconButton(
+                      onPressed: () {
+                        value.pauseOrResume();
+                      },
+                      icon: Icon(
+                        value.isPlaying ? Icons.pause : Icons.play_arrow,
+                        size: 40,
                       ),
                     ),
-                    SliderTheme(
-                      data: SliderTheme.of(context).copyWith(
-                        thumbShape:
-                            const RoundSliderThumbShape(enabledThumbRadius: 0),
-                      ),
-                      child: Slider(
-                        min: 0,
-                        max: value.totalDuration.inSeconds.toDouble(),
-                        value: value.currentDuration.inSeconds.toDouble(),
-                        activeColor: Colors.green,
-                        onChanged: (value) {
-                          // during when the user is liding around
-                        },
-                        onChangeEnd: (double double) {
-                          // slading has finished go to that position in the song
-                          value.seek(Duration(seconds: double.toInt()));
-                        },
-                      ),
-                    )
+                    IconButton(
+                      onPressed: value.currentSongIndex! < playlist.length - 1
+                          ? () {
+                              value.playNextSong();
+                            }
+                          : null,
+                      icon: const Icon(Icons.skip_next, size: 40),
+                    ),
                   ],
                 ),
-                const SizedBox(height: 25),
-                Row(
-                  children: [
-                    //skip
-                    Expanded(
-                      child: GestureDetector(
-                        onTap: value.playPreviousSong,
-                        child: const NewBox(
-                          child: Icon(Icons.skip_previous),
-                        ),
-                      ),
-                    ),
-                    const SizedBox(width: 20),
-                    //play
-                    Expanded(
-                      flex: 2,
-                      child: GestureDetector(
-                        onTap: value.pauseOrResume,
-                        child: NewBox(
-                          child: Icon(
-                              value.isPlaying ? Icons.pause : Icons.play_arrow),
-                        ),
-                      ),
-                    ),
-                    const SizedBox(width: 20),
-                    //skip
-                    Expanded(
-                      child: GestureDetector(
-                        onTap: value.playNextSong,
-                        child: const NewBox(
-                          child: Icon(Icons.skip_next),
-                        ),
-                      ),
-                    ),
-                  ],
-                )
               ],
             ),
           ),
@@ -167,3 +170,4 @@ class SongsPage extends StatelessWidget {
     });
   }
 }
+
