@@ -142,10 +142,10 @@ class _LoginScreenState extends State<LoginScreen> {
                               child: Container(
                                 alignment: Alignment.center,
                                 child: RichText(
-                                  text: TextSpan(
+                                  text: const TextSpan(
                                       text: 'If you need any support ',
-                                      style: DefaultTextStyle.of(context).style,
-                                      children: const [
+                                      style: TextStyle(color: Colors.black),
+                                      children: [
                                         TextSpan(
                                             text: 'Click Here',
                                             style: TextStyle(
