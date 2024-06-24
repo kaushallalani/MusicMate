@@ -67,12 +67,13 @@ class _SignupScreenState extends State<SignupScreen> {
       builder: (context, state) {
         return Scaffold(
           appBar: AppBar(
-              toolbarHeight: 0,
-              systemOverlayStyle: const SystemUiOverlayStyle(statusBarColor: Colors.white),
+            toolbarHeight: 0,
+            systemOverlayStyle: const SystemUiOverlayStyle(
+                statusBarColor: Colors.white,
+                statusBarIconBrightness: Brightness.dark),
           ),
-          body: Stack(
-            children: [
-              SingleChildScrollView(
+          body: Stack(children: [
+            SingleChildScrollView(
               child: Container(
                 height: Metrics.height(context) * 1,
                 color: Colors.white,
@@ -85,7 +86,8 @@ class _SignupScreenState extends State<SignupScreen> {
                           IconButton(
                             style: ButtonStyle(
                                 backgroundColor: WidgetStateProperty.all(
-                                    const Color.fromRGBO(221, 220, 220, 0.432))),
+                                    const Color.fromRGBO(
+                                        221, 220, 220, 0.432))),
                             icon: Image.asset(
                               'assets/images/back_arrow.png',
                               width: Metrics.width(context) * 0.035,
@@ -105,7 +107,9 @@ class _SignupScreenState extends State<SignupScreen> {
                               ),
                             ),
                           ),
-                          SizedBox(width: Metrics.width(context) * 0.1,)
+                          SizedBox(
+                            width: Metrics.width(context) * 0.1,
+                          )
                         ],
                       ),
                     ),
@@ -136,8 +140,8 @@ class _SignupScreenState extends State<SignupScreen> {
                                           TextSpan(
                                               text: 'Click Here',
                                               style: TextStyle(
-                                                  color:
-                                                      Color.fromRGBO(172, 38, 27, 1)))
+                                                  color: Color.fromRGBO(
+                                                      172, 38, 27, 1)))
                                         ]),
                                   ),
                                 ),
@@ -238,13 +242,16 @@ class _SignupScreenState extends State<SignupScreen> {
                                             borderRadius: BorderRadius.all(
                                                 Radius.circular(20.0)),
                                           ),
-                                          enabledBorder: const OutlineInputBorder(
-                                              borderRadius: BorderRadius.all(
-                                                  Radius.circular(20.0)),
-                                              borderSide: BorderSide(
-                                                  color: Color.fromARGB(
-                                                      255, 117, 117, 117),
-                                                  width: 0.5)),
+                                          enabledBorder:
+                                              const OutlineInputBorder(
+                                                  borderRadius:
+                                                      BorderRadius.all(
+                                                          Radius.circular(
+                                                              20.0)),
+                                                  borderSide: BorderSide(
+                                                      color: Color.fromARGB(
+                                                          255, 117, 117, 117),
+                                                      width: 0.5)),
                                           suffixIcon: IconButton(
                                             icon: Icon(
                                               passwordVisible
@@ -253,7 +260,8 @@ class _SignupScreenState extends State<SignupScreen> {
                                             ),
                                             onPressed: () {
                                               setState(() {
-                                                passwordVisible = !passwordVisible;
+                                                passwordVisible =
+                                                    !passwordVisible;
                                               });
                                             },
                                           ),
@@ -308,13 +316,15 @@ class _SignupScreenState extends State<SignupScreen> {
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
                                   SizedBox(
-                                    width: MediaQuery.of(context).size.width * 0.35,
+                                    width: MediaQuery.of(context).size.width *
+                                        0.35,
                                     child: const Divider(
                                       color: Color.fromARGB(255, 202, 202, 202),
                                     ),
                                   ),
                                   SizedBox(
-                                    width: MediaQuery.of(context).size.width * 0.1,
+                                    width:
+                                        MediaQuery.of(context).size.width * 0.1,
                                     child: const Center(
                                         child: Text(
                                       "Or",
@@ -322,7 +332,8 @@ class _SignupScreenState extends State<SignupScreen> {
                                     )),
                                   ),
                                   SizedBox(
-                                    width: MediaQuery.of(context).size.width * 0.35,
+                                    width: MediaQuery.of(context).size.width *
+                                        0.35,
                                     child: const Divider(
                                       color: Color.fromARGB(255, 202, 202, 202),
                                     ),
@@ -331,14 +342,16 @@ class _SignupScreenState extends State<SignupScreen> {
                               ),
                               Center(
                                 child: MaterialButton(
-                                  minWidth: MediaQuery.of(context).size.width * 0.07,
+                                  minWidth:
+                                      MediaQuery.of(context).size.width * 0.07,
                                   padding: const EdgeInsets.only(
                                       top: Metrics.doubleBaseMargin),
                                   onPressed: signupWithGoogle,
                                   child: Image.asset(
                                     'assets/images/google.png',
                                     fit: BoxFit.contain,
-                                    width: MediaQuery.of(context).size.width * 0.09,
+                                    width: MediaQuery.of(context).size.width *
+                                        0.09,
                                   ),
                                 ),
                               ),
@@ -349,18 +362,21 @@ class _SignupScreenState extends State<SignupScreen> {
                                     child: RichText(
                                       text: TextSpan(
                                           text: 'Already havce an account? ',
-                                          style: const TextStyle(color: Colors.black),
+                                          style: const TextStyle(
+                                              color: Colors.black),
                                           children: [
                                             TextSpan(
                                                 text: 'Sign In',
-                                                recognizer: TapGestureRecognizer()
-                                                  ..onTap = () {
-                                                    context.pop(context);
-                                                  },
+                                                recognizer:
+                                                    TapGestureRecognizer()
+                                                      ..onTap = () {
+                                                        context.pop(context);
+                                                      },
                                                 style: const TextStyle(
                                                     color: Color.fromRGBO(
                                                         172, 38, 27, 1),
-                                                    fontWeight: FontWeight.bold))
+                                                    fontWeight:
+                                                        FontWeight.bold))
                                           ]),
                                     )),
                               )
@@ -374,14 +390,13 @@ class _SignupScreenState extends State<SignupScreen> {
               ),
             ),
             if (isLoading)
-            Container(
-              color: Colors.black.withOpacity(0.5),
-              child: const Center(
-                child: CircularProgressIndicator(),
+              Container(
+                color: Colors.black.withOpacity(0.5),
+                child: const Center(
+                  child: CircularProgressIndicator(),
+                ),
               ),
-            ),
-            ]
-          ),
+          ]),
         );
       },
     );

@@ -87,288 +87,318 @@ class _LoginScreenState extends State<LoginScreen> {
     // });
   }
 
-@override
-Widget build(BuildContext context) {
-  return BlocConsumer<AuthenticationBloc, AuthenticationState>(
-    listener: (context, state) {
-      if (state is AuthenticationSuccessState) {
-        context.push(NAVIGATION.dashboard);
-      } else if (state is AuthenticationLoadingState) {
-        setState(() {
-          isLoading = state.isLoading;
-        });
-      } else if (state is AuthenticationFailureState) {
-        showSnackBar(context, state.errorMessage);
-      }
-    },
-    builder: (context, state) {
-      print(isLoading);
-      return Scaffold(
-        appBar: AppBar(
-          toolbarHeight: 0,
-          systemOverlayStyle: const SystemUiOverlayStyle(
-            statusBarColor: Colors.white,
-          ),
-        ),
-        body: Stack(
-          children: [
-            SingleChildScrollView(
-              child: Container(
-                color: Colors.white,
-                height: Metrics.height(context) * 1,
-                child: Column(
-                  children: [
-                    SizedBox(
-                      height: Metrics.height(context) * 0.1,
-                      child: Image.asset(
-                        'assets/images/icon.png',
-                        fit: BoxFit.contain,
-                        width: MediaQuery.of(context).size.width * 0.25,
+  @override
+  Widget build(BuildContext context) {
+    return BlocConsumer<AuthenticationBloc, AuthenticationState>(
+      listener: (context, state) {
+        if (state is AuthenticationSuccessState) {
+          context.push(NAVIGATION.dashboard);
+        } else if (state is AuthenticationLoadingState) {
+          setState(() {
+            isLoading = state.isLoading;
+          });
+        } else if (state is AuthenticationFailureState) {
+          showSnackBar(context, state.errorMessage);
+        }
+      },
+      builder: (context, state) {
+        print(isLoading);
+        return Scaffold(
+          appBar: AppBar(
+              toolbarHeight: 0,
+              systemOverlayStyle: const SystemUiOverlayStyle(
+                  statusBarColor: Colors.white,
+                  statusBarIconBrightness: Brightness.dark)),
+          body: Stack(
+            children: [
+              SingleChildScrollView(
+                child: Container(
+                  color: Colors.white,
+                  height: Metrics.height(context) * 1,
+                  child: Column(
+                    children: [
+                      SizedBox(
+                        height: Metrics.height(context) * 0.1,
+                        child: Image.asset(
+                          'assets/images/icon.png',
+                          fit: BoxFit.contain,
+                          width: MediaQuery.of(context).size.width * 0.25,
+                        ),
                       ),
-                    ),
-                    SizedBox(
-                      height: Metrics.height(context) * 0.05,
-                    ),
-                    Center(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          const Text(
-                            'Sign In',
-                            style: TextStyle(
-                              fontSize: FontSize.xlarge,
-                              fontWeight: FontWeight.bold,
+                      SizedBox(
+                        height: Metrics.height(context) * 0.05,
+                      ),
+                      Center(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            const Text(
+                              'Sign In',
+                              style: TextStyle(
+                                fontSize: FontSize.xlarge,
+                                fontWeight: FontWeight.bold,
+                              ),
                             ),
-                          ),
-                          SizedBox(
-                            height: Metrics.height(context) * 0.08,
-                            child: Container(
-                              alignment: Alignment.center,
-                              child: RichText(
-                                text: const TextSpan(
-                                  text: 'If you need any support ',
-                                  style: TextStyle(color: Colors.black),
-                                  children: [
-                                    TextSpan(
-                                      text: 'Click Here',
-                                      style: TextStyle(
-                                        color: Color.fromRGBO(172, 38, 27, 1),
+                            SizedBox(
+                              height: Metrics.height(context) * 0.08,
+                              child: Container(
+                                alignment: Alignment.center,
+                                child: RichText(
+                                  text: const TextSpan(
+                                    text: 'If you need any support ',
+                                    style: TextStyle(color: Colors.black),
+                                    children: [
+                                      TextSpan(
+                                        text: 'Click Here',
+                                        style: TextStyle(
+                                          color: Color.fromRGBO(172, 38, 27, 1),
+                                        ),
                                       ),
-                                    ),
-                                  ],
+                                    ],
+                                  ),
                                 ),
                               ),
                             ),
-                          ),
-                          const SizedBox(
-                            height: 20.0,
-                          ),
-                          Form(
-                            key: _formKey,
-                            child: Column(
-                              children: [
-                                SizedBox(
-                                  width: Metrics.width(context) * 0.85,
-                                  child: TextFormField(
-                                    controller: _emailController,
-                                    onTapOutside: (event) {
-                                      FocusScope.of(context).unfocus();
-                                    },
-                                    decoration: const InputDecoration(
-                                      contentPadding: EdgeInsets.only(
-                                          top: 20, bottom: 20, left: 15),
-                                      border: OutlineInputBorder(
-                                        borderRadius:
-                                            BorderRadius.all(Radius.circular(20.0)),
-                                      ),
-                                      enabledBorder: OutlineInputBorder(
-                                        borderRadius:
-                                            BorderRadius.all(Radius.circular(20.0)),
-                                        borderSide: BorderSide(
-                                          color: Color.fromARGB(255, 117, 117, 117),
-                                          width: 0.5,
+                            const SizedBox(
+                              height: 20.0,
+                            ),
+                            Form(
+                              key: _formKey,
+                              child: Column(
+                                children: [
+                                  SizedBox(
+                                    width: Metrics.width(context) * 0.85,
+                                    child: TextFormField(
+                                      controller: _emailController,
+                                      onTapOutside: (event) {
+                                        FocusScope.of(context).unfocus();
+                                      },
+                                      decoration: const InputDecoration(
+                                        contentPadding: EdgeInsets.only(
+                                            top: 20, bottom: 20, left: 15),
+                                        border: OutlineInputBorder(
+                                          borderRadius: BorderRadius.all(
+                                              Radius.circular(20.0)),
                                         ),
-                                      ),
-                                      hintText: 'Email',
-                                    ),
-                                    validator: (value) {
-                                      if (value == null || value.isEmpty) {
-                                        return "Email is required";
-                                      } else if (!Regex.emailRegex.hasMatch(value)) {
-                                        return "Email has invalid format";
-                                      }
-                                      return null;
-                                    },
-                                  ),
-                                ),
-                                const SizedBox(
-                                  height: 30.0,
-                                ),
-                                SizedBox(
-                                  width: Metrics.width(context) * 0.85,
-                                  child: TextFormField(
-                                    controller: _passwordController,
-                                    obscureText: !passwordVisible,
-                                    onTapOutside: (event) {
-                                      FocusScope.of(context).unfocus();
-                                    },
-                                    decoration: InputDecoration(
-                                      contentPadding: const EdgeInsets.only(
-                                          top: 20, bottom: 20, left: 15),
-                                      border: const OutlineInputBorder(
-                                        borderRadius:
-                                            BorderRadius.all(Radius.circular(20.0)),
-                                      ),
-                                      enabledBorder: const OutlineInputBorder(
-                                        borderRadius:
-                                            BorderRadius.all(Radius.circular(20.0)),
-                                        borderSide: BorderSide(
-                                          color: Color.fromARGB(255, 117, 117, 117),
-                                          width: 0.5,
-                                        ),
-                                      ),
-                                      suffixIcon: IconButton(
-                                        icon: Icon(
-                                          passwordVisible
-                                              ? Icons.visibility_outlined
-                                              : Icons.visibility_off_outlined,
-                                        ),
-                                        onPressed: () {
-                                          setState(() {
-                                            passwordVisible = !passwordVisible;
-                                          });
-                                        },
-                                      ),
-                                      hintText: 'Password',
-                                    ),
-                                    validator: (value) {
-                                      if (value == null || value.isEmpty) {
-                                        return "Password is required";
-                                      } else if (!Regex.passwordRegex.hasMatch(value)) {
-                                        return "Password is invalid";
-                                      }
-                                      return null;
-                                    },
-                                  ),
-                                ),
-                                const SizedBox(
-                                  height: 50.0,
-                                ),
-                                SizedBox(
-                                  width: Metrics.width(context) * 0.85,
-                                  height: Metrics.width(context) * 0.15,
-                                  child: ElevatedButton(
-                                    style: ButtonStyle(
-                                      backgroundColor:
-                                          WidgetStateProperty.all(const Color.fromRGBO(172, 38, 27, 1)),
-                                      shape: WidgetStateProperty.all<RoundedRectangleBorder>(
-                                        const RoundedRectangleBorder(
-                                          borderRadius: BorderRadius.all(Radius.circular(20)),
-                                          side: BorderSide(
-                                            color: Color.fromRGBO(172, 38, 27, 1),
+                                        enabledBorder: OutlineInputBorder(
+                                          borderRadius: BorderRadius.all(
+                                              Radius.circular(20.0)),
+                                          borderSide: BorderSide(
+                                            color: Color.fromARGB(
+                                                255, 117, 117, 117),
+                                            width: 0.5,
                                           ),
                                         ),
+                                        hintText: 'Email',
                                       ),
-                                    ),
-                                    onPressed: loginUser,
-                                    child: const Text(
-                                      'Login',
-                                      style: TextStyle(
-                                        color: Colors.white,
-                                        fontSize: FontSize.medium,
-                                      ),
+                                      validator: (value) {
+                                        if (value == null || value.isEmpty) {
+                                          return "Email is required";
+                                        } else if (!Regex.emailRegex
+                                            .hasMatch(value)) {
+                                          return "Email has invalid format";
+                                        }
+                                        return null;
+                                      },
                                     ),
                                   ),
-                                ),
-                                const SizedBox(
-                                  height: 40.0,
-                                ),
-                                Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    SizedBox(
-                                      width: MediaQuery.of(context).size.width * 0.35,
-                                      child: const Divider(
-                                        color: Color.fromARGB(255, 202, 202, 202),
-                                      ),
-                                    ),
-                                    SizedBox(
-                                      width: MediaQuery.of(context).size.width * 0.1,
-                                      child: const Center(
-                                        child: Text(
-                                          "Or",
-                                          style: TextStyle(color: Colors.grey),
+                                  const SizedBox(
+                                    height: 30.0,
+                                  ),
+                                  SizedBox(
+                                    width: Metrics.width(context) * 0.85,
+                                    child: TextFormField(
+                                      controller: _passwordController,
+                                      obscureText: !passwordVisible,
+                                      onTapOutside: (event) {
+                                        FocusScope.of(context).unfocus();
+                                      },
+                                      decoration: InputDecoration(
+                                        contentPadding: const EdgeInsets.only(
+                                            top: 20, bottom: 20, left: 15),
+                                        border: const OutlineInputBorder(
+                                          borderRadius: BorderRadius.all(
+                                              Radius.circular(20.0)),
                                         ),
+                                        enabledBorder: const OutlineInputBorder(
+                                          borderRadius: BorderRadius.all(
+                                              Radius.circular(20.0)),
+                                          borderSide: BorderSide(
+                                            color: Color.fromARGB(
+                                                255, 117, 117, 117),
+                                            width: 0.5,
+                                          ),
+                                        ),
+                                        suffixIcon: IconButton(
+                                          icon: Icon(
+                                            passwordVisible
+                                                ? Icons.visibility_outlined
+                                                : Icons.visibility_off_outlined,
+                                          ),
+                                          onPressed: () {
+                                            setState(() {
+                                              passwordVisible =
+                                                  !passwordVisible;
+                                            });
+                                          },
+                                        ),
+                                        hintText: 'Password',
                                       ),
-                                    ),
-                                    SizedBox(
-                                      width: MediaQuery.of(context).size.width * 0.35,
-                                      child: const Divider(
-                                        color: Color.fromARGB(255, 202, 202, 202),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                                Center(
-                                  child: MaterialButton(
-                                    minWidth: MediaQuery.of(context).size.width * 0.07,
-                                    padding: const EdgeInsets.only(top: Metrics.doubleBaseMargin),
-                                    onPressed: signInWithGoogle,
-                                    child: Image.asset(
-                                      'assets/images/google.png',
-                                      fit: BoxFit.contain,
-                                      width: MediaQuery.of(context).size.width * 0.09,
+                                      validator: (value) {
+                                        if (value == null || value.isEmpty) {
+                                          return "Password is required";
+                                        } else if (!Regex.passwordRegex
+                                            .hasMatch(value)) {
+                                          return "Password is invalid";
+                                        }
+                                        return null;
+                                      },
                                     ),
                                   ),
-                                ),
-                                SizedBox(
-                                  height: Metrics.width(context) * 0.2,
-                                  child: Container(
-                                    alignment: Alignment.center,
-                                    child: RichText(
-                                      text: TextSpan(
-                                        text: 'Not a Member ? ',
-                                        style: const TextStyle(color: Colors.black),
-                                        children: [
-                                          TextSpan(
-                                            text: 'Register Now',
-                                            recognizer: TapGestureRecognizer()
-                                              ..onTap = () {
-                                                context.push(NAVIGATION.signup);
-                                              },
-                                            style: const TextStyle(
-                                              color: Color.fromRGBO(172, 38, 27, 1),
-                                              fontWeight: FontWeight.bold,
+                                  const SizedBox(
+                                    height: 50.0,
+                                  ),
+                                  SizedBox(
+                                    width: Metrics.width(context) * 0.85,
+                                    height: Metrics.width(context) * 0.15,
+                                    child: ElevatedButton(
+                                      style: ButtonStyle(
+                                        backgroundColor:
+                                            WidgetStateProperty.all(
+                                                const Color.fromRGBO(
+                                                    172, 38, 27, 1)),
+                                        shape: WidgetStateProperty.all<
+                                            RoundedRectangleBorder>(
+                                          const RoundedRectangleBorder(
+                                            borderRadius: BorderRadius.all(
+                                                Radius.circular(20)),
+                                            side: BorderSide(
+                                              color: Color.fromRGBO(
+                                                  172, 38, 27, 1),
                                             ),
                                           ),
-                                        ],
+                                        ),
+                                      ),
+                                      onPressed: loginUser,
+                                      child: const Text(
+                                        'Login',
+                                        style: TextStyle(
+                                          color: Colors.white,
+                                          fontSize: FontSize.medium,
+                                        ),
                                       ),
                                     ),
                                   ),
-                                ),
-                              ],
+                                  const SizedBox(
+                                    height: 40.0,
+                                  ),
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      SizedBox(
+                                        width:
+                                            MediaQuery.of(context).size.width *
+                                                0.35,
+                                        child: const Divider(
+                                          color: Color.fromARGB(
+                                              255, 202, 202, 202),
+                                        ),
+                                      ),
+                                      SizedBox(
+                                        width:
+                                            MediaQuery.of(context).size.width *
+                                                0.1,
+                                        child: const Center(
+                                          child: Text(
+                                            "Or",
+                                            style:
+                                                TextStyle(color: Colors.grey),
+                                          ),
+                                        ),
+                                      ),
+                                      SizedBox(
+                                        width:
+                                            MediaQuery.of(context).size.width *
+                                                0.35,
+                                        child: const Divider(
+                                          color: Color.fromARGB(
+                                              255, 202, 202, 202),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  Center(
+                                    child: MaterialButton(
+                                      minWidth:
+                                          MediaQuery.of(context).size.width *
+                                              0.07,
+                                      padding: const EdgeInsets.only(
+                                          top: Metrics.doubleBaseMargin),
+                                      onPressed: signInWithGoogle,
+                                      child: Image.asset(
+                                        'assets/images/google.png',
+                                        fit: BoxFit.contain,
+                                        width:
+                                            MediaQuery.of(context).size.width *
+                                                0.09,
+                                      ),
+                                    ),
+                                  ),
+                                  SizedBox(
+                                    height: Metrics.width(context) * 0.2,
+                                    child: Container(
+                                      alignment: Alignment.center,
+                                      child: RichText(
+                                        text: TextSpan(
+                                          text: 'Not a Member ? ',
+                                          style: const TextStyle(
+                                              color: Colors.black),
+                                          children: [
+                                            TextSpan(
+                                              text: 'Register Now',
+                                              recognizer: TapGestureRecognizer()
+                                                ..onTap = () {
+                                                  context
+                                                      .push(NAVIGATION.signup);
+                                                },
+                                              style: const TextStyle(
+                                                color: Color.fromRGBO(
+                                                    172, 38, 27, 1),
+                                                fontWeight: FontWeight.bold,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
                             ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
-            ),
-            if (isLoading)
-              Container(
-                color: Colors.black.withOpacity(0.5),
-                width: MediaQuery.of(context).size.width, // Full width of the screen
-                height: MediaQuery.of(context).size.height, // Full height of the screen
-                child: const Center(
-                  child: CircularProgressIndicator(),
+              if (isLoading)
+                Container(
+                  color: Colors.black.withOpacity(0.5),
+                  width: MediaQuery.of(context)
+                      .size
+                      .width, // Full width of the screen
+                  height: MediaQuery.of(context)
+                      .size
+                      .height, // Full height of the screen
+                  child: const Center(
+                    child: CircularProgressIndicator(),
+                  ),
                 ),
-              ),
-          ],
-        ),
-      );
-    },
-  );
-}
+            ],
+          ),
+        );
+      },
+    );
+  }
 }
