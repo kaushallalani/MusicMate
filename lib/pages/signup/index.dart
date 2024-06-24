@@ -68,15 +68,16 @@ class _SignupScreenState extends State<SignupScreen> {
         return Scaffold(
           appBar: AppBar(
             toolbarHeight: 0,
-            systemOverlayStyle: const SystemUiOverlayStyle(
-                statusBarColor: Colors.white,
-                statusBarIconBrightness: Brightness.dark),
+            systemOverlayStyle: SystemUiOverlayStyle(
+                statusBarColor: Theme.of(context).customColors.bg,
+                statusBarIconBrightness:
+                    Theme.of(context).customColors.iconBrightness),
           ),
           body: Stack(children: [
             SingleChildScrollView(
               child: Container(
                 height: Metrics.height(context) * 1,
-                color: Colors.white,
+                color: Theme.of(context).customColors.bg,
                 child: Column(
                   children: [
                     Padding(
@@ -122,9 +123,12 @@ class _SignupScreenState extends State<SignupScreen> {
                           child: Column(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              const Text(
+                              Text(
                                 'Register',
                                 style: TextStyle(
+                                    color: Theme.of(context)
+                                        .customColors
+                                        .bgInverse,
                                     fontSize: FontSize.xlarge,
                                     fontWeight: FontWeight.bold),
                               ),
@@ -133,10 +137,13 @@ class _SignupScreenState extends State<SignupScreen> {
                                 child: Container(
                                   alignment: Alignment.center,
                                   child: RichText(
-                                    text: const TextSpan(
-                                        text: 'If you need any support ',
-                                        style: TextStyle(color: Colors.black),
-                                        children: [
+                                    text: TextSpan(
+                                        text: 'If you need any support  ',
+                                        style: TextStyle(
+                                            color: Theme.of(context)
+                                                .customColors
+                                                .bgInverse),
+                                        children: const [
                                           TextSpan(
                                               text: 'Click Here',
                                               style: TextStyle(
@@ -362,8 +369,10 @@ class _SignupScreenState extends State<SignupScreen> {
                                     child: RichText(
                                       text: TextSpan(
                                           text: 'Already havce an account? ',
-                                          style: const TextStyle(
-                                              color: Colors.black),
+                                          style: TextStyle(
+                                              color: Theme.of(context)
+                                                  .customColors
+                                                  .bgInverse),
                                           children: [
                                             TextSpan(
                                                 text: 'Sign In',
