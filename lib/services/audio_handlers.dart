@@ -43,7 +43,7 @@ class MyAudioHandler extends BaseAudioHandler with QueueHandler, SeekHandler {
   @override
   Future<void> playMediaItem(MediaItem mediaItem) async {
     _player.setAudioSource(AudioSource.uri(Uri.parse(mediaItem.id)));
-    this.mediaItem.add(mediaItem);  // Updated to use the proper mediaItem stream
+    this.mediaItem.add(mediaItem); // Updated to use the proper mediaItem stream
     await _player.play();
   }
 
@@ -71,7 +71,8 @@ class MyAudioHandler extends BaseAudioHandler with QueueHandler, SeekHandler {
       updatePosition: _player.position,
       bufferedPosition: _player.bufferedPosition,
       speed: _player.speed,
-      queueIndex: queue.value.indexOf(mediaItem.value ?? const MediaItem(id: '', title: '')), // Handle null case
+      queueIndex: queue.value.indexOf(mediaItem.value ??
+          const MediaItem(id: '', title: '')), // Handle null case
     );
   }
 }

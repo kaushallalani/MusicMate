@@ -7,7 +7,8 @@ class SongsPage extends StatelessWidget {
   const SongsPage({super.key});
 
   String formatTime(Duration duration) {
-    String twoDigitSeconds = duration.inSeconds.remainder(60).toString().padLeft(2, '0');
+    String twoDigitSeconds =
+        duration.inSeconds.remainder(60).toString().padLeft(2, '0');
     return "${duration.inMinutes}:$twoDigitSeconds";
   }
 
@@ -81,7 +82,8 @@ class SongsPage extends StatelessWidget {
                     child: Image.network(
                       currentSong.albumArtImagePath,
                       fit: BoxFit.fill,
-                      errorBuilder: (context, error, stackTrace) => Icon(Icons.error),
+                      errorBuilder: (context, error, stackTrace) =>
+                          Icon(Icons.error),
                     ),
                   ),
                 ),
@@ -153,11 +155,9 @@ class SongsPage extends StatelessWidget {
                       ),
                     ),
                     IconButton(
-                      onPressed: value.currentSongIndex! < playlist.length - 1
-                          ? () {
-                              value.playNextSong();
-                            }
-                          : null,
+                      onPressed: () {
+                        value.playNextSong();
+                      },
                       icon: const Icon(Icons.skip_next, size: 40),
                     ),
                   ],
@@ -170,4 +170,3 @@ class SongsPage extends StatelessWidget {
     });
   }
 }
-
