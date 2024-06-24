@@ -229,18 +229,18 @@ class DashboardBloc extends Bloc<DashboardEvent, DashboardState> {
     on<FetchMoreReleases>((event, emit) async {
       try {
         final oldAlbumItemsData = userRepository.albumData;
-        Logger().d(oldAlbumItemsData!.items.length);
+        Logger().d(oldAlbumItemsData!.items!.length);
 
         Logger().d('next => ${event.nextUrl}');
         Logger().d(
-            'length reached to total => ${oldAlbumItemsData.items.length == oldAlbumItemsData.total}');
+            'length reached to total => ${oldAlbumItemsData.items!.length == oldAlbumItemsData.total}');
 
         if (event.nextUrl != 'null') {
           final moreAlbums =
               await spotifyRepository.getMoreRelease(event.nextUrl);
 
           if (moreAlbums!.items != null) {
-            moreAlbums.items!.insertAll(0, oldAlbumItemsData.items);
+            moreAlbums.items!.insertAll(0, oldAlbumItemsData.items!);
             userRepository.saveAlbumData(moreAlbums);
             emit(DashboardSuccessState(albumsData: moreAlbums));
           } else {
@@ -249,7 +249,7 @@ class DashboardBloc extends Bloc<DashboardEvent, DashboardState> {
           }
         }
 
-        Logger().d("oldAlbumItemsData => ${oldAlbumItemsData.items.length}");
+        Logger().d("oldAlbumItemsData => ${oldAlbumItemsData.items!.length}");
       } catch (e) {
         print('error fetching more albums');
       }

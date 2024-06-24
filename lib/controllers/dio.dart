@@ -11,7 +11,6 @@ class DioController {
       print('in get');
       final response = await dio.get(url,
           options: options, queryParameters: queryParameters);
-      Logger().d(response);
       if (response.statusCode == 200) {
         return response.data;
       } else {

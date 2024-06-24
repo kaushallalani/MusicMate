@@ -26,10 +26,18 @@ class PlaybackLoading extends PlaybackInitial {
 }
 
 class PlaybackSuccess extends PlaybackInitial {
-  PlaybackSuccess({super.videoId, super.spotifyId, super.currentUser});
+  final List<Track?>? recommendedSongs;
+  final List<String>? nextTrackIds;
+  PlaybackSuccess(
+      {super.videoId,
+      super.spotifyId,
+      super.currentUser,
+      this.recommendedSongs,
+      this.nextTrackIds});
 
   @override
-  List<Object?> get props => [videoId, spotifyId, currentUser];
+  List<Object?> get props =>
+      [videoId, spotifyId, currentUser, recommendedSongs];
 }
 
 class PlaybackError extends PlaybackInitial {

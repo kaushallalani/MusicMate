@@ -2,13 +2,14 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:go_router/go_router.dart';
 import 'package:logger/logger.dart';
 import 'package:musicmate/components/index.dart';
 import 'package:musicmate/constants/theme.dart';
-import 'package:musicmate/models/playlistProvider.dart';
+import 'package:musicmate/services/playlistProvider.dart';
 import 'package:musicmate/models/song.dart';
 import 'package:musicmate/models/spotify/albums_data.dart';
 import 'package:musicmate/models/user.dart';
@@ -61,7 +62,8 @@ class _HomePageState extends State<HomePage> {
         .add(OnPlaySong(songName: songName, artistName: artistList));
 
     context.pushNamed(NAVIGATION.playback, queryParameters: {
-      'currentSong': jsonEncode(currentItem.toJson())
+      'currentSong': jsonEncode(currentItem.toJson()),
+      "currentSongType": 'AlbumItem'
     }).then((onValue) {
       reinitializeState();
     });
@@ -192,20 +194,20 @@ class _HomePageState extends State<HomePage> {
                                                 0,
                                       ),
                                       shrinkWrap: true,
-                                      itemCount: albumsData!.items.length,
+                                      itemCount: albumsData!.items!.length,
                                       itemBuilder: (context, index) {
                                         final AlbumItem albumItem =
-                                            albumsData!.items[index];
+                                            albumsData!.items![index];
 
-                                        final artistList = albumItem.artists
-                                            .map((artist) => artist.name)
+                                        final artistList = albumItem.artists!
+                                            .map((artist) => artist.name!)
                                             .toList();
 
                                         if (albumItem.albumType ==
                                             AlbumTypeEnum.SINGLE) {
                                           return InkWell(
                                             onTap: () {
-                                              goToSong(albumItem.name,
+                                              goToSong(albumItem.name!,
                                                   artistList, albumItem);
                                             },
                                             child: Row(
@@ -225,7 +227,7 @@ class _HomePageState extends State<HomePage> {
                                                       Metrics.width(context) *
                                                           0.15,
                                                   child: Image.network(
-                                                    albumItem.images![1].url,
+                                                    albumItem.images![1].url!,
                                                     height:
                                                         Metrics.width(context) *
                                                             0.15,

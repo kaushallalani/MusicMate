@@ -15,3 +15,10 @@ class OnGetRecommendedSongs extends PlaybackEvent {
 
   OnGetRecommendedSongs({required this.artistId});
 }
+
+class onGetListOfVideoIds extends PlaybackEvent {
+  final List<String> songName;
+  final List<List<String>> artistName;
+
+  onGetListOfVideoIds({required this.songName, required this.artistName});
+}

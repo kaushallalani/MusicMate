@@ -64,9 +64,10 @@ class SpotifyAuthentication {
 
   Future<Map<String, dynamic>?>? fetchSearchSong(
       String songName, List<String> artistName) async {
+
+        Logger().d('in search');
     const searchUrl = 'https://www.googleapis.com/youtube/v3/search';
 
-    Logger().d('artisit => ${artistName.join(' ')}');
 
     final Map<String, dynamic> queryParameters = {
       'part': 'snippet',
@@ -94,14 +95,13 @@ class SpotifyAuthentication {
     final Map<String, dynamic> queryParameters = {
       'seed_artists': artistId.join(','),
       'album_type': 'SINGLE',
-      'limit': 5
+      'limit': 1
     };
     if (accessToken != null) {
       final dioResponse = await controller.getController(
           Options(headers: {'authorization': 'Bearer $accessToken'}),
           recomendedUrl,
           queryParameters);
-      Logger().d('recomended => $dioResponse');
 
       if (dioResponse!.isNotEmpty) {
         return dioResponse;

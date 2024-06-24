@@ -72,7 +72,7 @@ class SpotifyRepositoryImpl extends SpotifyRepository {
       if (albumData!.isNotEmpty) {
         Logger().d('Albums => ${albumData}');
         final jsonData = AlbumData.fromJson(albumData);
-        Logger().d('Albums => ${jsonData.albums.items[0].albumType}');
+        Logger().d('Albums => ${jsonData.albums!.items![0].albumType}');
         return jsonData.albums;
       }
     } on Exception catch (e) {
@@ -91,7 +91,7 @@ class SpotifyRepositoryImpl extends SpotifyRepository {
       if (albumData!.isNotEmpty) {
         Logger().d('Albums => ${albumData}');
         final jsonData = AlbumData.fromJson(albumData);
-        Logger().d('New Albums => ${jsonData.albums.next}');
+        Logger().d('New Albums => ${jsonData.albums!.next}');
         return jsonData.albums;
       }
     } on Exception catch (e) {
@@ -119,17 +119,19 @@ class SpotifyRepositoryImpl extends SpotifyRepository {
   }
 
   @override
-  Future<RecommendedSongs?>? getRecommendedSongs(List<String> artistsId) async {
+  Future<List<Track>?>? getRecommendedSongs(List<String> artistsId) async {
     print(artistsId);
     try {
-      final songs =
-          await spotifyAuthentication.fetchRecommendedSongs(artistsId,userRepository.accessToken!);
+      final songs = await spotifyAuthentication.fetchRecommendedSongs(
+          artistsId, userRepository.accessToken!);
       if (songs!.isNotEmpty) {
         final jsonData = RecommendedSongs.fromJson(songs);
-        Logger().d('Rec => $jsonData');
+        Logger().d('recccccc => ${jsonData.tracks![0].name}');
+        return jsonData.tracks;
       }
     } on Exception catch (e) {
       return Future.error(e);
     }
+    return null;
   }
 }

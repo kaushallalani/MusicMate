@@ -5,7 +5,7 @@ import 'package:musicmate/bloc/playback/playback_bloc.dart';
 import 'package:musicmate/bloc/session/session_bloc.dart';
 import 'package:musicmate/constants/i18n/strings.g.dart';
 import 'package:musicmate/firebase_options.dart';
-import 'package:musicmate/models/playlistProvider.dart';
+import 'package:musicmate/services/playlistProvider.dart';
 import 'package:musicmate/navigation/app_navigation.dart';
 import 'package:musicmate/navigation/navigation.dart';
 import 'package:musicmate/bloc/dashboard/dashboard_bloc.dart';
@@ -27,7 +27,7 @@ void main() async {
     MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (context) => ThemeProvider()),
-        // ChangeNotifierProvider(create: (context) => Playlistprovider())
+        ChangeNotifierProvider(create: (context) => PlaylistProvider())
       ],
       child: TranslationProvider(child: const MyApp()),
     ),

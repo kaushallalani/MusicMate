@@ -99,9 +99,10 @@ List<Map<String, dynamic>> stackNavigation = [
   {
     "name": NAVIGATION.playback,
     "component": (BuildContext context, GoRouterState state) {
-      final AlbumItem currentSong = AlbumItem.fromJson(
-          jsonDecode(state.uri.queryParameters['currentSong']!));
-      return Playback(currentSong: currentSong);
+      // final AlbumItem currentSong = AlbumItem.fromJson(
+      //     jsonDecode(state.uri.queryParameters['currentSong']!));
+      return Playback(
+          currentSong: jsonDecode(state.uri.queryParameters['currentSong']!, ), currentSongType: state.uri.queryParameters['currentSongType']!);
     },
     "options": {"path": NAVIGATION.playback}
   }

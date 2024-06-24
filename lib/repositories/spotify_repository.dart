@@ -10,5 +10,5 @@ abstract class SpotifyRepository {
   Future<Albums?>? getLatestReleases();
   Future<Albums?>? getMoreRelease(String nextUrl);
   Future<String?> getVideoId(String songName, List<String> artistName);
-  Future<RecommendedSongs?>? getRecommendedSongs(List<String> artistsId);
+  Future<List<Track>?>? getRecommendedSongs(List<String> artistsId);
 }
