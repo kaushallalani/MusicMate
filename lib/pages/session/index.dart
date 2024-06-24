@@ -145,7 +145,7 @@ class _SessionState extends State<Session> {
                               ),
                               TextComponent(
                                 text: sessionUsers.isNotEmpty
-                                    ? 'Created on ${DateFormat('dd/MM/yy').format(DateTime.parse(sessionUsers[0]!.createdAt!))}'
+                                    ? 'Created on ${DateFormat('dd/MM/yy').format(DateTime.parse(currentSession!.createdAt!))}'
                                     : '',
                                 textStyle: const TextStyle(
                                     color: AppColor.grey,
