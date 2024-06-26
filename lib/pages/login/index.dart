@@ -106,14 +106,15 @@ class _LoginScreenState extends State<LoginScreen> {
         return Scaffold(
           appBar: AppBar(
               toolbarHeight: 0,
-              systemOverlayStyle: const SystemUiOverlayStyle(
-                  statusBarColor: Colors.white,
-                  statusBarIconBrightness: Brightness.dark)),
+              systemOverlayStyle: SystemUiOverlayStyle(
+                  statusBarColor: Theme.of(context).customColors.bg,
+                  statusBarIconBrightness:
+                      Theme.of(context).customColors.iconBrightness)),
           body: Stack(
             children: [
               SingleChildScrollView(
                 child: Container(
-                  color: Colors.white,
+                  color: Theme.of(context).customColors.bg,
                   height: Metrics.height(context) * 1,
                   child: Column(
                     children: [
@@ -123,6 +124,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           'assets/images/icon.png',
                           fit: BoxFit.contain,
                           width: MediaQuery.of(context).size.width * 0.25,
+                          // color: Theme.of(context).customColors.bgInverse,
                         ),
                       ),
                       SizedBox(
@@ -144,10 +146,13 @@ class _LoginScreenState extends State<LoginScreen> {
                               child: Container(
                                 alignment: Alignment.center,
                                 child: RichText(
-                                  text: const TextSpan(
-                                    text: 'If you need any support ',
-                                    style: TextStyle(color: Colors.black),
-                                    children: [
+                                  text: TextSpan(
+                                    text: 'If you need any support  ',
+                                    style: TextStyle(
+                                        color: Theme.of(context)
+                                            .customColors
+                                            .bgInverse),
+                                    children: const [
                                       TextSpan(
                                         text: 'Click Here',
                                         style: TextStyle(
@@ -350,9 +355,11 @@ class _LoginScreenState extends State<LoginScreen> {
                                       alignment: Alignment.center,
                                       child: RichText(
                                         text: TextSpan(
-                                          text: 'Not a Member ? ',
-                                          style: const TextStyle(
-                                              color: Colors.black),
+                                          text: 'Not a Member?   ',
+                                          style: TextStyle(
+                                              color: Theme.of(context)
+                                                  .customColors
+                                                  .bgInverse),
                                           children: [
                                             TextSpan(
                                               text: 'Register Now',
