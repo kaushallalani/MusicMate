@@ -105,7 +105,7 @@ class PlaylistProvider with ChangeNotifier {
       // final Track playlisttt = Track.fromJson(_playlist[_currentSongIndex]);
       Logger().d('playlistt t=> ${_playlist[currentSongIndex]}');
 
-      await play(_currentSongIndex);
+      // await play(_currentSongIndex);
     }
   }
 

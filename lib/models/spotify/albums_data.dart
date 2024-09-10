@@ -8,11 +8,10 @@ class AlbumData {
   Albums? albums;
 
   AlbumData({
-     this.albums,
+    this.albums,
   });
 
-  factory AlbumData.fromJson(Map<String, dynamic> json) =>
-      _$AlbumDataFromJson(json);
+  factory AlbumData.fromJson(Map<String, dynamic> json) => _$AlbumDataFromJson(json);
 
   Map<String, dynamic> toJson() => _$AlbumDataToJson(this);
 }
@@ -35,13 +34,13 @@ class Albums {
   int? total;
 
   Albums({
-     this.href,
-     this.items,
-     this.limit,
-     this.next,
-     this.offset,
-     this.previous,
-     this.total,
+    this.href,
+    this.items,
+    this.limit,
+    this.next,
+    this.offset,
+    this.previous,
+    this.total,
   });
 
   factory Albums.fromJson(Map<String, dynamic> json) => _$AlbumsFromJson(json);
@@ -79,23 +78,22 @@ class AlbumItem {
   String? uri;
 
   AlbumItem({
-     this.albumType,
-     this.artists,
-     this.availableMarkets,
-     this.externalUrls,
-     this.href,
-     this.id,
-     this.images,
-     this.name,
-     this.releaseDate,
-     this.releaseDatePrecision,
-     this.totalTracks,
-     this.type,
-     this.uri,
+    this.albumType,
+    this.artists,
+    this.availableMarkets,
+    this.externalUrls,
+    this.href,
+    this.id,
+    this.images,
+    this.name,
+    this.releaseDate,
+    this.releaseDatePrecision,
+    this.totalTracks,
+    this.type,
+    this.uri,
   });
 
-  factory AlbumItem.fromJson(Map<String, dynamic> json) =>
-      _$AlbumItemFromJson(json);
+  factory AlbumItem.fromJson(Map<String, dynamic> json) => _$AlbumItemFromJson(json);
 
   Map<String, dynamic> toJson() => _$AlbumItemToJson(this);
 }
@@ -116,12 +114,12 @@ class Artist {
   String? uri;
 
   Artist({
-     this.externalUrls,
-     this.href,
-     this.id,
-     this.name,
-     this.type,
-     this.uri,
+    this.externalUrls,
+    this.href,
+    this.id,
+    this.name,
+    this.type,
+    this.uri,
   });
 
   factory Artist.fromJson(Map<String, dynamic> json) => _$ArtistFromJson(json);
@@ -135,11 +133,10 @@ class ExternalUrls {
   String? spotify;
 
   ExternalUrls({
-     this.spotify,
+    this.spotify,
   });
 
-  factory ExternalUrls.fromJson(Map<String, dynamic> json) =>
-      _$ExternalUrlsFromJson(json);
+  factory ExternalUrls.fromJson(Map<String, dynamic> json) => _$ExternalUrlsFromJson(json);
 
   Map<String, dynamic> toJson() => _$ExternalUrlsToJson(this);
 }
@@ -154,13 +151,12 @@ class AlbumImage {
   int? width;
 
   AlbumImage({
-     this.height,
-     this.url,
-     this.width,
+    this.height,
+    this.url,
+    this.width,
   });
 
-  factory AlbumImage.fromJson(Map<String, dynamic> json) =>
-      _$AlbumImageFromJson(json);
+  factory AlbumImage.fromJson(Map<String, dynamic> json) => _$AlbumImageFromJson(json);
 
   Map<String, dynamic> toJson() => _$AlbumImageToJson(this);
 }

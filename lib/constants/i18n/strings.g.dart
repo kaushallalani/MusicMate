@@ -3,10 +3,10 @@
 /// Original: lib/constants/i18n
 /// To regenerate, run: `dart run slang`
 ///
-/// Locales: 2
-/// Strings: 10 (5 per locale)
+/// Locales: 3
+/// Strings: 33 (11 per locale)
 ///
-/// Built on 2024-06-06 at 08:27 UTC
+/// Built on 2024-06-26 at 12:24 UTC
 
 // coverage:ignore-file
 // ignore_for_file: type=lint
@@ -26,7 +26,8 @@ const AppLocale _baseLocale = AppLocale.en;
 /// - if (LocaleSettings.currentLocale == AppLocale.en) // locale check
 enum AppLocale with BaseAppLocale<AppLocale, Translations> {
 	en(languageCode: 'en', build: Translations.build),
-	ar(languageCode: 'ar', build: _StringsAr.build);
+	ar(languageCode: 'ar', build: _StringsAr.build),
+	hi(languageCode: 'hi', build: _StringsHi.build);
 
 	const AppLocale({required this.languageCode, this.scriptCode, this.countryCode, required this.build}); // ignore: unused_element
 
@@ -153,6 +154,12 @@ class Translations implements BaseTranslations<AppLocale, Translations> {
 	String get settings => 'Settings';
 	String get library => 'Library';
 	String get search => 'Search';
+	String get listenTogether => 'Listen Together';
+	String get appLanguage => 'App Language';
+	String get english => 'English';
+	String get arabic => 'Arabic';
+	String get darkMode => 'Dark Mode';
+	String get hindi => 'Hindi';
 }
 
 // Path: <root>
@@ -184,6 +191,49 @@ class _StringsAr implements Translations {
 	@override String get settings => 'إعدادات';
 	@override String get library => 'مكتبة';
 	@override String get search => 'يبحث';
+	@override String get listenTogether => 'الاستماع معا';
+	@override String get appLanguage => 'لغة التطبيق';
+	@override String get english => 'English';
+	@override String get arabic => 'عربي';
+	@override String get darkMode => 'الوضع المظلم';
+	@override String get hindi => 'हिंदी';
+}
+
+// Path: <root>
+class _StringsHi implements Translations {
+	/// You can call this constructor and build your own translation instance of this locale.
+	/// Constructing via the enum [AppLocale.build] is preferred.
+	_StringsHi.build({Map<String, Node>? overrides, PluralResolver? cardinalResolver, PluralResolver? ordinalResolver})
+		: assert(overrides == null, 'Set "translation_overrides: true" in order to enable this feature.'),
+		  $meta = TranslationMetadata(
+		    locale: AppLocale.hi,
+		    overrides: overrides ?? {},
+		    cardinalResolver: cardinalResolver,
+		    ordinalResolver: ordinalResolver,
+		  ) {
+		$meta.setFlatMapFunction(_flatMapFunction);
+	}
+
+	/// Metadata for the translations of <hi>.
+	@override final TranslationMetadata<AppLocale, Translations> $meta;
+
+	/// Access flat map
+	@override dynamic operator[](String key) => $meta.getTranslation(key);
+
+	@override late final _StringsHi _root = this; // ignore: unused_field
+
+	// Translations
+	@override String get hello => 'नमस्ते';
+	@override String get home => 'घर';
+	@override String get settings => 'समायोजन';
+	@override String get library => 'पुस्तकालय';
+	@override String get search => 'खोज';
+	@override String get listenTogether => 'एक साथ सुनें';
+	@override String get appLanguage => 'ऐप भाषा';
+	@override String get english => 'अंग्रेज़ी';
+	@override String get arabic => 'अरबी';
+	@override String get darkMode => 'डार्क मोड';
+	@override String get hindi => 'हिंदी';
 }
 
 /// Flat map(s) containing all translations.
@@ -197,6 +247,12 @@ extension on Translations {
 			case 'settings': return 'Settings';
 			case 'library': return 'Library';
 			case 'search': return 'Search';
+			case 'listenTogether': return 'Listen Together';
+			case 'appLanguage': return 'App Language';
+			case 'english': return 'English';
+			case 'arabic': return 'Arabic';
+			case 'darkMode': return 'Dark Mode';
+			case 'hindi': return 'Hindi';
 			default: return null;
 		}
 	}
@@ -210,6 +266,31 @@ extension on _StringsAr {
 			case 'settings': return 'إعدادات';
 			case 'library': return 'مكتبة';
 			case 'search': return 'يبحث';
+			case 'listenTogether': return 'الاستماع معا';
+			case 'appLanguage': return 'لغة التطبيق';
+			case 'english': return 'English';
+			case 'arabic': return 'عربي';
+			case 'darkMode': return 'الوضع المظلم';
+			case 'hindi': return 'हिंदी';
+			default: return null;
+		}
+	}
+}
+
+extension on _StringsHi {
+	dynamic _flatMapFunction(String path) {
+		switch (path) {
+			case 'hello': return 'नमस्ते';
+			case 'home': return 'घर';
+			case 'settings': return 'समायोजन';
+			case 'library': return 'पुस्तकालय';
+			case 'search': return 'खोज';
+			case 'listenTogether': return 'एक साथ सुनें';
+			case 'appLanguage': return 'ऐप भाषा';
+			case 'english': return 'अंग्रेज़ी';
+			case 'arabic': return 'अरबी';
+			case 'darkMode': return 'डार्क मोड';
+			case 'hindi': return 'हिंदी';
 			default: return null;
 		}
 	}

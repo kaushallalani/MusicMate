@@ -1,16 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:hive/hive.dart';
+import 'package:hive_flutter/adapters.dart';
 import 'package:logger/logger.dart';
 import 'package:musicmate/bloc/playback/playback_bloc.dart';
 import 'package:musicmate/bloc/session/session_bloc.dart';
 import 'package:musicmate/constants/i18n/strings.g.dart';
 import 'package:musicmate/firebase_options.dart';
+import 'package:musicmate/models/hiveUser.dart';
+import 'package:musicmate/pages/restart/index.dart';
 import 'package:musicmate/services/playlistProvider.dart';
 import 'package:musicmate/navigation/app_navigation.dart';
 import 'package:musicmate/navigation/navigation.dart';
 import 'package:musicmate/bloc/dashboard/dashboard_bloc.dart';
-import 'package:musicmate/themes/dark_mode.dart';
-import 'package:musicmate/themes/light_mode.dart';
 import 'package:musicmate/themes/theme_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -22,14 +24,20 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   await di.init();
+  await Hive.initFlutter();
+  await Hive.openBox('userBox');
+
   Logger().d('main called');
+
   runApp(
     MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (context) => ThemeProvider()),
         ChangeNotifierProvider(create: (context) => PlaylistProvider())
       ],
-      child: TranslationProvider(child: const MyApp()),
+      child: TranslationProvider(
+        child: Restart(child: MyApp()),
+      ),
     ),
   );
 }
@@ -43,12 +51,25 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   bool isLogin = false;
+  String? appLanguage;
   final routeConfig = NavigationConfig(stackNavigation);
+  var userBox = Hive.box('userBox');
+  List<AppLocale>? appLocales = AppLocale.values;
 
   @override
   void initState() {
     super.initState();
-    // initialCall();
+    appLanguage = userBox.get('appLanguage');
+    WidgetsBinding.instance
+        .addPostFrameCallback((_) async {handleGetLanguage();});
+  }
+
+  handleGetLanguage() async {
+    AppLocale? matchingLocale = appLocales!.firstWhere(
+        (locale) => locale.languageCode == appLanguage,
+        orElse: () => AppLocale.en);
+    LocaleSettings.setLocale(matchingLocale);
+    Logger().d('currentLang=> ${LocaleSettings.useDeviceLocale()}');
   }
 
   void initialCall() async {
@@ -74,6 +95,8 @@ class _MyAppState extends State<MyApp> {
 
   @override
   Widget build(BuildContext context) {
+    Logger().d('lang => $appLanguage');
+    Logger().d('lang1 => ${LocaleSettings.currentLocale}');
     return ChangeNotifierProvider<ThemeProvider>(
       create: (_) => ThemeProvider(),
       child: Consumer<ThemeProvider>(

@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:flutter/services.dart';
 import 'package:logger/logger.dart';
 import 'package:musicmate/models/spotify/albums_data.dart';
 import 'package:musicmate/models/spotify/browseCategories.dart';
@@ -126,8 +127,15 @@ class SpotifyRepositoryImpl extends SpotifyRepository {
           artistsId, userRepository.accessToken!);
       if (songs!.isNotEmpty) {
         final jsonData = RecommendedSongs.fromJson(songs);
-        Logger().d('recccccc => ${jsonData.tracks![0].name}');
-        return jsonData.tracks;
+        // Logger().d('recccccc1 => ${jsonData.tracks![1].name}');
+        jsonData.tracks!
+            .map((data) => Logger().d('datata=> ${data.album!.albumType}'));
+        final filteredData = jsonData.tracks!
+            .where((data) => data.album!.albumType!.toLowerCase() == 'single')
+            .toList();
+
+        Logger().d('recccccc => ${filteredData}');
+        return filteredData;
       }
     } on Exception catch (e) {
       return Future.error(e);

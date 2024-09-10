@@ -3,5 +3,11 @@
     "home":"Home",
     "settings":"Settings",
     "library":"Library",
-    "search":"Search"
+    "search":"Search",
+    "listenTogether":"Listen Together",
+    "appLanguage":"App Language",
+    "english":"English",
+    "arabic":"Arabic",
+    "darkMode":"Dark Mode",
+    "hindi":"Hindi"
 }

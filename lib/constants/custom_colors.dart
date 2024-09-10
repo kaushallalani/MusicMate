@@ -24,6 +24,8 @@ class CustomColors {
   Color get customColor3 => isDarkMode ? darkCustomColor3 : lightCustomColor3;
   Color get bg => isDarkMode ? black : white;
   Color get bgInverse => isDarkMode ? white : black;
+  Color get whiteColor => isDarkMode ? black : white;
+  Color get blackColor => isDarkMode ? white : black;
 
   Brightness get iconBrightness =>
       isDarkMode ? Brightness.light : Brightness.dark;

@@ -3,5 +3,11 @@
     "home": "بيت",
     "settings": "إعدادات",
     "library": "مكتبة",
-    "search": "يبحث"
-}
+    "search": "يبحث",
+    "listenTogether": "الاستماع معا",
+    "appLanguage": "لغة التطبيق",
+    "english": "English",
+    "arabic": "عربي",
+    "darkMode": "الوضع المظلم",
+    "hindi": "हिंदी"
+  }

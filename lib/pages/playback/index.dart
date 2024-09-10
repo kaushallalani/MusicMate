@@ -19,8 +19,8 @@ import 'package:provider/provider.dart';
 
 class Playback extends StatefulWidget {
   final dynamic currentSong;
-  final String currentSongType;
-  const Playback({super.key, this.currentSong, required this.currentSongType});
+  final String? currentSongType;
+  const Playback({super.key, this.currentSong, this.currentSongType});
 
   @override
   State<Playback> createState() => _PlaybackState();
@@ -41,6 +41,8 @@ class _PlaybackState extends State<Playback> {
     super.initState();
     _currentSong = widget.currentSong!;
     Logger().d('currentSong => ${widget.currentSong}');
+    Logger().d('currentSongType => ${widget.currentSongType}');
+
     playlistProvider = Provider.of<PlaylistProvider>(context, listen: false);
 
     handleRecommendedSongs();
@@ -112,12 +114,12 @@ class _PlaybackState extends State<Playback> {
       // Logger().d(Track.fromJson(newTrackPlaylist[i]).name);
     }
 
-    // Logger().d(playlist);
+    Logger().d('next => ${playlist[1]}');
 
     setState(() {
       nextTracks = playlist;
     });
-    // playlistProvider.setPlaylist(playlist);
+    playlistProvider.setPlaylist(playlist);
     // playlistProvider.playCurrentSong();
   }
 
@@ -155,8 +157,6 @@ class _PlaybackState extends State<Playback> {
           });
         }
         if (state is PlaybackSuccess) {
-          Logger().d('reccc=> ${state.recommendedSongs![0]!.name}');
-
           if (state.videoId != null) {
             Logger().d('videooo => ${state.videoId}');
             setState(() {
@@ -165,6 +165,8 @@ class _PlaybackState extends State<Playback> {
           }
 
           if (state.recommendedSongs != null) {
+            Logger().d('reccc=> ${state.recommendedSongs![0]!.name}');
+
             setState(() {
               recommendedTracks = state.recommendedSongs;
             });
@@ -188,14 +190,17 @@ class _PlaybackState extends State<Playback> {
         Logger().d('state => ${state}');
         return Scaffold(
           appBar: AppBar(
-            leadingWidth: 0,
+            leadingWidth: 40,
             titleSpacing: 0,
             leading: Padding(
               padding: EdgeInsets.symmetric(
-                  horizontal: Metrics.width(context) * 0.04),
+                  horizontal: Metrics.width(context) * 0.0),
               child: IconButton(
                 icon: const Icon(Entypo.down_open_big),
-                onPressed: () {},
+                onPressed: () {
+                  Logger().d('removee');
+                  context.pop();
+                },
               ),
             ),
             actions: [
@@ -374,7 +379,7 @@ class _PlaybackState extends State<Playback> {
                                   onTap: () {
                                     // value.playNextSong
                                     Logger().d('pressed');
-                                    playlistProvider.next();
+                                    // playlistProvider.next();
 
                                     Logger().d(
                                         ' current index => ${playlistProvider.currentSongIndex}');
@@ -416,4 +421,10 @@ class _PlaybackState extends State<Playback> {
       },
     );
   }
+
+  // @override
+  // void dispose() {
+  //   super.dispose();
+  //   playlistProvider.dispose();
+  // }
 }

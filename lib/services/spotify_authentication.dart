@@ -94,15 +94,14 @@ class SpotifyAuthentication {
     Logger().d('idsss => ${artistId.join(',')}');
     final Map<String, dynamic> queryParameters = {
       'seed_artists': artistId.join(','),
-      'album_type': 'SINGLE',
-      'limit': 1
+      'limit': 3
     };
     if (accessToken != null) {
       final dioResponse = await controller.getController(
           Options(headers: {'authorization': 'Bearer $accessToken'}),
           recomendedUrl,
           queryParameters);
-
+Logger().d('res $dioResponse');
       if (dioResponse!.isNotEmpty) {
         return dioResponse;
       }

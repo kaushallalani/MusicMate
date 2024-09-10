@@ -1,17 +1,16 @@
 import 'dart:convert';
 
-import 'package:musicmate/models/spotify/albums_data.dart';
+import 'package:logger/logger.dart';
 import 'package:musicmate/pages/dashboard/index.dart';
 import 'package:musicmate/pages/home/index.dart';
 import 'package:musicmate/pages/library/index.dart';
 import 'package:musicmate/pages/listenTogether/index.dart';
 import 'package:musicmate/pages/login/index.dart';
-import 'package:musicmate/pages/playback/index.dart';
+import 'package:musicmate/pages/playback/fragment.dart';
 import 'package:musicmate/pages/search/index.dart';
 import 'package:musicmate/pages/session/index.dart';
 import 'package:musicmate/pages/settings/index.dart';
 import 'package:musicmate/pages/signup/index.dart';
-import 'package:musicmate/pages/songsPage/index.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:musicmate/pages/splash/index.dart';
@@ -101,8 +100,12 @@ List<Map<String, dynamic>> stackNavigation = [
     "component": (BuildContext context, GoRouterState state) {
       // final AlbumItem currentSong = AlbumItem.fromJson(
       //     jsonDecode(state.uri.queryParameters['currentSong']!));
-      return Playback(
-          currentSong: jsonDecode(state.uri.queryParameters['currentSong']!, ), currentSongType: state.uri.queryParameters['currentSongType']!);
+      Logger().d('in nav currentS');
+      return PlaybackFragment(
+          currentSong: jsonDecode(
+            state.uri.queryParameters['currentSong']!,
+          ),
+          currentSongType: state.uri.queryParameters['currentSongType']!);
     },
     "options": {"path": NAVIGATION.playback}
   }

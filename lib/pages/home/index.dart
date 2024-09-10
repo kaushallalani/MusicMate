@@ -16,6 +16,7 @@ import 'package:musicmate/models/user.dart';
 import 'package:musicmate/navigation/app_navigation.dart';
 import 'package:musicmate/bloc/dashboard/dashboard_bloc.dart';
 import 'package:provider/provider.dart';
+import 'package:musicmate/constants/i18n/strings.g.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -43,10 +44,14 @@ class _HomePageState extends State<HomePage> {
     _userDetails = UserModel();
     context.read<DashboardBloc>().add(GetUserDetails());
 
-    Timer(const Duration(seconds: 1), () {
-      context.read<DashboardBloc>().add(GetToken());
-    });
     // getUserDetail();
+  }
+
+  @override
+  void didChangeDependencies() {
+    // TODO: implement didChangeDependencies
+    super.didChangeDependencies();
+    context.read<DashboardBloc>().add(GetToken());
   }
 
   void reinitializeState() {
@@ -81,13 +86,14 @@ class _HomePageState extends State<HomePage> {
       listener: (context, state) {
         if (state is DashboardInitial) {}
         if (state is DashboardLoadingState) {
-          if (mounted) {
-            Timer(const Duration(seconds: 1), () {
-              setState(() {
-                isLoading = state.isLoading;
-              });
-            });
-          }
+          setState(() {
+            isLoading = state.isLoading;
+          });
+          // if (mounted) {
+          //   Timer(const Duration(seconds: 1), () {
+
+          //   });
+          // }
         }
         if (state is DashboardSuccessState) {
           if (state.currentUser != null) {
@@ -172,7 +178,7 @@ class _HomePageState extends State<HomePage> {
                                   Align(
                                     alignment: Alignment.topRight,
                                     child: ButtonComponent(
-                                      btnTitle: 'Listen Together',
+                                      btnTitle: t.listenTogether,
                                       btnSize: SizedBox(
                                           width: Metrics.width(context) * 0.4),
                                       onPressed: onListenTogether,
@@ -259,11 +265,14 @@ class _HomePageState extends State<HomePage> {
                                                               TextAlign.left,
                                                           textStyle:
                                                               const TextStyle(
-                                                            fontWeight:
-                                                                FontWeight.w700,
-                                                            fontSize:
-                                                                FontSize.normal,
-                                                          ),
+                                                                  fontWeight:
+                                                                      FontWeight
+                                                                          .w700,
+                                                                  fontSize:
+                                                                      FontSize
+                                                                          .normal,
+                                                                  color: AppColor
+                                                                      .white),
                                                         ),
                                                         TextComponent(
                                                           text: artistList

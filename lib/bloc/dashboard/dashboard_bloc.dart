@@ -222,7 +222,7 @@ class DashboardBloc extends Bloc<DashboardEvent, DashboardState> {
 
         emit(DashboardLoadingState(isLoading: false));
       } catch (e) {
-        print('error fetching albums');
+        print('error fetching albums $e');
       }
     });
 
@@ -251,7 +251,7 @@ class DashboardBloc extends Bloc<DashboardEvent, DashboardState> {
 
         Logger().d("oldAlbumItemsData => ${oldAlbumItemsData.items!.length}");
       } catch (e) {
-        print('error fetching more albums');
+        print('error fetching more albums $e');
       }
     });
 
