@@ -23,8 +23,9 @@ class _SearchState extends State<Search> {
   Duration _position = const Duration();
   final yt = YoutubeExplode();
   final logger = Logger();
-  final String _spotifyAuthToken =
-      'BQAhR-bpj11xzE9y8Cd6UsPzjPRstciakFEhz4c0KJV9TUJ4pNHcPBOPKHFqqF-tYpD110TQl0IcUuue9FEZmvmjdMR7TA5bdqUUX107czzCAouQ_5U'; // Add your Spotify Auth Token here
+  String? _spotifyAuthToken; // Add your Spotify Auth Token here
+  DateTime? _tokenExpiryTime;
+  String? _currentTrackName;
   Timer? _debounce;
   int _offset = 0; // Track offset for pagination
   int _limit = 20; // Number of results per request
@@ -50,11 +51,21 @@ class _SearchState extends State<Search> {
       });
     });
 
-    // Load Spotify new releases on app start
-    _loadSpotifyNewReleases();
+    _initializeSpotify();
 
     // Add scroll listener to detect when user reaches end of list
     _scrollController.addListener(_onScroll);
+
+    // Listen for track completion to reset playing state
+    _audioPlayer.playerStateStream.listen((state) {
+      if (state.processingState == ProcessingState.completed) {
+        setState(() {
+          _isPlaying = false;
+          _currentTrackName = null;
+          _currentTrackIndex = -1;
+        });
+      }
+    });
   }
 
   @override
@@ -66,13 +77,67 @@ class _SearchState extends State<Search> {
     super.dispose();
   }
 
+  /// Initializes Spotify token using client credentials.
+  Future<void> _initializeSpotify() async {
+    try {
+      // Get the token (generate if expired)
+      final token = await _getSpotifyAuthToken();
+
+      // Now load the Spotify data (e.g., new releases)
+      _loadSpotifyNewReleases(token);
+    } catch (e) {
+      print('Error initializing Spotify: $e');
+    }
+  }
+
+  // Method to get Spotify Auth Token (either use the existing one or generate a new one)
+  Future<String> _getSpotifyAuthToken() async {
+    if (_spotifyAuthToken != null && !_isTokenExpired()) {
+      return _spotifyAuthToken!;
+    }
+
+    // Replace with your Spotify client ID and client secret
+    const clientId = '3222f0dac2e24c908781642f43c8506d';
+    const clientSecret = '31e95b4c7dd04ee0a7a285d23c4f36be';
+
+    final credentials = base64Encode(utf8.encode('$clientId:$clientSecret'));
+
+    final response = await http.post(
+      Uri.parse('https://accounts.spotify.com/api/token'),
+      headers: {
+        'Authorization': 'Basic $credentials',
+        'Content-Type': 'application/x-www-form-urlencoded',
+      },
+      body: {
+        'grant_type': 'client_credentials',
+      },
+    );
+
+    if (response.statusCode == 200) {
+      final data = json.decode(response.body);
+      _spotifyAuthToken = data['access_token'];
+      // Token expires in the given seconds from the response
+      _tokenExpiryTime =
+          DateTime.now().add(Duration(seconds: data['expires_in']));
+      return _spotifyAuthToken!;
+    } else {
+      throw Exception('Failed to get Spotify Auth Token');
+    }
+  }
+
+  // Method to check if the token is expired
+  bool _isTokenExpired() {
+    if (_tokenExpiryTime == null) return true;
+    return DateTime.now().isAfter(_tokenExpiryTime!);
+  }
+
   /// Fetches new releases from Spotify API.
-  void _loadSpotifyNewReleases() async {
+  void _loadSpotifyNewReleases(String? token) async {
     try {
       final response = await http.get(
         Uri.parse('https://api.spotify.com/v1/browse/new-releases'),
         headers: {
-          'Authorization': 'Bearer $_spotifyAuthToken',
+          'Authorization': 'Bearer $token',
         },
       );
 
@@ -104,8 +169,9 @@ class _SearchState extends State<Search> {
   /// Searches Spotify tracks based on query.
   void _searchSpotifyTracks(String query, {bool loadMore = false}) async {
     try {
+      final token = await _getSpotifyAuthToken();
       if (query.isEmpty) {
-        _loadSpotifyNewReleases(); // Load new releases if query is empty
+        _loadSpotifyNewReleases(token); // Load new releases if query is empty
         return;
       }
 
@@ -116,7 +182,7 @@ class _SearchState extends State<Search> {
         Uri.parse(
             'https://api.spotify.com/v1/search?q=$query&type=album&offset=$offset&limit=$_limit'),
         headers: {
-          'Authorization': 'Bearer $_spotifyAuthToken',
+          'Authorization': 'Bearer $token',
         },
       );
 
@@ -168,9 +234,10 @@ class _SearchState extends State<Search> {
   /// Searches for a track on YouTube and plays it.
   void _searchAndPlay(String songName) async {
     try {
+      final encodedQuery = Uri.encodeComponent(songName);
       final response = await http.get(
         Uri.parse(
-          'https://www.googleapis.com/youtube/v3/search?part=snippet&q=$songName&key=AIzaSyCizoXiBWYEfnglp5f2vfr1xkSXt77FuUM&type=video&maxResults=1',
+          'https://www.googleapis.com/youtube/v3/search?part=snippet&q=$encodedQuery&key=AIzaSyCizoXiBWYEfnglp5f2vfr1xkSXt77FuUM&type=video&maxResults=1',
         ),
       );
 
@@ -181,7 +248,11 @@ class _SearchState extends State<Search> {
         });
         if (_youtubeTracks.isNotEmpty) {
           final videoId = _youtubeTracks[0]['id']['videoId'];
-          await _playTrack(videoId);
+          await _playTrack(videoId, trackName: songName);
+          setState(() {
+            _currentTrackIndex =
+                _spotifyTracks.indexWhere((track) => track['name'] == songName);
+          });
         }
       } else {
         throw Exception('Failed to search on YouTube: ${response.statusCode}');
@@ -192,7 +263,7 @@ class _SearchState extends State<Search> {
   }
 
   /// Plays a track from YouTube using its video ID.
-  Future<void> _playTrack(String videoId) async {
+  Future<void> _playTrack(String videoId, {String? trackName}) async {
     try {
       var manifest = await yt.videos.streamsClient.getManifest(videoId);
       var streamInfo = manifest.audioOnly.withHighestBitrate();
@@ -202,7 +273,9 @@ class _SearchState extends State<Search> {
       _audioPlayer.play();
       setState(() {
         _isPlaying = true;
+        _currentTrackName = trackName ?? 'Unknown Track';
       });
+      logger.d('Playing track: $_currentTrackName');
     } catch (e) {
       print('Error playing audio: $e');
     }
@@ -212,7 +285,8 @@ class _SearchState extends State<Search> {
   void _playNext() {
     if (_currentTrackIndex < _spotifyTracks.length - 1) {
       _currentTrackIndex++;
-      _playTrackByUrl(_spotifyTracks[_currentTrackIndex]['url']);
+      final nextTrack = _spotifyTracks[_currentTrackIndex];
+      _searchAndPlay(nextTrack['name']);
     }
   }
 
@@ -220,20 +294,8 @@ class _SearchState extends State<Search> {
   void _playPrevious() {
     if (_currentTrackIndex > 0) {
       _currentTrackIndex--;
-      _playTrackByUrl(_spotifyTracks[_currentTrackIndex]['url']);
-    }
-  }
-
-  /// Plays a track from a provided URL.
-  Future<void> _playTrackByUrl(String url) async {
-    try {
-      await _audioPlayer.setUrl(url);
-      _audioPlayer.play();
-      setState(() {
-        _isPlaying = true;
-      });
-    } catch (e) {
-      print('Error playing audio: $e');
+      final prevTrack = _spotifyTracks[_currentTrackIndex];
+      _searchAndPlay(prevTrack['name']);
     }
   }
 
@@ -250,20 +312,25 @@ class _SearchState extends State<Search> {
     _audioPlayer.stop();
     setState(() {
       _isPlaying = false;
+      _currentTrackName = null;
       _currentTrackIndex = -1; // Reset current track index
     });
   }
 
   /// Formats duration to display in UI.
   String _formatDuration(Duration duration) {
-    return duration.toString().split('.').first.padLeft(8, '0');
+    String twoDigits(int n) => n.toString().padLeft(2, '0');
+    String twoDigitMinutes = twoDigits(duration.inMinutes.remainder(60));
+    String twoDigitSeconds = twoDigits(duration.inSeconds.remainder(60));
+    return "${twoDigits(duration.inHours)}:$twoDigitMinutes:$twoDigitSeconds";
   }
 
   /// Listens to scroll events to load more tracks when user reaches end of list.
   void _onScroll() {
-    if (_scrollController.position.pixels ==
-        _scrollController.position.maxScrollExtent) {
-      // User has scrolled to the end, load more results
+    if (_scrollController.position.pixels >=
+        _scrollController.position.maxScrollExtent - 200) {
+      // trigger before exact end
+      // User has scrolled near the end, load more results
       if (!_isLoadingMore && !_allResultsLoaded) {
         setState(() {
           _isLoadingMore = true;
@@ -281,7 +348,7 @@ class _SearchState extends State<Search> {
       ),
       body: Column(
         children: [
-// Search bar
+          // Search bar
           Padding(
             padding: const EdgeInsets.all(8.0),
             child: Row(
@@ -306,13 +373,14 @@ class _SearchState extends State<Search> {
               ],
             ),
           ),
-// Track list
+          // Track list
           Expanded(
             child: _spotifyTracks.isEmpty
                 ? const Center(child: Text('No results found'))
                 : GridView.builder(
                     controller: _scrollController,
-                    gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    gridDelegate:
+                        const SliverGridDelegateWithFixedCrossAxisCount(
                       crossAxisCount: 2,
                       mainAxisSpacing: 8.0,
                       crossAxisSpacing: 8.0,
@@ -321,12 +389,15 @@ class _SearchState extends State<Search> {
                     itemCount: _spotifyTracks.length + (_isLoadingMore ? 1 : 0),
                     itemBuilder: (context, index) {
                       if (index < _spotifyTracks.length) {
-// Display Spotify track
+                        // Display Spotify track
                         final track = _spotifyTracks[index];
                         return GestureDetector(
                           onTap: () {
-// Search and play song on YouTube when tapping on a Spotify track
+                            // Search and play song on YouTube when tapping on a Spotify track
                             _searchAndPlay(track['name']);
+                            setState(() {
+                              _currentTrackIndex = index;
+                            });
                           },
                           child: Card(
                             elevation: 2.0,
@@ -336,7 +407,7 @@ class _SearchState extends State<Search> {
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.stretch,
                               children: [
-// Track image
+                                // Track image
                                 Expanded(
                                   child: ClipRRect(
                                     borderRadius: const BorderRadius.vertical(
@@ -345,16 +416,31 @@ class _SearchState extends State<Search> {
                                       track[
                                           'image'], // Replace with actual image URL from Spotify data
                                       fit: BoxFit.cover,
+                                      errorBuilder:
+                                          (context, error, stackTrace) {
+                                        return const Icon(
+                                          Icons.music_note,
+                                          size: 50,
+                                          color: Colors.grey,
+                                        );
+                                      },
+                                      loadingBuilder:
+                                          (context, child, progress) {
+                                        if (progress == null) return child;
+                                        return const Center(
+                                          child: CircularProgressIndicator(),
+                                        );
+                                      },
                                     ),
                                   ),
                                 ),
-// Track name
+                                // Track name
                                 Padding(
                                   padding: const EdgeInsets.all(8.0),
                                   child: Text(
                                     track['name'],
-                                    style:
-                                        const TextStyle(fontWeight: FontWeight.bold),
+                                    style: const TextStyle(
+                                        fontWeight: FontWeight.bold),
                                     textAlign: TextAlign.center,
                                     maxLines: 2,
                                     overflow: TextOverflow.ellipsis,
@@ -365,7 +451,7 @@ class _SearchState extends State<Search> {
                           ),
                         );
                       } else {
-// Show loading indicator at the end of the list while loading more tracks
+                        // Show loading indicator at the end of the list while loading more tracks
                         return const Center(
                           child: CircularProgressIndicator(),
                         );
@@ -373,30 +459,50 @@ class _SearchState extends State<Search> {
                     },
                   ),
           ),
-// Playback controls
+          // Playback controls
           Container(
             padding: const EdgeInsets.all(12.0),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
+            child: Column(
               children: [
-                IconButton(
-                  icon: const Icon(Icons.skip_previous),
-                  onPressed: _currentTrackIndex > 0 ? _playPrevious : null,
-                ),
-                IconButton(
-                  icon: _isPlaying ? const Icon(Icons.pause) : const Icon(Icons.play_arrow),
-                  onPressed: _isPlaying ? _pauseTrack : _playTrackFromCurrent,
-                ),
-                IconButton(
-                  icon: const Icon(Icons.skip_next),
-                  onPressed: _currentTrackIndex < _spotifyTracks.length - 1
-                      ? _playNext
-                      : null,
+                if (_currentTrackName !=
+                    null) // Show the track name if it's set
+                  Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 8.0),
+                    child: Text(
+                      _currentTrackName!,
+                      style: const TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 16.0,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    IconButton(
+                      icon: const Icon(Icons.skip_previous),
+                      onPressed: _currentTrackIndex > 0 ? _playPrevious : null,
+                    ),
+                    IconButton(
+                      icon: _isPlaying
+                          ? const Icon(Icons.pause)
+                          : const Icon(Icons.play_arrow),
+                      onPressed:
+                          _isPlaying ? _pauseTrack : _playTrackFromCurrent,
+                    ),
+                    IconButton(
+                      icon: const Icon(Icons.skip_next),
+                      onPressed: _currentTrackIndex < _spotifyTracks.length - 1
+                          ? _playNext
+                          : null,
+                    ),
+                  ],
                 ),
               ],
             ),
           ),
-// Track position slider
+          // Track position slider
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16.0),
             child: Row(
@@ -407,13 +513,13 @@ class _SearchState extends State<Search> {
                 ),
                 Expanded(
                   child: Slider(
-                    value: _position.inMilliseconds.toDouble(),
-                    min: 0.0,
-                    max: _duration.inMilliseconds.toDouble(),
+                    value: _position.inSeconds
+                        .toDouble()
+                        .clamp(0.0, _duration.inSeconds.toDouble()),
+                    max: _duration.inSeconds.toDouble(),
                     onChanged: (value) {
-                      final Duration position =
-                          Duration(milliseconds: value.toInt());
-                      _audioPlayer.seek(position);
+                      final newPosition = Duration(seconds: value.toInt());
+                      _audioPlayer.seek(newPosition);
                     },
                   ),
                 ),
@@ -431,28 +537,13 @@ class _SearchState extends State<Search> {
 
   /// Plays the track from the current index in the playlist.
   void _playTrackFromCurrent() {
-    if (_currentTrackIndex != -1 &&
-        _currentTrackIndex < _spotifyTracks.length) {
-      _playTrackByUrl(_spotifyTracks[_currentTrackIndex]['url']);
+    if (_currentTrackIndex >= 0 && _currentTrackIndex < _spotifyTracks.length) {
+      final currentTrack = _spotifyTracks[_currentTrackIndex];
+      _searchAndPlay(currentTrack['name']);
     } else if (_spotifyTracks.isNotEmpty) {
       _currentTrackIndex = 0;
-      _playTrackByUrl(_spotifyTracks[_currentTrackIndex]['url']);
+      final firstTrack = _spotifyTracks[0];
+      _searchAndPlay(firstTrack['name']);
     }
   }
 }
-
-
-// ### Explanation:
-// 1. **Next and Previous Functionality**: 
-//    - Added `IconButton` widgets for skip previous (`Icons.skip_previous`) and skip next (`Icons.skip_next`) actions in the playback controls section.
-//    - `_playNext()` and `_playPrevious()` methods handle the logic to play the next and previous tracks in `_spotifyTracks` list respectively.
-//    - `_playTrackFromCurrent()` method is introduced to play the track from the current `_currentTrackIndex` if available or from the start of the list if `_currentTrackIndex` is `-1`.
-
-// 2. **Track Playback Logic**:
-//    - Updated `_playTrackByUrl()` method to handle playing tracks based on URL.
-
-// 3. **User Interface**:
-//    - Integrated the playback controls (`skip previous`, `play/pause`, `skip next`) into a `Row` container in the `Scaffold` widget.
-//    - Displayed the track position slider with labels for current position and total duration.
-
-// This implementation assumes that `_spotifyTracks` contains track details including `name`, `image`, and `url` for each track from the Spotify API response. Adjustments might be needed based on the actual structure of your Spotify API response and how you handle track playback URLs and other details.
