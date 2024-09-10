@@ -3,7 +3,7 @@ import 'package:hive/hive.dart';
 import 'package:logger/logger.dart';
 import 'package:musicmate/components/index.dart';
 import 'package:musicmate/constants/i18n/strings.g.dart';
-import 'package:musicmate/constants/theme.dart';
+import 'package:musicmate/constants/index.dart';
 import 'package:musicmate/models/hiveUser.dart';
 import 'package:musicmate/models/user.dart';
 import 'package:musicmate/bloc/dashboard/dashboard_bloc.dart';

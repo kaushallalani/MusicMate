@@ -1,4 +1,4 @@
-import 'package:musicmate/constants/theme.dart';
+import 'package:musicmate/constants/index.dart';
 import 'package:flutter/material.dart';
 
 class Styles {

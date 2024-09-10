@@ -5,11 +5,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:logger/logger.dart';
 import 'package:musicmate/components/index.dart';
-import 'package:musicmate/constants/i18n/strings.g.dart';
-import 'package:musicmate/constants/theme.dart';
+import 'package:musicmate/constants/index.dart';
 import 'package:musicmate/navigation/app_navigation.dart';
 import 'package:musicmate/bloc/dashboard/dashboard_bloc.dart';
-import 'package:musicmate/bloc/authentication/authentication_bloc.dart';
 import 'package:musicmate/pages/home/index.dart';
 import 'package:musicmate/pages/library/index.dart';
 import 'package:musicmate/pages/search/index.dart';
@@ -99,7 +97,8 @@ class _DashboardState extends State<Dashboard> with WidgetsBindingObserver {
 
   @override
   Widget build(BuildContext context) {
-    Logger().d('appstate => ${appLifecycleState}');
+    final colors = Theme.of(context).customColors;
+
     return StreamBuilder<Object>(
         stream: _userStream,
         builder: (context, AsyncSnapshot snapshot) {
@@ -110,7 +109,7 @@ class _DashboardState extends State<Dashboard> with WidgetsBindingObserver {
             final data = snapshot.data!.data() as Map<String, dynamic>;
             if (data['deviceUniqueId'] != deviceId) {
               WidgetsBinding.instance.addPostFrameCallback((_) {
-                BlocProvider.of<AuthenticationBloc>(context).add(SignoutUser());
+                BlocProvider.of<DashboardBloc>(context).add(SignoutUser());
                 context.go(NAVIGATION.login);
               });
             } else {
@@ -119,9 +118,9 @@ class _DashboardState extends State<Dashboard> with WidgetsBindingObserver {
                   pageItems: pageItems,
                   onTap: _onItemTapped,
                   pageIndex: pageIndex,
-                  bottomBarStyle: const BoxDecoration(
-                      color: AppColor.white,
-                      border: Border(
+                  bottomBarStyle: BoxDecoration(
+                      color: colors.whiteColor,
+                      border: const Border(
                           top: BorderSide(
                               width: 1, color: AppColor.headerBorder))),
                 ),

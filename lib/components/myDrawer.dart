@@ -2,6 +2,7 @@
 
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:musicmate/bloc/index.dart';
 import 'package:musicmate/navigation/app_navigation.dart';
 import 'package:musicmate/pages/settings/index.dart';
 import 'package:flutter/material.dart';
@@ -64,7 +65,7 @@ class Mydrawer extends StatelessWidget {
               title: const Text('L O G O U T'),
               leading: const Icon(Icons.logout),
               onTap: () async {
-                BlocProvider.of<AuthenticationBloc>(context).add(SignoutUser());
+                BlocProvider.of<DashboardBloc>(context).add(SignoutUser());
                 context.go(NAVIGATION.login);
 
                 // await AuthServices().signOut();

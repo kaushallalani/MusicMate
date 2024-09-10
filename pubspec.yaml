@@ -65,6 +65,8 @@ dependencies:
   youtube_explode_dart: ^2.2.1
   hive: ^2.2.3
   hive_flutter: ^1.1.0
+  hydrated_bloc: ^9.1.5
+  path_provider: ^2.1.4
   
 
 

@@ -1,29 +1,36 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:hive/hive.dart';
 import 'package:hive_flutter/adapters.dart';
+import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:logger/logger.dart';
-import 'package:musicmate/bloc/playback/playback_bloc.dart';
-import 'package:musicmate/bloc/session/session_bloc.dart';
-import 'package:musicmate/constants/i18n/strings.g.dart';
 import 'package:musicmate/firebase_options.dart';
-import 'package:musicmate/models/hiveUser.dart';
 import 'package:musicmate/pages/restart/index.dart';
 import 'package:musicmate/services/playlistProvider.dart';
 import 'package:musicmate/navigation/app_navigation.dart';
 import 'package:musicmate/navigation/navigation.dart';
-import 'package:musicmate/bloc/dashboard/dashboard_bloc.dart';
-import 'package:musicmate/themes/theme_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:musicmate/injectionContainer/injection_container.dart' as di;
 import 'package:firebase_core/firebase_core.dart';
-import 'package:musicmate/bloc/authentication/authentication_bloc.dart';
+import 'package:path_provider/path_provider.dart';
+
+/******************** Constants ********************/
+import 'package:musicmate/constants/index.dart';
+
+/******************** Bloc & Respository & Model ********************/
+import 'package:musicmate/bloc/index.dart';
+
+/******************** Theme ********************/
+import 'package:musicmate/themes/theme_provider.dart';
+
+
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   await di.init();
+  HydratedBloc.storage = await HydratedStorage.build(
+      storageDirectory: await getTemporaryDirectory());
   await Hive.initFlutter();
   await Hive.openBox('userBox');
 
@@ -60,13 +67,14 @@ class _MyAppState extends State<MyApp> {
   void initState() {
     super.initState();
     appLanguage = userBox.get('appLanguage');
-    WidgetsBinding.instance
-        .addPostFrameCallback((_) async {handleGetLanguage();});
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      handleGetLanguage();
+    });
   }
 
   handleGetLanguage() async {
     AppLocale? matchingLocale = appLocales!.firstWhere(
-        (locale) => locale.languageCode == appLanguage,
+        (locale) => locale!.languageCode == appLanguage,
         orElse: () => AppLocale.en);
     LocaleSettings.setLocale(matchingLocale);
     Logger().d('currentLang=> ${LocaleSettings.useDeviceLocale()}');

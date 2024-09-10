@@ -39,5 +39,4 @@ class GoogleSignUp extends AuthenticationEvent {
   List<Object> get props => [];
 }
 
-class SignoutUser extends AuthenticationEvent {}
 

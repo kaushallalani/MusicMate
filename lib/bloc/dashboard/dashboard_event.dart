@@ -15,11 +15,11 @@ class CreateSession extends DashboardEvent {
   CreateSession({required this.sessionModel});
 }
 
-class FetchCurrentSession extends DashboardEvent {
-  final String? sessionId;
+// class FetchCurrentSession extends DashboardEvent {
+//   final String? sessionId;
 
-  FetchCurrentSession({required this.sessionId});
-}
+//   FetchCurrentSession({required this.sessionId});
+// }
 
 class FetchUserSessions extends DashboardEvent {
   final String id;
@@ -55,9 +55,11 @@ class FetchMoreReleases extends DashboardEvent {
   FetchMoreReleases({required this.nextUrl});
 }
 
-class OnPlaySong extends DashboardEvent {
+class OnDisplaySong extends DashboardEvent {
   final String songName;
   final List<String> artistName;
 
-  OnPlaySong({required this.songName,required this.artistName});
+  OnDisplaySong({required this.songName,required this.artistName});
 }
+
+class SignoutUser extends DashboardEvent {}

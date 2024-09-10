@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:musicmate/components/bottomNav/custom_bottom_navigation_bar_item.dart';
-import 'package:musicmate/constants/theme.dart';
+import 'package:musicmate/constants/index.dart';
 
 class CustomBottomNavigation extends StatelessWidget {
   final List<Map<String?, dynamic>> pageItems;
@@ -18,8 +18,9 @@ class CustomBottomNavigation extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colors = Theme.of(context).customColors;
     return Container(
-        height: Metrics.height(context) * 0.08,
+        height: Metrics.getResponsiveSize(context, 0.08, isOpposite: true),
         decoration: bottomBarStyle,
         child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -36,17 +37,21 @@ class CustomBottomNavigation extends StatelessWidget {
                     data: IconThemeData(
                       color: pageIndex == index
                           ? AppColor.aquaBlue
-                          : AppColor.black,
-                      size: 24,
+                          : colors.blackColor,
+                      size: 22,
                     ),
                     child: item['icon']),
-                label: DefaultTextStyle(
-                  style: TextStyle(
-                    fontSize: FontSize.medium,
-                    color:
-                        pageIndex == index ? AppColor.aquaBlue : AppColor.black,
+                label: Padding(
+                  padding: const EdgeInsets.only(top: 5),
+                  child: DefaultTextStyle(
+                    style: TextStyle(
+                      fontSize: Metrics.getFontSize(context, FontSize.normal),
+                      color: pageIndex == index
+                          ? AppColor.aquaBlue
+                          : colors.blackColor,
+                    ),
+                    child: item['label'] as Text,
                   ),
-                  child: item['label'] as Text,
                 ),
                 backgroundColor: item['backgroundColor'] as Color?,
               ));

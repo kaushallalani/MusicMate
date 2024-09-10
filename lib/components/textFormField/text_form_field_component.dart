@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:logger/logger.dart';
-import 'package:musicmate/constants/theme.dart';
+import 'package:musicmate/constants/index.dart';
 import 'styles.dart';
 
 class TextFormFieldComponent extends StatelessWidget {

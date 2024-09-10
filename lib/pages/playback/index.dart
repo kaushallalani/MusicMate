@@ -10,7 +10,7 @@ import 'package:musicmate/bloc/playback/playback_bloc.dart';
 import 'package:musicmate/bloc/session/session_bloc.dart';
 import 'package:musicmate/components/index.dart';
 import 'package:musicmate/components/newBox.dart';
-import 'package:musicmate/constants/theme.dart';
+import 'package:musicmate/constants/index.dart';
 import 'package:musicmate/models/spotify/albums_data.dart';
 import 'package:musicmate/models/spotify/recommended_songs.dart';
 import 'package:musicmate/navigation/app_navigation.dart';

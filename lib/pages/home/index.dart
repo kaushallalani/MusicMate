@@ -1,22 +1,16 @@
-import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:go_router/go_router.dart';
 import 'package:logger/logger.dart';
 import 'package:musicmate/components/index.dart';
-import 'package:musicmate/constants/theme.dart';
-import 'package:musicmate/services/playlistProvider.dart';
-import 'package:musicmate/models/song.dart';
+import 'package:musicmate/constants/index.dart';
 import 'package:musicmate/models/spotify/albums_data.dart';
 import 'package:musicmate/models/user.dart';
 import 'package:musicmate/navigation/app_navigation.dart';
 import 'package:musicmate/bloc/dashboard/dashboard_bloc.dart';
-import 'package:provider/provider.dart';
-import 'package:musicmate/constants/i18n/strings.g.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -64,7 +58,7 @@ class _HomePageState extends State<HomePage> {
   void goToSong(
       String songName, List<String> artistList, AlbumItem currentItem) {
     BlocProvider.of<DashboardBloc>(context)
-        .add(OnPlaySong(songName: songName, artistName: artistList));
+        .add(OnDisplaySong(songName: songName, artistName: artistList));
 
     context.pushNamed(NAVIGATION.playback, queryParameters: {
       'currentSong': jsonEncode(currentItem.toJson()),
@@ -82,6 +76,7 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
+    final colors = Theme.of(context).customColors;
     return BlocConsumer<DashboardBloc, DashboardState>(
       listener: (context, state) {
         if (state is DashboardInitial) {}
@@ -134,11 +129,25 @@ class _HomePageState extends State<HomePage> {
                     horizontal: Metrics.width(context) * 0),
                 child: Text('Welcome ${_userDetails!.fullName}'),
               ),
+              actions: [
+                IconButton(
+                    onPressed: () {
+                      BlocProvider.of<DashboardBloc>(context)
+                          .add(SignoutUser());
+                      context.go(NAVIGATION.login);
+                    },
+                    icon: Icon(
+                      Icons.logout,
+                      color: colors.blackColor,
+                      size: Metrics.getResponsiveSize(context, 0.07),
+                    ))
+              ],
             ),
-            drawer: const Mydrawer(),
+
+            // drawer: const Mydrawer(),
             body: isLoading == true
                 ? Container(
-                    color: Colors.white,
+                    color: colors.whiteColor,
                     child: const Center(
                       child: CircularProgressIndicator(
                         color: AppColor.aquaBlue,
@@ -183,10 +192,10 @@ class _HomePageState extends State<HomePage> {
                                           width: Metrics.width(context) * 0.4),
                                       onPressed: onListenTogether,
                                       btnStyle: BoxDecoration(
-                                        color: AppColor.white,
+                                        color: colors.blackColor,
                                         borderRadius: BorderRadius.circular(5),
                                         border: Border.all(
-                                            color: AppColor.headerBorder),
+                                            color: colors.blackColor),
                                       ),
                                     ),
                                   ),

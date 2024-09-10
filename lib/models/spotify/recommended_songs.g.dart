@@ -134,40 +134,6 @@ Map<String, dynamic> _$AlbumToJson(Album instance) => <String, dynamic>{
       'uri': instance.uri,
     };
 
-Artist _$ArtistFromJson(Map<String, dynamic> json) => Artist(
-      externalUrls: json['external_urls'] == null
-          ? null
-          : ExternalUrls.fromJson(
-              json['external_urls'] as Map<String, dynamic>),
-      href: json['href'] as String?,
-      id: json['id'] as String?,
-      name: json['name'] as String?,
-      type: $enumDecodeNullable(_$TypeEnumMap, json['type']),
-      uri: json['uri'] as String?,
-    );
-
-Map<String, dynamic> _$ArtistToJson(Artist instance) => <String, dynamic>{
-      'external_urls': instance.externalUrls,
-      'href': instance.href,
-      'id': instance.id,
-      'name': instance.name,
-      'type': _$TypeEnumMap[instance.type],
-      'uri': instance.uri,
-    };
-
-const _$TypeEnumMap = {
-  Type.ARTIST: 'artist',
-};
-
-ExternalUrls _$ExternalUrlsFromJson(Map<String, dynamic> json) => ExternalUrls(
-      spotify: json['spotify'] as String?,
-    );
-
-Map<String, dynamic> _$ExternalUrlsToJson(ExternalUrls instance) =>
-    <String, dynamic>{
-      'spotify': instance.spotify,
-    };
-
 TrackImage _$TrackImageFromJson(Map<String, dynamic> json) => TrackImage(
       height: (json['height'] as num?)?.toInt(),
       url: json['url'] as String?,

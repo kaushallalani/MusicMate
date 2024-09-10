@@ -5,8 +5,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:logger/logger.dart';
 import 'package:musicmate/bloc/authentication/authentication_bloc.dart';
-import 'package:musicmate/components/snackbar.dart';
-import 'package:musicmate/constants/theme.dart';
+import 'package:musicmate/components/index.dart';
+import 'package:musicmate/constants/index.dart';
 import 'package:musicmate/navigation/app_navigation.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -98,7 +98,7 @@ class _LoginScreenState extends State<LoginScreen> {
             isLoading = state.isLoading;
           });
         } else if (state is AuthenticationFailureState) {
-          showSnackBar(context, state.errorMessage);
+          showSnackbar(context, state.errorMessage);
         }
       },
       builder: (context, state) {

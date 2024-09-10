@@ -9,6 +9,7 @@ class UserRepository {
   String? _accessToken;
   DateTime? _tokenExpirationTime;
   String? _currentSongId;
+  bool? _loginStatus;
 
   Albums? _albumData;
 
@@ -18,6 +19,7 @@ class UserRepository {
   DateTime? get tokenExpirationTime => _tokenExpirationTime;
   Albums? get albumData => _albumData;
   String? get currentSongId => _currentSongId;
+  bool? get loginStatus => _loginStatus;
 
   void saveUserData(UserModel userData) {
     _userDataModel = userData;
@@ -39,5 +41,9 @@ class UserRepository {
 
   void saveCurrentSongId(String currentSongId) {
     _currentSongId = currentSongId;
+  }
+
+  void saveUserLoginStatus(bool status) {
+    _loginStatus = status;
   }
 }

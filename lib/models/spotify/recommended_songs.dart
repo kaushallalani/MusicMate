@@ -1,4 +1,6 @@
 import 'package:json_annotation/json_annotation.dart';
+
+import 'albums_data.dart';
 part 'recommended_songs.g.dart';
 
 @JsonSerializable()
@@ -157,54 +159,6 @@ class Album {
     factory Album.fromJson(Map<String, dynamic> json) => _$AlbumFromJson(json);
 
     Map<String, dynamic> toJson() => _$AlbumToJson(this);
-}
-
-@JsonSerializable()
-class Artist {
-    @JsonKey(name: "external_urls")
-    ExternalUrls? externalUrls;
-    @JsonKey(name: "href")
-    String? href;
-    @JsonKey(name: "id")
-    String? id;
-    @JsonKey(name: "name")
-    String? name;
-    @JsonKey(name: "type")
-    Type? type;
-    @JsonKey(name: "uri")
-    String? uri;
-
-    Artist({
-        this.externalUrls,
-        this.href,
-        this.id,
-        this.name,
-        this.type,
-        this.uri,
-    });
-
-    factory Artist.fromJson(Map<String, dynamic> json) => _$ArtistFromJson(json);
-
-    Map<String, dynamic> toJson() => _$ArtistToJson(this);
-}
-
-@JsonSerializable()
-class ExternalUrls {
-    @JsonKey(name: "spotify")
-    String? spotify;
-
-    ExternalUrls({
-        this.spotify,
-    });
-
-    factory ExternalUrls.fromJson(Map<String, dynamic> json) => _$ExternalUrlsFromJson(json);
-
-    Map<String, dynamic> toJson() => _$ExternalUrlsToJson(this);
-}
-
-enum Type {
-    @JsonValue("artist")
-    ARTIST
 }
 
 @JsonSerializable()

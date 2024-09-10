@@ -1,15 +1,13 @@
-import 'package:bloc/bloc.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:meta/meta.dart';
-import 'package:musicmate/models/user.dart';
-import 'package:musicmate/repositories/auth_repository.dart';
-import 'package:musicmate/repositories/user_repository.dart';
-
+import 'package:hydrated_bloc/hydrated_bloc.dart';
+import 'package:musicmate/models/index.dart';
+import 'package:musicmate/repositories/index.dart';
 part 'authentication_event.dart';
 part 'authentication_state.dart';
 
 class AuthenticationBloc
-    extends Bloc<AuthenticationEvent, AuthenticationState> {
+    extends HydratedBloc<AuthenticationEvent, AuthenticationState> {
   final FirebaseRepository firebaseRepository;
   final UserRepository userRepository;
 
@@ -36,16 +34,6 @@ class AuthenticationBloc
       emit(AuthenticationLoadingState(isLoading: false));
     });
 
-    on<SignoutUser>((event, emit) async {
-      emit(AuthenticationLoadingState(isLoading: true));
-      try {
-        firebaseRepository.signOut();
-      } catch (e) {
-        print('error');
-        print(e.toString());
-      }
-      emit(AuthenticationLoadingState(isLoading: false));
-    });
 
     on<SigninUser>((event, emit) async {
       emit(AuthenticationLoadingState(isLoading: true));
@@ -104,5 +92,19 @@ class AuthenticationBloc
       }
       emit(AuthenticationLoadingState(isLoading: false));
     });
+  }
+
+  @override
+  AuthenticationState? fromJson(Map<String, dynamic> json) {
+    try {} catch (e) {}
+  }
+
+  @override
+  Map<String, dynamic>? toJson(AuthenticationState state) {
+    if (state is AuthenticationSuccessState) {
+      final json = <String, dynamic>{};
+
+      return json;
+    }
   }
 }

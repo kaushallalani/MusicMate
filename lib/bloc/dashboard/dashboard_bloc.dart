@@ -1,5 +1,7 @@
-import 'package:bloc/bloc.dart';
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
+import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:logger/logger.dart';
 import 'package:musicmate/models/session.dart';
 import 'package:musicmate/models/spotify/albums_data.dart';
@@ -14,7 +16,7 @@ import 'package:musicmate/repositories/user_repository.dart';
 part 'dashboard_event.dart';
 part 'dashboard_state.dart';
 
-class DashboardBloc extends Bloc<DashboardEvent, DashboardState> {
+class DashboardBloc extends HydratedBloc<DashboardEvent, DashboardState> {
   final UserRepository userRepository;
   final FirebaseRepository firebaseRepository;
   final DashboardRepository dashboardRepository;
@@ -28,10 +30,16 @@ class DashboardBloc extends Bloc<DashboardEvent, DashboardState> {
     on<FetchUserDataFromFirebase>((event, emit) async {
       // emit(DashboardLoadingState(isLoading: true));
       try {
-        final UserModel? userData = await firebaseRepository.getCurrentUser();
-        Logger().d(userData!.activeSessionId);
-        userRepository.saveUserData(userData);
-        emit(DashboardSuccessState(currentUser: userRepository.userDataModel));
+        if (userRepository.userDataModel != null) {
+          emit(
+              DashboardSuccessState(currentUser: userRepository.userDataModel));
+        } else {
+          final UserModel? userData = await firebaseRepository.getCurrentUser();
+          Logger().d(userData!.activeSessionId);
+          userRepository.saveUserData(userData);
+          emit(
+              DashboardSuccessState(currentUser: userRepository.userDataModel));
+        }
         // emit(DashboardLoadingState(isLoading: false));
       } on Exception catch (e) {
         print('fetch error');
@@ -69,7 +77,7 @@ class DashboardBloc extends Bloc<DashboardEvent, DashboardState> {
             await dashboardRepository.fetchCurrentSessionDetails(sessionId);
         Logger().d(currentUserData!.activeSessionId);
         userRepository.saveSessionData(sessionData!);
-        userRepository.saveUserData(currentUserData!);
+        userRepository.saveUserData(currentUserData);
         emit(SessionLoadingSuccessState(
             currentUser: userRepository.userDataModel,
             sessionId: sessionId,
@@ -136,7 +144,7 @@ class DashboardBloc extends Bloc<DashboardEvent, DashboardState> {
             await dashboardRepository.joinSession(event.code, event.userId);
         final currentUserData = await firebaseRepository.getCurrentUser();
         Logger().d(currentUserData!.activeSessionId);
-        userRepository.saveUserData(currentUserData!);
+        userRepository.saveUserData(currentUserData);
 
         if (sessionData is String) {
           emit(SessionLoadingErrorState(errorMessage: sessionData));
@@ -255,7 +263,7 @@ class DashboardBloc extends Bloc<DashboardEvent, DashboardState> {
       }
     });
 
-    on<OnPlaySong>((event, emit) async {
+    on<OnDisplaySong>((event, emit) async {
       try {
         final videoId = await spotifyRepository.getVideoId(
             event.songName, event.artistName);
@@ -270,5 +278,46 @@ class DashboardBloc extends Bloc<DashboardEvent, DashboardState> {
         print('error fetching video id');
       }
     });
+    on<SignoutUser>((event, emit) async {
+      emit(DashboardLoadingState(isLoading: true));
+      try {
+        firebaseRepository.signOut();
+      } catch (e) {
+        print('error');
+        print(e.toString());
+      }
+      emit(DashboardLoadingState(isLoading: false));
+    });
+  }
+
+  @override
+  DashboardState? fromJson(Map<String, dynamic> json) {
+    try {
+      final userData =
+          json['user'] != null ? UserModel.fromJson(json['user']) : null;
+
+      if (userData != null) {
+        userRepository.saveUserData(userData);
+      }
+
+      return DashboardSuccessState(currentUser: userData);
+    } catch (e) {}
+    return null;
+  }
+
+  @override
+  Map<String, dynamic>? toJson(DashboardState state) {
+    if (state is DashboardSuccessState) {
+      final Map<String, dynamic> json = {};
+
+      json['user'] = state.currentUser?.id!.isNotEmpty == true
+          ? state.currentUser?.toJson()
+          : userRepository.userDataModel;
+
+      log('Saved state to JSON: ${json.keys}');
+
+      return json;
+    }
+    return null;
   }
 }
