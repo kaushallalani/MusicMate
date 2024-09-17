@@ -45,13 +45,14 @@ class _SignupScreenState extends State<SignupScreen> {
   }
 
   void signupWithGoogle() async {
-    if (_formKey.currentState!.validate()) {
-      BlocProvider.of<AuthenticationBloc>(context).add(const GoogleSignUp());
-    }
+    BlocProvider.of<AuthenticationBloc>(context).add(const GoogleSignUp());
+    // if (_formKey.currentState!.validate()) {
+    // }
   }
 
   @override
   Widget build(BuildContext context) {
+    final colors = Theme.of(context).customColors;
     return BlocConsumer<AuthenticationBloc, AuthenticationState>(
       listener: (context, state) {
         if (state is AuthenticationSignUpSuccessState) {
@@ -66,6 +67,7 @@ class _SignupScreenState extends State<SignupScreen> {
       },
       builder: (context, state) {
         return Scaffold(
+          backgroundColor: colors.whiteColor,
           appBar: AppBar(
             toolbarHeight: 0,
             systemOverlayStyle: SystemUiOverlayStyle(
@@ -76,7 +78,7 @@ class _SignupScreenState extends State<SignupScreen> {
           body: Stack(children: [
             SingleChildScrollView(
               child: Container(
-                height: Metrics.height(context) * 1,
+                // height: Metrics.height(context) * 1,
                 color: Theme.of(context).customColors.bg,
                 child: Column(
                   children: [
@@ -347,13 +349,11 @@ class _SignupScreenState extends State<SignupScreen> {
                                   ),
                                 ],
                               ),
-                              Center(
-                                child: MaterialButton(
-                                  minWidth:
-                                      MediaQuery.of(context).size.width * 0.07,
-                                  padding: const EdgeInsets.only(
-                                      top: Metrics.doubleBaseMargin),
-                                  onPressed: signupWithGoogle,
+                              Container(
+                                margin: const EdgeInsets.only(
+                                    top: Metrics.doubleBaseMargin),
+                                child: InkWell(
+                                  onTap: signupWithGoogle,
                                   child: Image.asset(
                                     'assets/images/google.png',
                                     fit: BoxFit.contain,
@@ -368,7 +368,7 @@ class _SignupScreenState extends State<SignupScreen> {
                                     alignment: Alignment.center,
                                     child: RichText(
                                       text: TextSpan(
-                                          text: 'Already havce an account? ',
+                                          text: 'Already have an account? ',
                                           style: TextStyle(
                                               color: Theme.of(context)
                                                   .customColors

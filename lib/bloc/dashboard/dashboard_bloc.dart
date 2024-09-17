@@ -3,6 +3,7 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:logger/logger.dart';
+import 'package:musicmate/constants/environment.dart';
 import 'package:musicmate/models/session.dart';
 import 'package:musicmate/models/spotify/albums_data.dart';
 import 'package:musicmate/models/spotify/browseCategories.dart';
@@ -12,6 +13,7 @@ import 'package:musicmate/repositories/dashboard_repository.dart';
 import 'package:musicmate/repositories/spotify_repository.dart';
 
 import 'package:musicmate/repositories/user_repository.dart';
+import 'package:musicmate/services/global_listeners.dart';
 
 part 'dashboard_event.dart';
 part 'dashboard_state.dart';
@@ -48,7 +50,7 @@ class DashboardBloc extends HydratedBloc<DashboardEvent, DashboardState> {
     });
 
     on<GetUserDetails>((event, emit) async {
-      // emit(DashboardLoadingState(isLoading: true));
+      emit(DashboardLoadingState(isLoading: true));
       try {
         final userData = userRepository.userDataModel;
         Logger().d(userData);
@@ -59,7 +61,7 @@ class DashboardBloc extends HydratedBloc<DashboardEvent, DashboardState> {
               errorMessage: 'Error fetching userdetails'));
         }
 
-        // emit(DashboardLoadingState(isLoading: false));
+        emit(DashboardLoadingState(isLoading: false));
       } on Exception catch (e) {
         print('get error');
         print(e.toString());
@@ -190,8 +192,9 @@ class DashboardBloc extends HydratedBloc<DashboardEvent, DashboardState> {
           await spotifyRepository.generateAccessToken();
         }
         Logger().d('Saved Token => ${userRepository.accessToken}');
+        GlobalListeners().setAuthToken(userRepository.accessToken!);
       } catch (e) {
-        print('error generating token');
+        print('error generating token =>$e');
       }
     });
 
@@ -217,20 +220,21 @@ class DashboardBloc extends HydratedBloc<DashboardEvent, DashboardState> {
       emit(DashboardLoadingState(isLoading: true));
       try {
         final albums = await spotifyRepository.getLatestReleases();
+        print('inn albumsss => $albums');
 
-        Logger().d(albums!.total);
         if (albums != null) {
           print('inn albumsss');
 
           userRepository.saveAlbumData(albums);
+          userRepository.saveNewReleases(albums.items!);
           emit(DashboardSuccessState(albumsData: albums));
         } else {
-          emit(DashboardFailureState(errorMessage: 'Error Fetching Albums'));
+          emit(DashboardFailureState(errorMessage: 'Error Fetching Releases'));
         }
 
         emit(DashboardLoadingState(isLoading: false));
       } catch (e) {
-        print('error fetching albums $e');
+        print('error fetching latest release: s $e');
       }
     });
 

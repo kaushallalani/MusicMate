@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:hive_flutter/adapters.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:logger/logger.dart';
 import 'package:musicmate/firebase_options.dart';
 import 'package:musicmate/pages/restart/index.dart';
+import 'package:musicmate/services/global_listeners.dart';
 import 'package:musicmate/services/playlistProvider.dart';
 import 'package:musicmate/navigation/app_navigation.dart';
 import 'package:musicmate/navigation/navigation.dart';
@@ -23,17 +25,17 @@ import 'package:musicmate/bloc/index.dart';
 /******************** Theme ********************/
 import 'package:musicmate/themes/theme_provider.dart';
 
-
-
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  await dotenv.load(fileName: ".env");
   await di.init();
   HydratedBloc.storage = await HydratedStorage.build(
       storageDirectory: await getTemporaryDirectory());
   await Hive.initFlutter();
   await Hive.openBox('userBox');
 
+  GlobalListeners().initializeAuthToken();
   Logger().d('main called');
 
   runApp(
@@ -43,7 +45,7 @@ void main() async {
         ChangeNotifierProvider(create: (context) => PlaylistProvider())
       ],
       child: TranslationProvider(
-        child: Restart(child: MyApp()),
+        child: const Restart(child: MyApp()),
       ),
     ),
   );
@@ -74,10 +76,9 @@ class _MyAppState extends State<MyApp> {
 
   handleGetLanguage() async {
     AppLocale? matchingLocale = appLocales!.firstWhere(
-        (locale) => locale!.languageCode == appLanguage,
+        (locale) => locale.languageCode == appLanguage,
         orElse: () => AppLocale.en);
     LocaleSettings.setLocale(matchingLocale);
-    Logger().d('currentLang=> ${LocaleSettings.useDeviceLocale()}');
   }
 
   void initialCall() async {
@@ -103,8 +104,6 @@ class _MyAppState extends State<MyApp> {
 
   @override
   Widget build(BuildContext context) {
-    Logger().d('lang => $appLanguage');
-    Logger().d('lang1 => ${LocaleSettings.currentLocale}');
     return ChangeNotifierProvider<ThemeProvider>(
       create: (_) => ThemeProvider(),
       child: Consumer<ThemeProvider>(

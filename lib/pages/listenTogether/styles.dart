@@ -4,9 +4,13 @@ import 'package:musicmate/constants/index.dart';
 class Styles {
   Styles._();
 
-  static const TextStyle btnTextStyle =
-      TextStyle(color: AppColor.white, fontSize: FontSize.normal);
+  static TextStyle btnTextStyle(BuildContext context) {
+    return TextStyle(
+        color: Theme.of(context).customColors.blackColor,
+        fontSize: FontSize.normal);
+  }
 
-  static BoxDecoration sessionBtn = BoxDecoration(
-      color: AppColor.aquaBlue, borderRadius: BorderRadius.circular(10));
+  static BoxDecoration sessionBtn(BuildContext context) => BoxDecoration(
+      color: Theme.of(context).customColors.customColor2,
+      borderRadius: BorderRadius.circular(10));
 }

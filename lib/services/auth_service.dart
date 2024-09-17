@@ -51,6 +51,7 @@ class FirebaseService {
   Future<UserCredential?> signInWithGoogle() async {
     try {
       final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
+      Logger().d('googggle =>${googleUser}');
       if (googleUser != null) {
         final GoogleSignInAuthentication googleAuth =
             await googleUser.authentication;
@@ -62,6 +63,7 @@ class FirebaseService {
 
         var response =
             await FirebaseAuth.instance.signInWithCredential(credential);
+        Logger().d('GG RES =>${response}');
         return response;
       } else {
         return null;
@@ -75,6 +77,7 @@ class FirebaseService {
   Future<UserCredential?> signUpWithGoogle() async {
     try {
       final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
+      Logger().d('SIGNUP =>${googleUser!.id}');
       if (googleUser != null) {
         final GoogleSignInAuthentication googleAuth =
             await googleUser.authentication;

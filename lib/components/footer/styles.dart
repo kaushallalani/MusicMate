@@ -4,5 +4,7 @@ import 'package:musicmate/constants/index.dart';
 class Styles {
   Styles._();
 
-  static const footerStyle = BoxDecoration(color: AppColor.white);
+  static footerStyle(BuildContext context) {
+    return BoxDecoration(color: Theme.of(context).customColors.whiteColor);
+  }
 }

@@ -55,11 +55,11 @@ List<Map<String, dynamic>> stackNavigation = [
         const Dashboard(),
     "options": {"path": NAVIGATION.dashboard}
   },
-  {
-    "name": NAVIGATION.search,
-    "component": (BuildContext context, GoRouterState state) => const Search(),
-    "options": {"path": NAVIGATION.search}
-  },
+  // {
+  //   "name": NAVIGATION.search,
+  //   "component": (BuildContext context, GoRouterState state) => const Search(),
+  //   "options": {"path": NAVIGATION.search}
+  // },
   {
     "name": NAVIGATION.library,
     "component": (BuildContext context, GoRouterState state) => const Library(),

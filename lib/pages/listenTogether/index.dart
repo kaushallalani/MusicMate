@@ -132,6 +132,7 @@ class _ListenTogetherState extends State<ListenTogether> {
       String hintText,
       String errorText,
       VoidCallback onPressed) {
+    final colors = Theme.of(context).customColors;
     return showModalBottomSheet(
         context: context,
         isScrollControlled: true,
@@ -166,8 +167,8 @@ class _ListenTogetherState extends State<ListenTogether> {
                       // Return null if the input is valid
                       return null;
                     },
-                    focusedBorder: const UnderlineInputBorder(
-                        borderSide: BorderSide(color: AppColor.aquaBlue)),
+                    focusedBorder: UnderlineInputBorder(
+                        borderSide: BorderSide(color: colors.customColor2)),
                   ),
                   Center(
                     child: Padding(
@@ -176,8 +177,8 @@ class _ListenTogetherState extends State<ListenTogether> {
                       child: ButtonComponent(
                           btnTitle: btnTitle,
                           btnPadding: const EdgeInsets.all(5),
-                          btnStyle: Styles.sessionBtn,
-                          btnTextStyle: Styles.btnTextStyle,
+                          btnStyle: Styles.sessionBtn(context),
+                          btnTextStyle: Styles.btnTextStyle(context),
                           onPressed: onPressed),
                     ),
                   )
@@ -190,6 +191,7 @@ class _ListenTogetherState extends State<ListenTogether> {
 
   @override
   Widget build(BuildContext context) {
+    final colors = Theme.of(context).customColors;
     Logger().d(errors);
     return BlocConsumer<DashboardBloc, DashboardState>(
       listener: (context, state) {
@@ -238,7 +240,7 @@ class _ListenTogetherState extends State<ListenTogether> {
           Logger().d(state.errorMessage);
           Fluttertoast.showToast(
               msg: state.errorMessage!,
-              backgroundColor: AppColor.headerBorder,
+              backgroundColor: colors.headerBorder,
               textColor: Colors.black);
         }
       },
@@ -258,9 +260,9 @@ class _ListenTogetherState extends State<ListenTogether> {
             bottom: PreferredSize(
               preferredSize: Size.zero,
               child: Container(
-                decoration: const BoxDecoration(
-                    border: Border(
-                        bottom: BorderSide(color: AppColor.headerBorder))),
+                decoration: BoxDecoration(
+                    border:
+                        Border(bottom: BorderSide(color: colors.headerBorder))),
               ),
             ),
             leading: IconButton(
@@ -279,9 +281,9 @@ class _ListenTogetherState extends State<ListenTogether> {
           body: isLoading == true
               ? Container(
                   color: Colors.white,
-                  child: const Center(
+                  child: Center(
                     child: CircularProgressIndicator(
-                      color: AppColor.aquaBlue,
+                      color: colors.customColor2,
                     ),
                   ),
                 )
@@ -320,11 +322,12 @@ class _ListenTogetherState extends State<ListenTogether> {
                                       borderRadius: const BorderRadius.all(
                                           Radius.circular(10)),
                                       child: Container(
-                                        decoration: const BoxDecoration(
-                                            borderRadius: BorderRadius.all(
-                                                Radius.circular(10)),
+                                        decoration: BoxDecoration(
+                                            borderRadius:
+                                                const BorderRadius.all(
+                                                    Radius.circular(10)),
                                             gradient: LinearGradient(
-                                                colors: AppColor.blueGradient)),
+                                                colors: colors.blueGradient)),
                                         child: ListTile(
                                           onTap: () {
                                             BlocProvider.of<DashboardBloc>(
@@ -340,17 +343,17 @@ class _ListenTogetherState extends State<ListenTogether> {
                                           ),
                                           title: TextComponent(
                                             text: sessionItem.sessionName ?? '',
-                                            textStyle: const TextStyle(
-                                                color: AppColor.white,
+                                            textStyle: TextStyle(
+                                                color: colors.whiteColor,
                                                 fontSize: FontSize.xmedium,
                                                 fontWeight: FontWeight.w700),
                                           ),
                                           subtitle: Row(
                                             children: [
-                                              const Icon(
+                                              Icon(
                                                 FontAwesome5.users,
                                                 size: 15,
-                                                color: AppColor.white,
+                                                color: colors.whiteColor,
                                               ),
                                               Padding(
                                                 padding:
@@ -360,8 +363,8 @@ class _ListenTogetherState extends State<ListenTogether> {
                                                   text: sessionItem
                                                       .allUsers!.length
                                                       .toString(),
-                                                  textStyle: const TextStyle(
-                                                      color: AppColor.white,
+                                                  textStyle: TextStyle(
+                                                      color: colors.whiteColor,
                                                       fontSize: FontSize.small),
                                                 ),
                                               ),
@@ -373,7 +376,7 @@ class _ListenTogetherState extends State<ListenTogether> {
                                                 ? 'View'
                                                 : 'Join',
                                             textStyle: TextStyle(
-                                                color: AppColor.white,
+                                                color: colors.blackColor,
                                                 fontSize: FontSize.normal),
                                           ),
                                         ),
@@ -394,12 +397,8 @@ class _ListenTogetherState extends State<ListenTogether> {
                               ),
                             ),
                       FooterComponent(
-                        flex: 0,
                         footerMargin: EdgeInsets.symmetric(
                             vertical: Metrics.width(context) * 0.04),
-                        footerSize: SizedBox(
-                          height: Metrics.height(context) * 0.05,
-                        ),
                         footerStyle: const BoxDecoration(
                             // color: Colors.orange,
                             borderRadius:
@@ -413,7 +412,7 @@ class _ListenTogetherState extends State<ListenTogether> {
                               child: ButtonComponent(
                                   btnTitle: 'Create Session',
                                   btnPadding: const EdgeInsets.all(5),
-                                  btnStyle: Styles.sessionBtn,
+                                  btnStyle: Styles.sessionBtn(context),
                                   btnSize: SizedBox(
                                     width: Metrics.width(context) * 0.4,
                                   ),
@@ -427,12 +426,12 @@ class _ListenTogetherState extends State<ListenTogether> {
                                         'Session name cannot be empty',
                                         handleOnCreateSession);
                                   },
-                                  btnTextStyle: Styles.btnTextStyle),
+                                  btnTextStyle: Styles.btnTextStyle(context)),
                             ),
                             ButtonComponent(
                                 btnTitle: 'Join Session',
                                 btnPadding: const EdgeInsets.all(5),
-                                btnStyle: Styles.sessionBtn,
+                                btnStyle: Styles.sessionBtn(context),
                                 btnSize: SizedBox(
                                   width: Metrics.width(context) * 0.4,
                                 ),
@@ -448,7 +447,7 @@ class _ListenTogetherState extends State<ListenTogether> {
                                       'Session code cannot be empty',
                                       handleOnJoinSession);
                                 },
-                                btnTextStyle: Styles.btnTextStyle)
+                                btnTextStyle: Styles.btnTextStyle(context))
                           ],
                         ),
                       )

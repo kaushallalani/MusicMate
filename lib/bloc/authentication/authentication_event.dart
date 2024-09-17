@@ -39,4 +39,4 @@ class GoogleSignUp extends AuthenticationEvent {
   List<Object> get props => [];
 }
 
-
+class GenerateSpotifyAccessToken extends AuthenticationEvent {}

@@ -2,9 +2,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hive/hive.dart';
 import 'package:logger/logger.dart';
 import 'package:musicmate/components/index.dart';
-import 'package:musicmate/constants/i18n/strings.g.dart';
 import 'package:musicmate/constants/index.dart';
-import 'package:musicmate/models/hiveUser.dart';
 import 'package:musicmate/models/user.dart';
 import 'package:musicmate/bloc/dashboard/dashboard_bloc.dart';
 import 'package:musicmate/pages/restart/index.dart';
@@ -12,7 +10,6 @@ import 'package:musicmate/themes/theme_provider.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:musicmate/constants/i18n/strings.g.dart';
 
 class SettingsPage extends StatefulWidget {
   const SettingsPage({
@@ -63,6 +60,7 @@ class _SettingsPageState extends State<SettingsPage> {
 
   @override
   Widget build(BuildContext context) {
+    final colors = Theme.of(context).customColors;
     return BlocConsumer<DashboardBloc, DashboardState>(
       listener: (context, state) {
         if (state is DashboardInitial) {
@@ -110,7 +108,7 @@ class _SettingsPageState extends State<SettingsPage> {
                       //dark mode
                       const Text(
                         "Dark Mode",
-                        style: TextStyle(fontWeight: FontWeight.bold),
+                        style:  TextStyle(fontWeight: FontWeight.bold),
                       ),
 
                       //switch
@@ -126,7 +124,7 @@ class _SettingsPageState extends State<SettingsPage> {
                 ),
                 TextComponent(
                   text: t.appLanguage,
-                  textStyle: const TextStyle(color: AppColor.white),
+                  textStyle: TextStyle(color: colors.blackColor),
                 ),
                 InkWell(
                   onTap: () {
@@ -140,19 +138,19 @@ class _SettingsPageState extends State<SettingsPage> {
                     margin: const EdgeInsets.symmetric(vertical: 10),
                     padding: const EdgeInsets.all(10),
                     decoration: BoxDecoration(
-                        border: Border.all(color: AppColor.white),
+                        border: Border.all(color: colors.blackColor),
                         borderRadius: BorderRadius.circular(10)),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         TextComponent(
                           text: t.english,
-                          textStyle: const TextStyle(color: AppColor.white),
+                          textStyle: TextStyle(color: colors.blackColor),
                         ),
                         selectedLanguage == AppLocale.en
-                            ? const Icon(
+                            ? Icon(
                                 Icons.check,
-                                color: AppColor.aquaBlue,
+                                color: colors.customColor2,
                                 size: 20,
                               )
                             : Container()
@@ -172,19 +170,19 @@ class _SettingsPageState extends State<SettingsPage> {
                     margin: const EdgeInsets.symmetric(vertical: 10),
                     padding: const EdgeInsets.all(10),
                     decoration: BoxDecoration(
-                        border: Border.all(color: AppColor.white),
+                        border: Border.all(color: colors.blackColor),
                         borderRadius: BorderRadius.circular(10)),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         TextComponent(
                           text: t.arabic,
-                          textStyle: const TextStyle(color: AppColor.white),
+                          textStyle: TextStyle(color: colors.blackColor),
                         ),
                         selectedLanguage == AppLocale.ar
-                            ? const Icon(
+                            ? Icon(
                                 Icons.check,
-                                color: AppColor.aquaBlue,
+                                color: colors.customColor2,
                                 size: 20,
                               )
                             : Container()
@@ -204,19 +202,19 @@ class _SettingsPageState extends State<SettingsPage> {
                     margin: const EdgeInsets.symmetric(vertical: 10),
                     padding: const EdgeInsets.all(10),
                     decoration: BoxDecoration(
-                        border: Border.all(color: AppColor.white),
+                        border: Border.all(color: colors.blackColor),
                         borderRadius: BorderRadius.circular(10)),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         TextComponent(
                           text: t.hindi,
-                          textStyle: const TextStyle(color: AppColor.white),
+                          textStyle: TextStyle(color: colors.blackColor),
                         ),
                         selectedLanguage == AppLocale.hi
-                            ? const Icon(
+                            ? Icon(
                                 Icons.check,
-                                color: AppColor.aquaBlue,
+                                color: colors.customColor2,
                                 size: 20,
                               )
                             : Container()

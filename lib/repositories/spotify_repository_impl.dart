@@ -1,12 +1,15 @@
 import 'dart:convert';
+import 'dart:developer';
 
 import 'package:flutter/services.dart';
 import 'package:logger/logger.dart';
+import 'package:musicmate/constants/environment.dart';
 import 'package:musicmate/models/spotify/albums_data.dart';
 import 'package:musicmate/models/spotify/browseCategories.dart';
 import 'package:musicmate/models/spotify/recommended_songs.dart';
 import 'package:musicmate/repositories/spotify_repository.dart';
 import 'package:musicmate/repositories/user_repository.dart';
+import 'package:musicmate/services/global_listeners.dart';
 import 'package:musicmate/services/spotify_authentication.dart';
 
 class SpotifyRepositoryImpl extends SpotifyRepository {
@@ -24,6 +27,7 @@ class SpotifyRepositoryImpl extends SpotifyRepository {
 
       Logger().d('Token => $token');
       if (token != null) {
+        GlobalListeners().setAuthToken(token);
         userRepository.saveAccessToken(token, tokenExpirationTime);
       }
     } on Exception catch (e) {
@@ -67,13 +71,13 @@ class SpotifyRepositoryImpl extends SpotifyRepository {
   @override
   Future<Albums?>? getLatestReleases() async {
     try {
+      log(Environment.NEW_RELEASE);
+      log(GlobalListeners().authToken!);
+      log(userRepository.accessToken!);
       final albumData = await spotifyAuthentication.fetchNewReleases(
-          userRepository.accessToken!,
-          'https://api.spotify.com/v1/browse/new-releases');
+          userRepository.accessToken!, Environment.NEW_RELEASE);
       if (albumData!.isNotEmpty) {
-        Logger().d('Albums => ${albumData}');
         final jsonData = AlbumData.fromJson(albumData);
-        Logger().d('Albums => ${jsonData.albums!.items![0].albumType}');
         return jsonData.albums;
       }
     } on Exception catch (e) {

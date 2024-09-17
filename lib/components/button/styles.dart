@@ -4,13 +4,17 @@ import 'package:flutter/material.dart';
 class Styles {
   Styles._();
 
-  static const btnStyle = BoxDecoration(
-    color: AppColor.grey,
-    borderRadius: BorderRadius.zero,
-  );
+  static btnStyle(BuildContext context) {
+    return BoxDecoration(
+      color: Theme.of(context).customColors.customColor1,
+      borderRadius: BorderRadius.circular(Metrics.doubleBorderRadius),
+    );
+  }
 
-  static final btnstyle = ElevatedButton.styleFrom(
-      backgroundColor: AppColor.grey,
-      padding: const EdgeInsets.all(5),
-      shape: const RoundedRectangleBorder(side: BorderSide.none));
+  static btnstyle(BuildContext context) {
+    return ElevatedButton.styleFrom(
+        backgroundColor: Theme.of(context).customColors.blackColor,
+        padding: const EdgeInsets.all(Metrics.borderRadius),
+        shape: const RoundedRectangleBorder(side: BorderSide.none));
+  }
 }

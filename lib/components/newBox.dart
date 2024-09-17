@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:logger/logger.dart';
 import 'package:musicmate/constants/index.dart';
 import 'package:musicmate/themes/theme_provider.dart';
 import 'package:provider/provider.dart';
@@ -17,15 +18,18 @@ class NewBox extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    bool isDarkMode = Provider.of<ThemeProvider>(context).darkTheme;
+    // bool isDarkMode = Provider.of<ThemeProvider>(context).darkTheme;
+    bool isDarkMode = Brightness == Brightness.dark;
+
+    Logger().d('DARKMODE => $isDarkMode');
     return Container(
       decoration: BoxDecoration(
           color: Theme.of(context).colorScheme.surface,
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(10),
           boxShadow: [
             //Darker
             BoxShadow(
-              color: isDarkMode ? Colors.black : Colors.grey.shade500,
+              color: isDarkMode ? Colors.red : Colors.grey.shade500,
               blurRadius: 15,
               offset: const Offset(4, 4),
             ),

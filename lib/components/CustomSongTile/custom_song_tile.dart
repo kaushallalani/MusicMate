@@ -7,10 +7,12 @@ class CustomSongTile extends StatelessWidget {
   final VoidCallback? onTap;
   final Song songs;
   final Widget? otherItems;
-  const CustomSongTile({super.key, this.onTap, required this.songs, this.otherItems});
+  const CustomSongTile(
+      {super.key, this.onTap, required this.songs, this.otherItems});
 
   @override
   Widget build(BuildContext context) {
+    final colors = Theme.of(context).customColors;
     return InkWell(
       onTap: onTap,
       child: Row(
@@ -49,9 +51,9 @@ class CustomSongTile extends StatelessWidget {
                   TextComponent(
                     text: songs.artistName,
                     textAlign: TextAlign.left,
-                    textStyle: const TextStyle(color: AppColor.grey),
+                    textStyle: TextStyle(color: colors.hintGreyColor),
                   ),
-                  otherItems?? Container()
+                  otherItems ?? Container()
                 ],
               ),
             ),

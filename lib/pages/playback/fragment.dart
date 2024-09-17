@@ -1,5 +1,6 @@
 import 'package:flutter/widgets.dart';
-import 'package:musicmate/pages/playback/index.dart';
+import 'package:musicmate/models/index.dart';
+import 'package:musicmate/pages/playback/demo.dart';
 
 class PlaybackFragment extends StatelessWidget {
   final dynamic currentSong;
@@ -8,8 +9,9 @@ class PlaybackFragment extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final albumItem = AlbumItem.fromJson(currentSong);
     return Playback(
-      currentSong: currentSong,
+      currentSong: albumItem,
       currentSongType: currentSongType,
     );
   }

@@ -50,6 +50,7 @@ class _SessionState extends State<Session> {
 
   @override
   Widget build(BuildContext context) {
+    final colors = Theme.of(context).customColors;
     return BlocConsumer<SessionBloc, SessionState>(
       listener: (context, state) {
         if (state is SessionLoading) {
@@ -81,16 +82,16 @@ class _SessionState extends State<Session> {
         print('insessions');
         print(state);
         return Scaffold(
-          backgroundColor: AppColor.white,
+          backgroundColor: colors.blackColor,
           appBar: AppBar(
             leadingWidth: 40,
             titleSpacing: 0,
             bottom: PreferredSize(
               preferredSize: Size.zero,
               child: Container(
-                decoration: const BoxDecoration(
-                    border: Border(
-                        bottom: BorderSide(color: AppColor.headerBorder))),
+                decoration: BoxDecoration(
+                    border:
+                        Border(bottom: BorderSide(color: colors.headerBorder))),
               ),
             ),
             leading: IconButton(
@@ -109,10 +110,10 @@ class _SessionState extends State<Session> {
           ),
           body: isLoading == true
               ? Container(
-                  color: Colors.white,
-                  child: const Center(
+                  color: colors.blackColor,
+                  child: Center(
                     child: CircularProgressIndicator(
-                      color: AppColor.aquaBlue,
+                      color: colors.customColor2,
                     ),
                   ),
                 )
@@ -139,16 +140,16 @@ class _SessionState extends State<Session> {
                                 text: sessionUsers.isNotEmpty
                                     ? 'By ${sessionUsers[0]!.fullName.toString()}'
                                     : '',
-                                textStyle: const TextStyle(
-                                    color: AppColor.grey,
+                                textStyle: TextStyle(
+                                    color: colors.hintGreyColor,
                                     fontSize: FontSize.small),
                               ),
                               TextComponent(
                                 text: sessionUsers.isNotEmpty
                                     ? 'Created on ${DateFormat('dd/MM/yy').format(DateTime.parse(currentSession!.createdAt!))}'
                                     : '',
-                                textStyle: const TextStyle(
-                                    color: AppColor.grey,
+                                textStyle: TextStyle(
+                                    color: colors.hintGreyColor,
                                     fontSize: FontSize.small),
                               ),
                             ],
@@ -171,9 +172,9 @@ class _SessionState extends State<Session> {
                                         shape: BoxShape.circle,
                                         color: Colors.primaries[Random()
                                             .nextInt(Colors.primaries.length)]),
-                                    child: const Icon(
+                                    child: Icon(
                                       Icons.person,
-                                      color: AppColor.white,
+                                      color: colors.blackColor,
                                       size: 20,
                                     ),
                                     // child: sessionUsers.isNotEmpty
@@ -181,7 +182,7 @@ class _SessionState extends State<Session> {
                                     //         text:
                                     //             sessionUsers[0]!.fullName![0],
                                     //         textStyle: const TextStyle(
-                                    //             color: AppColor.white,
+                                    //             color: colors.blackColor,
                                     //             fontWeight: FontWeight.w500,
                                     //             fontSize: FontSize.small),
                                     //       )
@@ -189,8 +190,8 @@ class _SessionState extends State<Session> {
                                   ),
                                   TextComponent(
                                     text: ' : ${sessionUsers.length} users',
-                                    textStyle: const TextStyle(
-                                        color: AppColor.grey,
+                                    textStyle: TextStyle(
+                                        color: colors.hintGreyColor,
                                         fontSize: FontSize.small),
                                   )
                                 ],
@@ -203,7 +204,7 @@ class _SessionState extends State<Session> {
                                   decoration: BoxDecoration(
                                       shape: BoxShape.circle,
                                       color:
-                                          AppColor.aquaBlue.withOpacity(0.7)),
+                                          colors.customColor2.withOpacity(0.7)),
                                   child: const Icon(FontAwesome.play),
                                 ),
                               )

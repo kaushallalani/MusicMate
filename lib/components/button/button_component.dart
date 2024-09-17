@@ -1,6 +1,7 @@
+import 'package:flutter/material.dart';
 import 'package:musicmate/components/index.dart';
 import 'package:musicmate/constants/index.dart';
-import 'package:flutter/material.dart';
+
 import 'styles.dart';
 
 class ButtonComponent extends StatelessWidget {
@@ -27,20 +28,21 @@ class ButtonComponent extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isTablet = Metrics.isTablet(context);
 
-    return InkWell(
-      onTap: onPressed,
-      child: Container(
-        margin: btnMargin,
-        width: btnSize?.width,
-        height: btnSize?.height ?? Metrics.height(context) * 0.05,
-        decoration: Styles.btnStyle.copyWith(
-            gradient: btnStyle?.gradient,
-            color: btnStyle?.color,
-            shape: btnStyle?.shape,
-            border: btnStyle?.border,
-            borderRadius: btnStyle?.borderRadius,
-            boxShadow: btnStyle?.boxShadow),
+    return Container(
+      margin: btnMargin,
+      width: btnSize?.width,
+      height: btnSize?.height ?? Metrics.height(context) * 0.04,
+      decoration: Styles.btnStyle(context).copyWith(
+          gradient: btnStyle?.gradient,
+          color: btnStyle?.color,
+          shape: btnStyle?.shape,
+          border: btnStyle?.border,
+          borderRadius: btnStyle?.borderRadius,
+          boxShadow: btnStyle?.boxShadow),
+      child: InkWell(
+        onTap: onPressed,
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
@@ -54,32 +56,6 @@ class ButtonComponent extends StatelessWidget {
             ),
           ],
         ),
-
-        // ElevatedButton(
-        //   onPressed: onPressed,
-        //   style: Styles.btnStyle.copyWith(
-        //       shape: btnStyle?.shape,
-        //       backgroundColor: btnStyle?.backgroundColor,
-        //       padding: btnStyle?.padding,
-        //       animationDuration: btnStyle?.animationDuration,
-        //       minimumSize: btnStyle?.minimumSize,
-        //       maximumSize: btnStyle?.maximumSize,
-        //       textStyle: btnStyle?.textStyle),
-        //   child:
-        // Row(
-        //     mainAxisAlignment: MainAxisAlignment.center,
-        //     children: <Widget>[
-        //       if (leadingChild != null) leadingChild!,
-        //       Padding(
-        //         padding: btnPadding ?? const EdgeInsets.all(0),
-        //         child: TextComponent(
-        //           text: btnTitle,
-        //           textStyle: btnTextStyle,
-        //         ),
-        //       ),
-        //     ],
-        //   ),
-        // ),
       ),
     );
   }

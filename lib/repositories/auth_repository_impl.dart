@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
@@ -55,6 +57,7 @@ class FirebaseRepositoryImpl extends FirebaseRepository {
           Map<Object, Object?> updateData = user.toMapWithoutNulls();
           await firebaseService.updateUserDetail(
               id: firebaseUser!.uid, data: updateData);
+          Logger().d('GOOGLE SIGNIN USER +>${firebaseUser.displayName}');
           return firebaseUser;
         }
       } else {
@@ -76,6 +79,7 @@ class FirebaseRepositoryImpl extends FirebaseRepository {
       UserModel? user = UserModel(
           deviceUniqueId: deviceId, updatedAt: FieldValue.serverTimestamp());
       Map<Object, Object?> updateData = user.toMapWithoutNulls();
+      log('USER +> ${updateData}');
       await firebaseService.updateUserDetail(
           id: firebaseUser!.uid, data: updateData);
       return firebaseUser;

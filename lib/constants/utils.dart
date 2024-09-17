@@ -13,8 +13,8 @@ void showCustomToast({
   required BuildContext context,
   required FToast fToast,
   required List<String> message,
-  required Color backgroundColor,
-  required IconData icon,
+  Color? backgroundColor,
+  IconData? icon,
   double? width,
   double? height,
   double? top,
@@ -28,11 +28,9 @@ void showCustomToast({
 
   Widget createToast(String message, List<String> messageList) {
     return Container(
-      margin: messageList.length > 1
-          ? const EdgeInsets.only(top: 10, right: 20, left: 20, bottom: 0)
-          : const EdgeInsets.all(Metrics.doubleBaseMargin),
+      margin: const EdgeInsets.all(Metrics.baseMargin),
       child: Container(
-        padding: const EdgeInsets.all(Metrics.semiBaseMargin),
+        padding: const EdgeInsets.all(Metrics.baseMargin),
         constraints: isTablet
             ? null
             : BoxConstraints(maxWidth: MediaQuery.of(context).size.width * 0.9),
@@ -43,8 +41,10 @@ void showCustomToast({
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(icon, size: 30, color: colors.whiteColor),
-            const SizedBox(width: Metrics.baseMargin),
+            icon != null
+                ? Icon(icon, size: 30, color: colors.whiteColor)
+                : Container(),
+            // const SizedBox(width: Metrics.baseMargin),
             Flexible(
               child: Text(
                 message,
@@ -55,7 +55,7 @@ void showCustomToast({
                           ? Metrics.getFontSize(context, 14)
                           : Metrics.getFontSize(context, 20)
                       : Metrics.getFontSize(context, 14),
-                  color:  colors.whiteColor,
+                  color: colors.whiteColor,
                 ),
               ),
             ),
@@ -70,8 +70,11 @@ void showCustomToast({
     toastDuration: toastDuration,
     positionedToastBuilder: (context, child) {
       return Positioned(
-        top: top ?? 50.0,
-        right: right ?? 0.0,
+        bottom: 20,
+        left: 0,
+        right: 0,
+        // top: top ?? 50.0,
+        // right: right ?? 0.0,
         child: child,
       );
     },

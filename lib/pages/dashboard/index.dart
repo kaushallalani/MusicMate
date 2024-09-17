@@ -33,7 +33,8 @@ class _DashboardState extends State<Dashboard> with WidgetsBindingObserver {
 
   List<Widget> pages = [
     const HomePage(),
-    const Search(),
+    // const Search(),
+    const SettingsPage(),
     const SettingsPage(),
     const Library()
   ];
@@ -120,9 +121,9 @@ class _DashboardState extends State<Dashboard> with WidgetsBindingObserver {
                   pageIndex: pageIndex,
                   bottomBarStyle: BoxDecoration(
                       color: colors.whiteColor,
-                      border: const Border(
+                      border: Border(
                           top: BorderSide(
-                              width: 1, color: AppColor.headerBorder))),
+                              width: 1, color: colors.headerBorder))),
                 ),
                 body: pages[pageIndex],
               );

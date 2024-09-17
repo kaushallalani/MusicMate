@@ -19,8 +19,8 @@ final GetIt serviceLocater = GetIt.instance;
 
 Future<void> init() async {
   serviceLocater
-    ..registerFactory(
-        () => AuthenticationBloc(serviceLocater.call(), serviceLocater.call()))
+    ..registerFactory(() => AuthenticationBloc(
+        serviceLocater.call(), serviceLocater.call(), serviceLocater.call()))
     ..registerFactory(() => DashboardBloc(serviceLocater.call(),
         serviceLocater.call(), serviceLocater.call(), serviceLocater.call()))
     ..registerFactory(() => SessionBloc(serviceLocater.call(),

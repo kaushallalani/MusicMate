@@ -18,7 +18,7 @@ import 'package:musicmate/services/playlistProvider.dart';
 import 'package:provider/provider.dart';
 
 class Playback extends StatefulWidget {
-  final dynamic currentSong;
+  final AlbumItem? currentSong;
   final String? currentSongType;
   const Playback({super.key, this.currentSong, this.currentSongType});
 
@@ -27,25 +27,23 @@ class Playback extends StatefulWidget {
 }
 
 class _PlaybackState extends State<Playback> {
-  late dynamic _currentSong;
   List<Track?>? recommendedTracks;
   List<dynamic>? nextTracks;
   List<String>? videoIds;
   String? currentVideoId;
-  bool isLoading = true;
+  bool isLoading = false;
   bool _isPlaying = false;
   late PlaylistProvider playlistProvider;
 
   @override
   void initState() {
     super.initState();
-    _currentSong = widget.currentSong!;
-    Logger().d('currentSong => ${widget.currentSong}');
+    Logger().d('currentSong => ${widget.currentSong!.name}');
     Logger().d('currentSongType => ${widget.currentSongType}');
 
-    playlistProvider = Provider.of<PlaylistProvider>(context, listen: false);
+    // playlistProvider = Provider.of<PlaylistProvider>(context, listen: false);
 
-    handleRecommendedSongs();
+    // handleRecommendedSongs();
   }
 
   handleRecommendedSongs() {
@@ -53,19 +51,19 @@ class _PlaybackState extends State<Playback> {
     List<String>? artistIds;
     switch (widget.currentSongType) {
       case 'AlbumItem':
-        final AlbumItem albumData = AlbumItem.fromJson(_currentSong);
+        final AlbumItem albumData = widget.currentSong!;
         artistIds = albumData.artists!.map((artist) => artist.id!).toList();
         break;
 
       case 'Track':
         Logger().d('in track rec');
-        final Track trackData = Track.fromJson(_currentSong);
-        Logger().d(trackData.artists![0].name);
-        BlocProvider.of<PlaybackBloc>(context).add(OnPlaySong(
-            songName: trackData.name!,
-            artistName:
-                trackData.artists!.map((artist) => artist.name!).toList()));
-        artistIds = trackData.artists!.map((artist) => artist.id!).toList();
+      // final Track trackData = Track.fromJson(_currentSong);
+      // Logger().d(trackData.artists![0].name);
+      // BlocProvider.of<PlaybackBloc>(context).add(OnPlaySong(
+      //     songName: trackData.name!,
+      //     artistName:
+      //         trackData.artists!.map((artist) => artist.name!).toList()));
+      // artistIds = trackData.artists!.map((artist) => artist.id!).toList();
     }
 
     BlocProvider.of<PlaybackBloc>(context)
@@ -128,26 +126,25 @@ class _PlaybackState extends State<Playback> {
     List<String>? artistList = [];
     String? imageUrl;
     String? name;
-
-    final colors= Theme.of(context).customColors;
+    final colors = Theme.of(context).customColors;
 
     // Logger().d(_currentSong.runtimeType);
     switch (widget.currentSongType) {
       case "AlbumItem":
         Logger().d('in album');
-        final AlbumItem albumData = AlbumItem.fromJson(_currentSong);
+        final AlbumItem albumData = widget.currentSong!;
         name = albumData.name;
         imageUrl = albumData.images![0].url;
         artistList = albumData.artists!.map((artist) => artist.name!).toList();
         break;
 
-      case "Track":
-        Logger().d('in track');
-        final Track trackData = Track.fromJson(_currentSong);
-        name = trackData.name!;
-        imageUrl = trackData.album!.images![0].url!;
-        artistList = trackData.artists!.map((artist) => artist.name!).toList();
-        break;
+      // case "Track":
+      //   Logger().d('in track');
+      //   final Track trackData = Track.fromJson(_currentSong);
+      //   name = trackData.name!;
+      //   imageUrl = trackData.album!.images![0].url!;
+      //   artistList = trackData.artists!.map((artist) => artist.name!).toList();
+      //   break;
     }
 
     return BlocConsumer<PlaybackBloc, PlaybackState>(
@@ -192,6 +189,7 @@ class _PlaybackState extends State<Playback> {
         Logger().d('state => ${state}');
         return Scaffold(
           appBar: AppBar(
+            backgroundColor: colors.whiteColor,
             leadingWidth: 40,
             titleSpacing: 0,
             leading: Padding(
@@ -216,7 +214,7 @@ class _PlaybackState extends State<Playback> {
           body: isLoading == true
               ? Container(
                   color: Colors.white,
-                  child:  Center(
+                  child: Center(
                     child: CircularProgressIndicator(
                       color: colors.customColor2,
                     ),
@@ -240,7 +238,8 @@ class _PlaybackState extends State<Playback> {
                                   child: ClipRRect(
                                     borderRadius: BorderRadius.circular(10),
                                     child: Image.network(
-                                      "https://i.scdn.co/image/ab67616d00004851d45d964b438b8297eb908384",
+                                      filterQuality: FilterQuality.medium,
+                                      widget.currentSong!.images![1].url!,
                                       width: Metrics.width(context),
                                       fit: BoxFit.cover,
                                     ),

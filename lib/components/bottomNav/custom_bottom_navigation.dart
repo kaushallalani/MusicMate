@@ -36,7 +36,7 @@ class CustomBottomNavigation extends StatelessWidget {
                 icon: IconTheme(
                     data: IconThemeData(
                       color: pageIndex == index
-                          ? AppColor.aquaBlue
+                          ? colors.customColor2
                           : colors.blackColor,
                       size: 22,
                     ),
@@ -47,7 +47,7 @@ class CustomBottomNavigation extends StatelessWidget {
                     style: TextStyle(
                       fontSize: Metrics.getFontSize(context, FontSize.normal),
                       color: pageIndex == index
-                          ? AppColor.aquaBlue
+                          ? colors.customColor2
                           : colors.blackColor,
                     ),
                     child: item['label'] as Text,

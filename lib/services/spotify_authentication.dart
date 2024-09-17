@@ -1,22 +1,18 @@
 import 'dart:convert';
+import 'dart:developer';
 import 'package:dio/dio.dart';
 import 'package:logger/logger.dart';
+import 'package:musicmate/constants/environment.dart';
 import 'package:musicmate/controllers/dio.dart';
-import 'package:musicmate/models/spotify/albums_data.dart';
 
 class SpotifyAuthentication {
-  final String ClientID = '3222f0dac2e24c908781642f43c8506d';
-  final String ClientSecret = '31e95b4c7dd04ee0a7a285d23c4f36be';
-  final String YoutubeApi = 'AIzaSyCizoXiBWYEfnglp5f2vfr1xkSXt77FuUM';
   final DioController controller = DioController();
-  final String ENDPOINT = 'https://api.spotify.com/v1';
 
   Future<String?> getAccessToken() async {
-    print('acccc');
-    const String authUrl = 'https://accounts.spotify.com/api/token';
+    final String authUrl = Environment.AUTH_TOKEN;
 
     final String basicAuth =
-        'Basic ${base64Encode(utf8.encode('$ClientID:$ClientSecret'))}';
+        'Basic ${base64Encode(utf8.encode('${Environment.ClientId}:${Environment.ClientSecret}'))}';
 
     final dioResponse = await controller.postController(
         Options(
@@ -36,9 +32,9 @@ class SpotifyAuthentication {
     if (accessToken.isNotEmpty) {
       Logger().d(accessToken);
       final dioResponse = await controller.getController(
-          Options(headers: {'authorization': 'Bearer $accessToken'}),
-          'https://api.spotify.com/v1/browse/categories',
-          null);
+          url: Environment.BROWSE_CATEGORIES,
+          options: Options(headers: {'authorization': 'Bearer $accessToken'}),
+          queryParameters: null);
 
       if (dioResponse!.isNotEmpty) {
         return dioResponse;
@@ -49,11 +45,12 @@ class SpotifyAuthentication {
 
   Future<Map<String, dynamic>?> fetchNewReleases(
       String accessToken, String url) async {
+    log('${accessToken.isNotEmpty} ,ccccc');
     if (accessToken.isNotEmpty) {
       final dioResponse = await controller.getController(
-          Options(headers: {'authorization': 'Bearer $accessToken'}),
-          url,
-          null);
+          options: Options(headers: {'authorization': 'Bearer $accessToken'}),
+          url: url,
+          queryParameters: null);
 
       if (dioResponse!.isNotEmpty) {
         return dioResponse;
@@ -64,22 +61,20 @@ class SpotifyAuthentication {
 
   Future<Map<String, dynamic>?>? fetchSearchSong(
       String songName, List<String> artistName) async {
-
-        Logger().d('in search');
-    const searchUrl = 'https://www.googleapis.com/youtube/v3/search';
-
+    Logger().d('in search');
+    final searchUrl = Environment.YOUTUBE_SEARCH;
 
     final Map<String, dynamic> queryParameters = {
       'part': 'snippet',
       'q': '$songName${artistName.join(' ')}',
-      'key': YoutubeApi,
+      'key': Environment.YT_API_KEY,
       'type': 'video',
       'maxResults': '1'
     };
 
     if (songName != null) {
-      final dioResponse =
-          await controller.getController(null, searchUrl, queryParameters);
+      final dioResponse = await controller.getController(
+          options: null, url: searchUrl, queryParameters: queryParameters);
       if (dioResponse!.isNotEmpty) {
         return dioResponse;
       }
@@ -89,8 +84,6 @@ class SpotifyAuthentication {
 
   Future<Map<String, dynamic>?>? fetchRecommendedSongs(
       List<String> artistId, String accessToken) async {
-    const recomendedUrl = 'https://api.spotify.com/v1/recommendations';
-
     Logger().d('idsss => ${artistId.join(',')}');
     final Map<String, dynamic> queryParameters = {
       'seed_artists': artistId.join(','),
@@ -98,10 +91,10 @@ class SpotifyAuthentication {
     };
     if (accessToken != null) {
       final dioResponse = await controller.getController(
-          Options(headers: {'authorization': 'Bearer $accessToken'}),
-          recomendedUrl,
-          queryParameters);
-Logger().d('res $dioResponse');
+          options: Options(headers: {'authorization': 'Bearer $accessToken'}),
+          url: Environment.RECOMMENDATIONS,
+          queryParameters: queryParameters);
+      Logger().d('res $dioResponse');
       if (dioResponse!.isNotEmpty) {
         return dioResponse;
       }

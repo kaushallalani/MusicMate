@@ -10,6 +10,7 @@ class UserRepository {
   DateTime? _tokenExpirationTime;
   String? _currentSongId;
   bool? _loginStatus;
+  List<AlbumItem>? _newReleases;
 
   Albums? _albumData;
 
@@ -20,6 +21,7 @@ class UserRepository {
   Albums? get albumData => _albumData;
   String? get currentSongId => _currentSongId;
   bool? get loginStatus => _loginStatus;
+  List<AlbumItem>? get newReleases => _newReleases;
 
   void saveUserData(UserModel userData) {
     _userDataModel = userData;
@@ -30,7 +32,7 @@ class UserRepository {
     _sessionModel = sessionData;
   }
 
-  void saveAccessToken(String accessToken, DateTime tokenExpirationTime) {
+  void saveAccessToken(String accessToken, DateTime? tokenExpirationTime) {
     _accessToken = accessToken;
     _tokenExpirationTime = tokenExpirationTime;
   }
@@ -45,5 +47,9 @@ class UserRepository {
 
   void saveUserLoginStatus(bool status) {
     _loginStatus = status;
+  }
+
+  void saveNewReleases(List<AlbumItem> albums) {
+    _newReleases = albums;
   }
 }

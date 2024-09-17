@@ -25,7 +25,7 @@ class _HomePageState extends State<HomePage> {
   int currentIndex = 0;
   double sliderValue = 0;
   bool isLoading = true;
-  late UserModel? _userDetails;
+  UserModel? _userDetails;
   Albums? albumsData;
   final scrollController = ScrollController();
   bool hasMoreData = true;
@@ -61,6 +61,7 @@ class _HomePageState extends State<HomePage> {
         .add(OnDisplaySong(songName: songName, artistName: artistList));
 
     context.pushNamed(NAVIGATION.playback, queryParameters: {
+      // 'currentSong': currentItem,
       'currentSong': jsonEncode(currentItem.toJson()),
       "currentSongType": 'AlbumItem'
     }).then((onValue) {
@@ -77,6 +78,9 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     final colors = Theme.of(context).customColors;
+    final isTablet = Metrics.isTablet(context);
+    final isPortrait = Metrics.isPortrait(context);
+
     return BlocConsumer<DashboardBloc, DashboardState>(
       listener: (context, state) {
         if (state is DashboardInitial) {}
@@ -123,11 +127,23 @@ class _HomePageState extends State<HomePage> {
           child: Scaffold(
             backgroundColor: Theme.of(context).colorScheme.surface,
             appBar: AppBar(
-              leadingWidth: 25,
-              title: Padding(
-                padding: EdgeInsets.symmetric(
-                    horizontal: Metrics.width(context) * 0),
-                child: Text('Welcome ${_userDetails!.fullName}'),
+              backgroundColor: Theme.of(context).colorScheme.surface,
+              leading: Icon(
+                FontAwesome.music,
+                size: 20,
+                color: colors.blackColor,
+              ),
+              leadingWidth: isTablet
+                  ? Metrics.getResponsiveSize(context, 0.1)
+                  : Metrics.getResponsiveSize(context, 0.12),
+              titleSpacing: 0,
+              title: TextComponent(
+                text: 'Welcome ${_userDetails!.fullName}',
+                textStyle: TextStyle(
+                    color: colors.blackColor,
+                    fontSize: isTablet
+                        ? Metrics.getFontSize(context, 18)
+                        : Metrics.getFontSize(context, 18)),
               ),
               actions: [
                 IconButton(
@@ -148,9 +164,9 @@ class _HomePageState extends State<HomePage> {
             body: isLoading == true
                 ? Container(
                     color: colors.whiteColor,
-                    child: const Center(
+                    child: Center(
                       child: CircularProgressIndicator(
-                        color: AppColor.aquaBlue,
+                        color: colors.customColor2,
                       ),
                     ),
                   )
@@ -192,7 +208,7 @@ class _HomePageState extends State<HomePage> {
                                           width: Metrics.width(context) * 0.4),
                                       onPressed: onListenTogether,
                                       btnStyle: BoxDecoration(
-                                        color: colors.blackColor,
+                                        color: colors.whiteColor,
                                         borderRadius: BorderRadius.circular(5),
                                         border: Border.all(
                                             color: colors.blackColor),
@@ -233,23 +249,30 @@ class _HomePageState extends State<HomePage> {
                                               children: [
                                                 Container(
                                                   decoration: BoxDecoration(
-                                                    border: Border.all(),
-                                                  ),
+                                                      border: Border.all(),
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                              5)),
                                                   width:
                                                       Metrics.width(context) *
                                                           0.15,
                                                   height:
                                                       Metrics.width(context) *
                                                           0.15,
-                                                  child: Image.network(
-                                                    albumItem.images![1].url!,
-                                                    height:
-                                                        Metrics.width(context) *
-                                                            0.15,
-                                                    width:
-                                                        Metrics.width(context) *
-                                                            0.15,
-                                                    fit: BoxFit.fill,
+                                                  child: ClipRRect(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            5),
+                                                    child: Image.network(
+                                                      albumItem.images![1].url!,
+                                                      // height:
+                                                      //     Metrics.width(context) *
+                                                      //         0.15,
+                                                      // width:
+                                                      //     Metrics.width(context) *
+                                                      //         0.15,
+                                                      fit: BoxFit.fill,
+                                                    ),
                                                   ),
                                                 ),
                                                 Expanded(
@@ -272,28 +295,25 @@ class _HomePageState extends State<HomePage> {
                                                           text: albumItem.name!,
                                                           textAlign:
                                                               TextAlign.left,
-                                                          textStyle:
-                                                              const TextStyle(
-                                                                  fontWeight:
-                                                                      FontWeight
-                                                                          .w700,
-                                                                  fontSize:
-                                                                      FontSize
-                                                                          .normal,
-                                                                  color: AppColor
-                                                                      .white),
+                                                          textStyle: TextStyle(
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .w700,
+                                                              fontSize: FontSize
+                                                                  .normal,
+                                                              color: colors
+                                                                  .whiteColor),
                                                         ),
                                                         TextComponent(
                                                           text: artistList
                                                               .join(' | '),
                                                           textAlign:
                                                               TextAlign.left,
-                                                          textStyle:
-                                                              const TextStyle(
+                                                          textStyle: TextStyle(
                                                             fontSize:
                                                                 FontSize.msmall,
-                                                            color:
-                                                                AppColor.grey,
+                                                            color: colors
+                                                                .hintGreyColor,
                                                           ),
                                                         ),
                                                       ],
@@ -327,142 +347,138 @@ class _HomePageState extends State<HomePage> {
                           ),
                         ),
                       ),
-                      FooterComponent(
-                        flex: 0,
-                        footerMargin: EdgeInsets.symmetric(
-                          vertical: 2,
-                          horizontal: Metrics.width(context) * 0.04,
-                        ),
-                        footerSize: SizedBox(
-                          height: Metrics.height(context) * 0.1,
-                        ),
-                        footerStyle: const BoxDecoration(
-                          color: Colors.red,
-                          borderRadius: BorderRadius.all(Radius.circular(10)),
-                        ),
-                        child: Column(
-                          children: [
-                            Expanded(
-                              flex: 0,
-                              child: Container(
-                                padding: EdgeInsets.all(
-                                    Metrics.width(context) * 0.02),
-                                width: double.infinity,
-                                child: Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceAround,
-                                  children: [
-                                    ClipRRect(
-                                      borderRadius: const BorderRadius.all(
-                                          Radius.circular(5)),
-                                      child: Image.asset(
-                                        'assets/images/Lae_Dooba.jpg',
-                                        height: Metrics.width(context) * 0.15,
-                                        width: Metrics.width(context) * 0.15,
-                                        fit: BoxFit.fill,
-                                      ),
-                                    ),
-                                    Container(
-                                      width: Metrics.width(context) * 0.4,
-                                      padding: EdgeInsets.symmetric(
-                                        horizontal:
-                                            Metrics.width(context) * 0.02,
-                                      ),
-                                      child: const Column(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.start,
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          TextComponent(
-                                            text: "songName",
-                                            textAlign: TextAlign.left,
-                                            textStyle: TextStyle(
-                                              fontWeight: FontWeight.w700,
-                                            ),
-                                          ),
-                                          TextComponent(
-                                            text: "artistName",
-                                            textAlign: TextAlign.left,
-                                            textStyle:
-                                                TextStyle(color: Colors.green),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                    Flexible(
-                                      child: IconButton(
-                                        padding: const EdgeInsets.all(0),
-                                        onPressed: () {},
-                                        icon: const Icon(
-                                          Icons.speaker,
-                                          size: 25,
-                                          color: Colors.white,
-                                        ),
-                                      ),
-                                    ),
-                                    Flexible(
-                                      child: IconButton(
-                                        padding: const EdgeInsets.all(0),
-                                        onPressed: () {},
-                                        icon: const Icon(
-                                          Icons.pause,
-                                          size: 25,
-                                          color: Colors.white,
-                                        ),
-                                      ),
-                                    ),
-                                    Flexible(
-                                      child: IconButton(
-                                        padding: const EdgeInsets.all(0),
-                                        onPressed: () {},
-                                        icon: const Icon(
-                                          Icons.add_circle,
-                                          size: 25,
-                                          color: Colors.white,
-                                        ),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ),
-                            Expanded(
-                              child: SizedBox(
-                                width: double.infinity,
-                                child: SliderTheme(
-                                  data: SliderTheme.of(context).copyWith(
-                                    trackHeight: 5,
-                                    trackShape:
-                                        const RectangularSliderTrackShape(),
-                                    thumbShape: const RoundSliderThumbShape(
-                                      elevation: 0,
-                                      pressedElevation: 0,
-                                      enabledThumbRadius: 0.0,
-                                    ),
-                                  ),
-                                  child: Slider(
-                                    min: 0,
-                                    max: 3.05,
-                                    value: sliderValue,
-                                    activeColor: Colors.green,
-                                    thumbColor: Colors.transparent,
-                                    onChanged: (value) {
-                                      // setState(() {
-                                      //   sliderValue = value;
-                                      // });
-                                    },
-                                    onChangeEnd: (double value) {
-                                      // Sliding has finished go to that position in the song
-                                      // value.seek(Duration(seconds: value.toInt()));
-                                    },
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
+                      // FooterComponent(
+                      //   footerMargin: EdgeInsets.symmetric(
+                      //     vertical: 2,
+                      //     horizontal: Metrics.width(context) * 0.04,
+                      //   ),
+                      //   footerStyle: const BoxDecoration(
+                      //     color: Colors.red,
+                      //     borderRadius: BorderRadius.all(Radius.circular(10)),
+                      //   ),
+                      //   child: Column(
+                      //     children: [
+                      //       Expanded(
+                      //         flex: 0,
+                      //         child: Container(
+                      //           padding: EdgeInsets.all(
+                      //               Metrics.width(context) * 0.02),
+                      //           width: double.infinity,
+                      //           child: Row(
+                      //             mainAxisAlignment:
+                      //                 MainAxisAlignment.spaceAround,
+                      //             children: [
+                      //               ClipRRect(
+                      //                 borderRadius: const BorderRadius.all(
+                      //                     Radius.circular(5)),
+                      //                 child: Image.asset(
+                      //                   'assets/images/Lae_Dooba.jpg',
+                      //                   height: Metrics.width(context) * 0.15,
+                      //                   width: Metrics.width(context) * 0.15,
+                      //                   fit: BoxFit.fill,
+                      //                 ),
+                      //               ),
+                      //               Container(
+                      //                 width: Metrics.width(context) * 0.4,
+                      //                 padding: EdgeInsets.symmetric(
+                      //                   horizontal:
+                      //                       Metrics.width(context) * 0.02,
+                      //                 ),
+                      //                 child: const Column(
+                      //                   mainAxisAlignment:
+                      //                       MainAxisAlignment.start,
+                      //                   crossAxisAlignment:
+                      //                       CrossAxisAlignment.start,
+                      //                   children: [
+                      //                     TextComponent(
+                      //                       text: "songName",
+                      //                       textAlign: TextAlign.left,
+                      //                       textStyle: TextStyle(
+                      //                         fontWeight: FontWeight.w700,
+                      //                       ),
+                      //                     ),
+                      //                     TextComponent(
+                      //                       text: "artistName",
+                      //                       textAlign: TextAlign.left,
+                      //                       textStyle:
+                      //                           TextStyle(color: Colors.green),
+                      //                     ),
+                      //                   ],
+                      //                 ),
+                      //               ),
+                      //               Flexible(
+                      //                 child: IconButton(
+                      //                   padding: const EdgeInsets.all(0),
+                      //                   onPressed: () {},
+                      //                   icon: const Icon(
+                      //                     Icons.speaker,
+                      //                     size: 25,
+                      //                     color: Colors.white,
+                      //                   ),
+                      //                 ),
+                      //               ),
+                      //               Flexible(
+                      //                 child: IconButton(
+                      //                   padding: const EdgeInsets.all(0),
+                      //                   onPressed: () {},
+                      //                   icon: const Icon(
+                      //                     Icons.pause,
+                      //                     size: 25,
+                      //                     color: Colors.white,
+                      //                   ),
+                      //                 ),
+                      //               ),
+                      //               Flexible(
+                      //                 child: IconButton(
+                      //                   padding: const EdgeInsets.all(0),
+                      //                   onPressed: () {},
+                      //                   icon: const Icon(
+                      //                     Icons.add_circle,
+                      //                     size: 25,
+                      //                     color: Colors.white,
+                      //                   ),
+                      //                 ),
+                      //               ),
+                      //             ],
+                      //           ),
+                      //         ),
+                      //       ),
+                      //       Expanded(
+                      //         child: SizedBox(
+                      //           width: double.infinity,
+                      //           child: SliderTheme(
+                      //             data: SliderTheme.of(context).copyWith(
+                      //               trackHeight: 5,
+                      //               trackShape:
+                      //                   const RectangularSliderTrackShape(),
+                      //               thumbShape: const RoundSliderThumbShape(
+                      //                 elevation: 0,
+                      //                 pressedElevation: 0,
+                      //                 enabledThumbRadius: 0.0,
+                      //               ),
+                      //             ),
+                      //             child: Slider(
+                      //               min: 0,
+                      //               max: 3.05,
+                      //               value: sliderValue,
+                      //               activeColor: Colors.green,
+                      //               thumbColor: Colors.transparent,
+                      //               onChanged: (value) {
+                      //                 // setState(() {
+                      //                 //   sliderValue = value;
+                      //                 // });
+                      //               },
+                      //               onChangeEnd: (double value) {
+                      //                 // Sliding has finished go to that position in the song
+                      //                 // value.seek(Duration(seconds: value.toInt()));
+                      //               },
+                      //             ),
+                      //           ),
+                      //         ),
+                      //       ),
+                      //     ],
+                      //   ),
+                      // ),
                     ],
                   ),
           ),
