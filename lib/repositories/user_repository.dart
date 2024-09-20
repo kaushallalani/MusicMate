@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:logger/logger.dart';
 import 'package:musicmate/models/session.dart';
 import 'package:musicmate/models/spotify/albums_data.dart';
@@ -9,7 +11,7 @@ class UserRepository {
   String? _accessToken;
   DateTime? _tokenExpirationTime;
   String? _currentSongId;
-  bool? _loginStatus;
+  bool? _loginStatus = false;
   List<AlbumItem>? _newReleases;
 
   Albums? _albumData;
@@ -33,6 +35,7 @@ class UserRepository {
   }
 
   void saveAccessToken(String accessToken, DateTime? tokenExpirationTime) {
+    log('TOKEN SAVEDDD +>$accessToken');
     _accessToken = accessToken;
     _tokenExpirationTime = tokenExpirationTime;
   }
@@ -51,5 +54,17 @@ class UserRepository {
 
   void saveNewReleases(List<AlbumItem> albums) {
     _newReleases = albums;
+  }
+
+  void clearUserRepository() {
+    log('user repo cleared');
+    _accessToken = null;
+    _currentSongId = null;
+    _albumData = null;
+    _loginStatus = false;
+    _newReleases = null;
+    _sessionModel = null;
+    _tokenExpirationTime = null;
+    _userDataModel = null;
   }
 }

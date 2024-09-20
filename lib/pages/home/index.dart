@@ -57,8 +57,8 @@ class _HomePageState extends State<HomePage> {
 // go to a song
   void goToSong(
       String songName, List<String> artistList, AlbumItem currentItem) {
-    BlocProvider.of<DashboardBloc>(context)
-        .add(OnDisplaySong(songName: songName, artistName: artistList));
+    // BlocProvider.of<DashboardBloc>(context)
+    //     .add(OnDisplaySong(songName: songName, artistName: artistList));
 
     context.pushNamed(NAVIGATION.playback, queryParameters: {
       // 'currentSong': currentItem,
@@ -234,8 +234,9 @@ class _HomePageState extends State<HomePage> {
                                             .map((artist) => artist.name!)
                                             .toList();
 
-                                        if (albumItem.albumType ==
-                                            AlbumTypeEnum.SINGLE) {
+                                        if (albumItem.albumType!
+                                                .toLowerCase() ==
+                                            'single') {
                                           return InkWell(
                                             onTap: () {
                                               goToSong(albumItem.name!,
@@ -302,7 +303,7 @@ class _HomePageState extends State<HomePage> {
                                                               fontSize: FontSize
                                                                   .normal,
                                                               color: colors
-                                                                  .whiteColor),
+                                                                  .blackColor),
                                                         ),
                                                         TextComponent(
                                                           text: artistList

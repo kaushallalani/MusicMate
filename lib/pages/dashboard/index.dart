@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -25,15 +27,13 @@ class _DashboardState extends State<Dashboard> with WidgetsBindingObserver {
   int pageIndex = 0;
   String? deviceId;
   AppLifecycleState? appLifecycleState;
-  final Stream<DocumentSnapshot<Map<String, dynamic>>> _userStream =
-      FirebaseFirestore.instance
-          .collection("users")
-          .doc(FirebaseAuth.instance.currentUser!.uid)
-          .snapshots();
+  Stream<DocumentSnapshot<Map<String, dynamic>>>? _userStream;
+  StreamSubscription? _userStreamSubscription;
+
 
   List<Widget> pages = [
     const HomePage(),
-    // const Search(),
+    const Search(),
     const SettingsPage(),
     const SettingsPage(),
     const Library()
@@ -70,6 +70,7 @@ class _DashboardState extends State<Dashboard> with WidgetsBindingObserver {
     getDeviceId();
     Logger().d('dashboard called');
     WidgetsBinding.instance.addObserver(this);
+    _initializeUserStream();
     BlocProvider.of<DashboardBloc>(context).add(GenerateAccessToken());
     BlocProvider.of<DashboardBloc>(context).add(FetchUserDataFromFirebase());
   }
@@ -85,8 +86,29 @@ class _DashboardState extends State<Dashboard> with WidgetsBindingObserver {
   @override
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
-
+    _userStreamSubscription?.cancel();
     super.dispose();
+  }
+
+  void _initializeUserStream() {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user != null) {
+      _userStream = _userStream = FirebaseFirestore.instance
+          .collection("users")
+          .doc(user!.uid)
+          .snapshots();
+      _userStreamSubscription = _userStream!.listen((data) {
+        Logger().d("Stream data: ${data.data()} DATA $data");
+      });
+    } else {
+      Logger().e("User not authenticated");
+      _userStreamSubscription?.cancel();
+
+      // Handle navigation to login if user is not authenticated
+      // if (mounted) {
+      //   context.go(NAVIGATION.login);
+      // }
+    }
   }
 
   void getDeviceId() async {
@@ -99,15 +121,19 @@ class _DashboardState extends State<Dashboard> with WidgetsBindingObserver {
   @override
   Widget build(BuildContext context) {
     final colors = Theme.of(context).customColors;
+    final user = FirebaseAuth.instance.currentUser;
 
     return StreamBuilder<Object>(
         stream: _userStream,
         builder: (context, AsyncSnapshot snapshot) {
+          Logger().d('Connection state => ${snapshot.connectionState}');
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
           }
           if (snapshot.connectionState == ConnectionState.active) {
-            final data = snapshot.data!.data() as Map<String, dynamic>;
+            final data = snapshot.data != null
+                ? snapshot.data!.data() as Map<String, dynamic>
+                : {};
             if (data['deviceUniqueId'] != deviceId) {
               WidgetsBinding.instance.addPostFrameCallback((_) {
                 BlocProvider.of<DashboardBloc>(context).add(SignoutUser());

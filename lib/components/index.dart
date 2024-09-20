@@ -4,7 +4,6 @@ export 'icon/icon_component.dart';
 export 'myDrawer.dart';
 export 'bottomNav/custom_bottom_navigation.dart';
 export 'footer/footer_component.dart';
-export 'customSongTile/custom_song_tile.dart';
 export 'textFormField/text_form_field_component.dart';
 export './customAnimation/customAnimation.dart';
 export '../constants/utils.dart';

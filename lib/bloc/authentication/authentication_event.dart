@@ -40,3 +40,6 @@ class GoogleSignUp extends AuthenticationEvent {
 }
 
 class GenerateSpotifyAccessToken extends AuthenticationEvent {}
+class GetLogginStatus extends AuthenticationEvent {
+  const GetLogginStatus();
+}

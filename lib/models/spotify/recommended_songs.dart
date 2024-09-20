@@ -4,20 +4,20 @@ import 'albums_data.dart';
 part 'recommended_songs.g.dart';
 
 @JsonSerializable()
-class RecommendedSongs {
+class Tracks {
     @JsonKey(name: "tracks")
     List<Track>? tracks;
     @JsonKey(name: "seeds")
     List<Seed>? seeds;
 
-    RecommendedSongs({
+    Tracks({
         this.tracks,
         this.seeds,
     });
 
-    factory RecommendedSongs.fromJson(Map<String, dynamic> json) => _$RecommendedSongsFromJson(json);
+    factory Tracks.fromJson(Map<String, dynamic> json) => _$TracksFromJson(json);
 
-    Map<String, dynamic> toJson() => _$RecommendedSongsToJson(this);
+    Map<String, dynamic> toJson() => _$TracksToJson(this);
 }
 
 @JsonSerializable()
@@ -52,7 +52,7 @@ class Seed {
 @JsonSerializable()
 class Track {
     @JsonKey(name: "album")
-    Album? album;
+    AlbumItem? album;
     @JsonKey(name: "artists")
     List<Artist>? artists;
     @JsonKey(name: "available_markets")
@@ -109,76 +109,6 @@ class Track {
     factory Track.fromJson(Map<String, dynamic> json) => _$TrackFromJson(json);
 
     Map<String, dynamic> toJson() => _$TrackToJson(this);
-}
-
-@JsonSerializable()
-class Album {
-    @JsonKey(name: "album_type")
-    String? albumType;
-    @JsonKey(name: "artists")
-    List<Artist>? artists;
-    @JsonKey(name: "available_markets")
-    List<String>? availableMarkets;
-    @JsonKey(name: "external_urls")
-    ExternalUrls? externalUrls;
-    @JsonKey(name: "href")
-    String? href;
-    @JsonKey(name: "id")
-    String? id;
-    @JsonKey(name: "images")
-    List<TrackImage>? images;
-    @JsonKey(name: "name")
-    String? name;
-    @JsonKey(name: "release_date")
-    DateTime? releaseDate;
-    @JsonKey(name: "release_date_precision")
-    String? releaseDatePrecision;
-    @JsonKey(name: "total_tracks")
-    int? totalTracks;
-    @JsonKey(name: "type")
-    String? type;
-    @JsonKey(name: "uri")
-    String? uri;
-
-    Album({
-        this.albumType,
-        this.artists,
-        this.availableMarkets,
-        this.externalUrls,
-        this.href,
-        this.id,
-        this.images,
-        this.name,
-        this.releaseDate,
-        this.releaseDatePrecision,
-        this.totalTracks,
-        this.type,
-        this.uri,
-    });
-
-    factory Album.fromJson(Map<String, dynamic> json) => _$AlbumFromJson(json);
-
-    Map<String, dynamic> toJson() => _$AlbumToJson(this);
-}
-
-@JsonSerializable()
-class TrackImage {
-    @JsonKey(name: "height")
-    int? height;
-    @JsonKey(name: "url")
-    String? url;
-    @JsonKey(name: "width")
-    int? width;
-
-    TrackImage({
-        this.height,
-        this.url,
-        this.width,
-    });
-
-    factory TrackImage.fromJson(Map<String, dynamic> json) => _$TrackImageFromJson(json);
-
-    Map<String, dynamic> toJson() => _$TrackImageToJson(this);
 }
 
 @JsonSerializable()

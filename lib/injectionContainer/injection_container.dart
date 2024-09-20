@@ -26,7 +26,7 @@ Future<void> init() async {
     ..registerFactory(() => SessionBloc(serviceLocater.call(),
         serviceLocater.call(), serviceLocater.call(), serviceLocater.call()))
     ..registerFactory(
-        () => PlaybackBloc(serviceLocater.call(), serviceLocater.call()))
+        () => SongsPlaybackBloc(serviceLocater.call(), serviceLocater.call()))
     ..registerLazySingleton<FirebaseRepository>(() => FirebaseRepositoryImpl())
     ..registerLazySingleton<UserRepository>(() => UserRepository())
     ..registerLazySingleton<DashboardRepository>(() => DashboardRepositoryImpl(

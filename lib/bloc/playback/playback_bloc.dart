@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:bloc/bloc.dart';
 import 'package:logger/logger.dart';
 import 'package:meta/meta.dart';
@@ -9,12 +11,12 @@ import 'package:musicmate/repositories/user_repository.dart';
 part 'playback_event.dart';
 part 'playback_state.dart';
 
-class PlaybackBloc extends Bloc<PlaybackEvent, PlaybackState> {
+class SongsPlaybackBloc extends Bloc<SongsPlaybackEvent, SongsPlaybackState> {
   final SpotifyRepository spotifyRepository;
   final UserRepository userRepository;
-  PlaybackBloc(this.spotifyRepository, this.userRepository)
+  SongsPlaybackBloc(this.spotifyRepository, this.userRepository)
       : super(PlaybackInitial()) {
-    on<PlaybackEvent>((event, emit) {});
+    on<SongsPlaybackEvent>((event, emit) {});
 
     on<OnPlaySong>((event, emit) async {
       try {
@@ -34,12 +36,28 @@ class PlaybackBloc extends Bloc<PlaybackEvent, PlaybackState> {
       }
     });
 
+    on<onSaveCurrentAudioId>((event, emit) async {
+      try {
+        // final videoId = await spotifyRepository.getVideoId(
+        //     event.songName, event.artistName);
+
+        if (event.videoId != null) {
+          userRepository.saveCurrentSongId(event.videoId);
+          emit(PlaybackSuccess(videoId: event.videoId));
+        } else {
+          emit(PlaybackError(errorMessage: 'Error fetching videoID'));
+        }
+      } catch (e) {
+        print('error fetching video id');
+      }
+    });
     on<OnGetRecommendedSongs>((event, emit) async {
       Logger().d('called rec');
-      emit(PlaybackLoading(isLoading: true));
+      // emit(PlaybackLoading(isLoading: true));
       try {
         final songs =
             await spotifyRepository.getRecommendedSongs(event.artistId);
+        log('Songsssss =>${songs!.length}');
         if (songs?.length != 0) {
           Logger().d(songs);
           emit(PlaybackSuccess(
@@ -47,9 +65,9 @@ class PlaybackBloc extends Bloc<PlaybackEvent, PlaybackState> {
         } else {
           PlaybackError(errorMessage: 'Error fetching recommended songs');
         }
-        emit(PlaybackLoading(isLoading: false));
+        // emit(PlaybackLoading(isLoading: false));
       } catch (e) {
-        print('error fetching recomended songs');
+        print('error fetching recomended songs =>${e}');
       }
     });
 

@@ -42,7 +42,7 @@ void main() async {
     MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (context) => ThemeProvider()),
-        ChangeNotifierProvider(create: (context) => PlaylistProvider())
+        // ChangeNotifierProvider(create: (context) => PlaylistProvider())
       ],
       child: TranslationProvider(
         child: const Restart(child: MyApp()),
@@ -118,9 +118,9 @@ class _MyAppState extends State<MyApp> {
             BlocProvider<SessionBloc>(
                 create: (BuildContext context) =>
                     di.serviceLocater<SessionBloc>()),
-            BlocProvider<PlaybackBloc>(
+            BlocProvider<SongsPlaybackBloc>(
                 create: (BuildContext content) =>
-                    di.serviceLocater<PlaybackBloc>())
+                    di.serviceLocater<SongsPlaybackBloc>())
           ],
           child: MaterialApp.router(
             debugShowCheckedModeBanner: false,

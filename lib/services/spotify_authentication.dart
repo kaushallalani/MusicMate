@@ -75,7 +75,9 @@ class SpotifyAuthentication {
     if (songName != null) {
       final dioResponse = await controller.getController(
           options: null, url: searchUrl, queryParameters: queryParameters);
-      if (dioResponse!.isNotEmpty) {
+      log('SONGGG =>$dioResponse');
+
+      if (dioResponse != null) {
         return dioResponse;
       }
     }

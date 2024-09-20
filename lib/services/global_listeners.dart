@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:logger/logger.dart';
 import 'package:musicmate/services/spotify_authentication.dart';
+import '../repositories/index.dart';
 
 class GlobalListeners with WidgetsBindingObserver {
   static final GlobalListeners instance = GlobalListeners.internal();
@@ -31,8 +32,10 @@ class GlobalListeners with WidgetsBindingObserver {
       final token = await spotifyAuthentication.getAccessToken();
 
       if (token != null) {
-        Logger().d('Token regenerated');
+        Logger().d('Token regenerated => $token');
         authToken = token;
+        UserRepository().saveAccessToken(
+            token, DateTime.now().add(const Duration(hours: 1)));
         startExpirationTimer();
       } else {
         throw Exception('Error fetching auth token');

@@ -1,9 +1,9 @@
 part of 'playback_bloc.dart';
 
 @immutable
-abstract class PlaybackState {}
+abstract class SongsPlaybackState {}
 
-class PlaybackInitial extends PlaybackState {
+class PlaybackInitial extends SongsPlaybackState {
   final String? videoId;
   final String? spotifyId;
   final UserModel? currentUser;

@@ -1,7 +1,7 @@
 export './fieldvalue_converter.dart';
 export './hiveUser.dart';
 export './session.dart';
-export './song.dart';
+export './song_model.dart';
 export './user.dart';
 export './spotify/albums_data.dart';
 export './spotify/browseCategories.dart';

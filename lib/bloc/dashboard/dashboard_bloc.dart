@@ -187,8 +187,11 @@ class DashboardBloc extends HydratedBloc<DashboardEvent, DashboardState> {
     });
     on<GenerateAccessToken>((event, emit) async {
       try {
+        Logger()
+            .d('Saved Token before => ${userRepository.accessToken == null}');
+
         if (userRepository.accessToken == null ||
-            DateTime.now().isAfter(userRepository.tokenExpirationTime!)) {
+            userRepository.tokenExpirationTime == null) {
           await spotifyRepository.generateAccessToken();
         }
         Logger().d('Saved Token => ${userRepository.accessToken}');
@@ -267,25 +270,26 @@ class DashboardBloc extends HydratedBloc<DashboardEvent, DashboardState> {
       }
     });
 
-    on<OnDisplaySong>((event, emit) async {
-      try {
-        final videoId = await spotifyRepository.getVideoId(
-            event.songName, event.artistName);
+    // on<OnDisplaySong>((event, emit) async {
+    //   try {
+    //     final videoId = await spotifyRepository.getVideoId(
+    //         event.songName, event.artistName);
 
-        if (videoId != null) {
-          userRepository.saveCurrentSongId(videoId);
-          emit(DashboardSuccessState(videoId: videoId));
-        } else {
-          emit(DashboardFailureState(errorMessage: 'Error fetching videoID'));
-        }
-      } catch (e) {
-        print('error fetching video id');
-      }
-    });
+    //     if (videoId != null) {
+    //       userRepository.saveCurrentSongId(videoId);
+    //       emit(DashboardSuccessState(videoId: videoId));
+    //     } else {
+    //       emit(DashboardFailureState(errorMessage: 'Error fetching videoID'));
+    //     }
+    //   } catch (e) {
+    //     print('error fetching video id');
+    //   }
+    // });
     on<SignoutUser>((event, emit) async {
       emit(DashboardLoadingState(isLoading: true));
       try {
-        firebaseRepository.signOut();
+        await firebaseRepository.signOut();
+        userRepository.clearUserRepository();
       } catch (e) {
         print('error');
         print(e.toString());
@@ -318,7 +322,7 @@ class DashboardBloc extends HydratedBloc<DashboardEvent, DashboardState> {
           ? state.currentUser?.toJson()
           : userRepository.userDataModel;
 
-      log('Saved state to JSON: ${json.keys}');
+      log('Saved state to JSON: ${json}');
 
       return json;
     }

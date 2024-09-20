@@ -12,7 +12,7 @@ class CustomColors {
   static const Color grey = Color(0xFF818181);
   static const Color dimGray = Color(0xFF696969);
   static const Color red = Color(0xFFFF0000);
-  static const Color casper = Color(0xFFABB3BB);
+  static  Color casper = Colors.grey.shade800;
   static const Color toryBlue = Color(0xFF2F3990);
   static const Color solitude = Color(0xFFDFE1E6);
   static const Color solitudeShade1 = Color(0xFFF4F5F7);
@@ -88,7 +88,7 @@ class CustomColors {
   Color get blackColor => isDarkMode ? white : black;
   Color get greyColor => isDarkMode ? darkGrey : grey;
   Color get redColor => isDarkMode ? darkRed : red;
-  Color get placeholderIcon => isDarkMode ? darkCasper : casper;
+  Color get boxShadow => isDarkMode ? casper : defaultWhite;
   Color get placeholder => isDarkMode ? darkSilver : silver;
   Color get dimGrey => isDarkMode ? darkDimGray : dimGray;
   Color get toryblue => isDarkMode ? darkToryBlue : toryBlue;

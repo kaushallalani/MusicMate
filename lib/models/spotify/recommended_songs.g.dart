@@ -6,8 +6,7 @@ part of 'recommended_songs.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
-RecommendedSongs _$RecommendedSongsFromJson(Map<String, dynamic> json) =>
-    RecommendedSongs(
+Tracks _$TracksFromJson(Map<String, dynamic> json) => Tracks(
       tracks: (json['tracks'] as List<dynamic>?)
           ?.map((e) => Track.fromJson(e as Map<String, dynamic>))
           .toList(),
@@ -16,8 +15,7 @@ RecommendedSongs _$RecommendedSongsFromJson(Map<String, dynamic> json) =>
           .toList(),
     );
 
-Map<String, dynamic> _$RecommendedSongsToJson(RecommendedSongs instance) =>
-    <String, dynamic>{
+Map<String, dynamic> _$TracksToJson(Tracks instance) => <String, dynamic>{
       'tracks': instance.tracks,
       'seeds': instance.seeds,
     };
@@ -43,7 +41,7 @@ Map<String, dynamic> _$SeedToJson(Seed instance) => <String, dynamic>{
 Track _$TrackFromJson(Map<String, dynamic> json) => Track(
       album: json['album'] == null
           ? null
-          : Album.fromJson(json['album'] as Map<String, dynamic>),
+          : AlbumItem.fromJson(json['album'] as Map<String, dynamic>),
       artists: (json['artists'] as List<dynamic>?)
           ?.map((e) => Artist.fromJson(e as Map<String, dynamic>))
           .toList(),
@@ -89,62 +87,6 @@ Map<String, dynamic> _$TrackToJson(Track instance) => <String, dynamic>{
       'track_number': instance.trackNumber,
       'type': instance.type,
       'uri': instance.uri,
-    };
-
-Album _$AlbumFromJson(Map<String, dynamic> json) => Album(
-      albumType: json['album_type'] as String?,
-      artists: (json['artists'] as List<dynamic>?)
-          ?.map((e) => Artist.fromJson(e as Map<String, dynamic>))
-          .toList(),
-      availableMarkets: (json['available_markets'] as List<dynamic>?)
-          ?.map((e) => e as String)
-          .toList(),
-      externalUrls: json['external_urls'] == null
-          ? null
-          : ExternalUrls.fromJson(
-              json['external_urls'] as Map<String, dynamic>),
-      href: json['href'] as String?,
-      id: json['id'] as String?,
-      images: (json['images'] as List<dynamic>?)
-          ?.map((e) => TrackImage.fromJson(e as Map<String, dynamic>))
-          .toList(),
-      name: json['name'] as String?,
-      releaseDate: json['release_date'] == null
-          ? null
-          : DateTime.parse(json['release_date'] as String),
-      releaseDatePrecision: json['release_date_precision'] as String?,
-      totalTracks: (json['total_tracks'] as num?)?.toInt(),
-      type: json['type'] as String?,
-      uri: json['uri'] as String?,
-    );
-
-Map<String, dynamic> _$AlbumToJson(Album instance) => <String, dynamic>{
-      'album_type': instance.albumType,
-      'artists': instance.artists,
-      'available_markets': instance.availableMarkets,
-      'external_urls': instance.externalUrls,
-      'href': instance.href,
-      'id': instance.id,
-      'images': instance.images,
-      'name': instance.name,
-      'release_date': instance.releaseDate?.toIso8601String(),
-      'release_date_precision': instance.releaseDatePrecision,
-      'total_tracks': instance.totalTracks,
-      'type': instance.type,
-      'uri': instance.uri,
-    };
-
-TrackImage _$TrackImageFromJson(Map<String, dynamic> json) => TrackImage(
-      height: (json['height'] as num?)?.toInt(),
-      url: json['url'] as String?,
-      width: (json['width'] as num?)?.toInt(),
-    );
-
-Map<String, dynamic> _$TrackImageToJson(TrackImage instance) =>
-    <String, dynamic>{
-      'height': instance.height,
-      'url': instance.url,
-      'width': instance.width,
     };
 
 ExternalIds _$ExternalIdsFromJson(Map<String, dynamic> json) => ExternalIds(

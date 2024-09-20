@@ -19,9 +19,8 @@ class NewBox extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // bool isDarkMode = Provider.of<ThemeProvider>(context).darkTheme;
-    bool isDarkMode = Brightness == Brightness.dark;
+    final colors = Theme.of(context).customColors;
 
-    Logger().d('DARKMODE => $isDarkMode');
     return Container(
       decoration: BoxDecoration(
           color: Theme.of(context).colorScheme.surface,
@@ -29,12 +28,12 @@ class NewBox extends StatelessWidget {
           boxShadow: [
             //Darker
             BoxShadow(
-              color: isDarkMode ? Colors.red : Colors.grey.shade500,
+              color: colors.boxShadow,
               blurRadius: 15,
               offset: const Offset(4, 4),
             ),
             BoxShadow(
-              color: isDarkMode ? Colors.grey.shade800 : Colors.white,
+              color: colors.boxShadow,
               blurRadius: 15,
               offset: const Offset(-4, -4),
             ),

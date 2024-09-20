@@ -55,11 +55,11 @@ class FetchMoreReleases extends DashboardEvent {
   FetchMoreReleases({required this.nextUrl});
 }
 
-class OnDisplaySong extends DashboardEvent {
-  final String songName;
-  final List<String> artistName;
+// class OnDisplaySong extends DashboardEvent {
+//   final String songName;
+//   final List<String> artistName;
 
-  OnDisplaySong({required this.songName,required this.artistName});
-}
+//   OnDisplaySong({required this.songName,required this.artistName});
+// }
 
 class SignoutUser extends DashboardEvent {}

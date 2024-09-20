@@ -72,10 +72,14 @@ class SpotifyRepositoryImpl extends SpotifyRepository {
   Future<Albums?>? getLatestReleases() async {
     try {
       log(Environment.NEW_RELEASE);
-      log(GlobalListeners().authToken!);
-      log(userRepository.accessToken!);
+      log('VALLLLL =>${userRepository.accessToken == null}');
+      if (userRepository.accessToken != null) {
+        log(userRepository.accessToken!);
+      }
       final albumData = await spotifyAuthentication.fetchNewReleases(
           userRepository.accessToken!, Environment.NEW_RELEASE);
+      log('ALBUMM DATA =>${albumData!.length}');
+
       if (albumData!.isNotEmpty) {
         final jsonData = AlbumData.fromJson(albumData);
         return jsonData.albums;
@@ -129,11 +133,13 @@ class SpotifyRepositoryImpl extends SpotifyRepository {
     try {
       final songs = await spotifyAuthentication.fetchRecommendedSongs(
           artistsId, userRepository.accessToken!);
+
+      log('RECOMMENNDEDDD =>${songs!.length}');
       if (songs!.isNotEmpty) {
-        final jsonData = RecommendedSongs.fromJson(songs);
-        // Logger().d('recccccc1 => ${jsonData.tracks![1].name}');
-        jsonData.tracks!
-            .map((data) => Logger().d('datata=> ${data.album!.albumType}'));
+        final jsonData = Tracks.fromJson(songs);
+        Logger().d('recccccc1 => ${jsonData.tracks![1].name}');
+        // jsonData.tracks!
+        //     .forEach((data) => Logger().d('datata=> ${data.album!.albumType}'));
         final filteredData = jsonData.tracks!
             .where((data) => data.album!.albumType!.toLowerCase() == 'single')
             .toList();

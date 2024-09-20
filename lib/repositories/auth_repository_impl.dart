@@ -73,6 +73,7 @@ class FirebaseRepositoryImpl extends FirebaseRepository {
   @override
   Future<User?> signIn(String email, String password) async {
     try {
+      log('hereee Login');
       final data = await firebaseService.signinUser(email, password);
       final User? firebaseUser = data!.user;
       final deviceId = await UniqueIdentifier.serial;
@@ -92,6 +93,7 @@ class FirebaseRepositoryImpl extends FirebaseRepository {
   @override
   Future<void> signOut() async {
     try {
+      // await FirebaseAuth.instance.signOut();
       await firebaseService.signOutUser();
     } on FirebaseAuthException catch (e) {
       print('Exception signout => $e');

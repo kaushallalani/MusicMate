@@ -14,6 +14,7 @@ import 'package:musicmate/pages/signup/index.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:musicmate/pages/splash/index.dart';
+import 'package:musicmate/repositories/index.dart';
 
 class NAVIGATION {
   static const String songsPage = '/songsPage';
@@ -55,11 +56,11 @@ List<Map<String, dynamic>> stackNavigation = [
         const Dashboard(),
     "options": {"path": NAVIGATION.dashboard}
   },
-  // {
-  //   "name": NAVIGATION.search,
-  //   "component": (BuildContext context, GoRouterState state) => const Search(),
-  //   "options": {"path": NAVIGATION.search}
-  // },
+  {
+    "name": NAVIGATION.search,
+    "component": (BuildContext context, GoRouterState state) => const Search(),
+    "options": {"path": NAVIGATION.search}
+  },
   {
     "name": NAVIGATION.library,
     "component": (BuildContext context, GoRouterState state) => const Library(),
@@ -102,10 +103,11 @@ List<Map<String, dynamic>> stackNavigation = [
       //     jsonDecode(state.uri.queryParameters['currentSong']!));
       Logger().d('in nav currentS');
       return PlaybackFragment(
-          currentSong: jsonDecode(
-            state.uri.queryParameters['currentSong']!,
-          ),
-          currentSongType: state.uri.queryParameters['currentSongType']!);
+        currentSong: jsonDecode(
+          state.uri.queryParameters['currentSong']!,
+        ),
+        currentSongType: state.uri.queryParameters['currentSongType']!,
+      );
     },
     "options": {"path": NAVIGATION.playback}
   }

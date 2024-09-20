@@ -39,8 +39,7 @@ Map<String, dynamic> _$AlbumsToJson(Albums instance) => <String, dynamic>{
     };
 
 AlbumItem _$AlbumItemFromJson(Map<String, dynamic> json) => AlbumItem(
-      albumType:
-          $enumDecodeNullable(_$AlbumTypeEnumEnumMap, json['album_type']),
+      albumType: json['album_type'] as String?,
       artists: (json['artists'] as List<dynamic>?)
           ?.map((e) => Artist.fromJson(e as Map<String, dynamic>))
           .toList(),
@@ -57,16 +56,17 @@ AlbumItem _$AlbumItemFromJson(Map<String, dynamic> json) => AlbumItem(
           ?.map((e) => AlbumImage.fromJson(e as Map<String, dynamic>))
           .toList(),
       name: json['name'] as String?,
-      releaseDate: json['release_date'] as String?,
-      releaseDatePrecision: $enumDecodeNullable(
-          _$ReleaseDatePrecisionEnumMap, json['release_date_precision']),
+      releaseDate: json['release_date'] == null
+          ? null
+          : DateTime.parse(json['release_date'] as String),
+      releaseDatePrecision: json['release_date_precision'] as String?,
       totalTracks: (json['total_tracks'] as num?)?.toInt(),
-      type: $enumDecodeNullable(_$AlbumTypeEnumEnumMap, json['type']),
+      type: json['type'] as String?,
       uri: json['uri'] as String?,
     );
 
 Map<String, dynamic> _$AlbumItemToJson(AlbumItem instance) => <String, dynamic>{
-      'album_type': _$AlbumTypeEnumEnumMap[instance.albumType],
+      'album_type': instance.albumType,
       'artists': instance.artists,
       'available_markets': instance.availableMarkets,
       'external_urls': instance.externalUrls,
@@ -74,23 +74,12 @@ Map<String, dynamic> _$AlbumItemToJson(AlbumItem instance) => <String, dynamic>{
       'id': instance.id,
       'images': instance.images,
       'name': instance.name,
-      'release_date': instance.releaseDate,
-      'release_date_precision':
-          _$ReleaseDatePrecisionEnumMap[instance.releaseDatePrecision],
+      'release_date': instance.releaseDate?.toIso8601String(),
+      'release_date_precision': instance.releaseDatePrecision,
       'total_tracks': instance.totalTracks,
-      'type': _$AlbumTypeEnumEnumMap[instance.type],
+      'type': instance.type,
       'uri': instance.uri,
     };
-
-const _$AlbumTypeEnumEnumMap = {
-  AlbumTypeEnum.ALBUM: 'album',
-  AlbumTypeEnum.EP: 'ep',
-  AlbumTypeEnum.SINGLE: 'single',
-};
-
-const _$ReleaseDatePrecisionEnumMap = {
-  ReleaseDatePrecision.DAY: 'day',
-};
 
 Artist _$ArtistFromJson(Map<String, dynamic> json) => Artist(
       externalUrls: json['external_urls'] == null
@@ -100,7 +89,7 @@ Artist _$ArtistFromJson(Map<String, dynamic> json) => Artist(
       href: json['href'] as String?,
       id: json['id'] as String?,
       name: json['name'] as String?,
-      type: $enumDecodeNullable(_$ArtistTypeEnumMap, json['type']),
+      type: json['type'] as String?,
       uri: json['uri'] as String?,
     );
 
@@ -109,13 +98,9 @@ Map<String, dynamic> _$ArtistToJson(Artist instance) => <String, dynamic>{
       'href': instance.href,
       'id': instance.id,
       'name': instance.name,
-      'type': _$ArtistTypeEnumMap[instance.type],
+      'type': instance.type,
       'uri': instance.uri,
     };
-
-const _$ArtistTypeEnumMap = {
-  ArtistType.ARTIST: 'artist',
-};
 
 ExternalUrls _$ExternalUrlsFromJson(Map<String, dynamic> json) => ExternalUrls(
       spotify: json['spotify'] as String?,

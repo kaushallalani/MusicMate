@@ -129,7 +129,8 @@ class AuthenticationBloc
               accessToken, DateTime.now().add(const Duration(hours: 1)));
           GlobalListeners().setAuthToken(accessToken);
           userRepository.saveUserLoginStatus(true);
-          emit(AuthenticationSuccessState(user: userRepository.userDataModel));
+          emit(AuthenticationSuccessState(
+              user: userRepository.userDataModel, loginStatus: true));
         } else {
           userRepository.saveUserLoginStatus(false);
           emit(AuthenticationFailureState('Error while Logging in'));
@@ -137,18 +138,35 @@ class AuthenticationBloc
         emit(AuthenticationLoadingState(isLoading: false));
       } catch (e) {}
     });
+    on<GetLogginStatus>((event, emit) {
+      emit(AuthenticationLoadingState(isLoading: true));
+      log('calleldddd');
+      if (userRepository.loginStatus != null) {
+        emit(
+          AuthenticationSuccessState(loginStatus: userRepository.loginStatus),
+        );
+      }
+
+      emit(AuthenticationLoadingState(isLoading: false));
+    });
   }
 
   @override
   AuthenticationState? fromJson(Map<String, dynamic> json) {
     try {
       final authToken = json['authToken'] as String? ?? '';
+      final loginStatus = json['loginStatus'] as bool ?? null;
 
       if (authToken.isNotEmpty) {
         userRepository.saveAccessToken(authToken, null);
       }
 
-      return AuthenticationSuccessState(authToken: authToken);
+      if (loginStatus != null) {
+        userRepository.saveUserLoginStatus(loginStatus);
+      }
+
+      return AuthenticationSuccessState(
+          authToken: authToken, loginStatus: loginStatus);
     } catch (e) {}
   }
 
@@ -157,7 +175,8 @@ class AuthenticationBloc
     if (state is AuthenticationSuccessState) {
       final json = <String, dynamic>{};
       json['authToken'] = state.authToken ?? userRepository.accessToken;
-      log('Saved state to JSON: ${json.keys}');
+      json['loginStatus'] = state.loginStatus ?? userRepository.loginStatus;
+      log('Saved state to JSON: ${json}');
 
       return json;
     }
