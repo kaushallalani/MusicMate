@@ -149,6 +149,15 @@ class AuthenticationBloc
 
       emit(AuthenticationLoadingState(isLoading: false));
     });
+
+    on<OnSaveAuthToken>((event, emit) {
+      try {
+        if (event.authToken != null) {
+          log('SAVEEEDDDDDD');
+          emit(AuthenticationSuccessState(authToken: event.authToken));
+        }
+      } catch (e) {}
+    });
   }
 
   @override

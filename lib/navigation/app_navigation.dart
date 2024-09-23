@@ -1,5 +1,4 @@
 import 'dart:convert';
-
 import 'package:logger/logger.dart';
 import 'package:musicmate/pages/dashboard/index.dart';
 import 'package:musicmate/pages/home/index.dart';
@@ -14,7 +13,6 @@ import 'package:musicmate/pages/signup/index.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:musicmate/pages/splash/index.dart';
-import 'package:musicmate/repositories/index.dart';
 
 class NAVIGATION {
   static const String songsPage = '/songsPage';

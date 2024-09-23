@@ -24,14 +24,14 @@ Future<String?> getAudioStreamUrl(String videoId) async {
 
     log('Fetching new video from YouTube =>${video.id}');
 
-    log('Fetched video ID: ${await yt.videos.streams.getManifest(video.id)}');
+    // log('Fetched video ID: ${await yt.videos.streams.getManifest(video.id)}');
 
     // Get the stream manifest
     final manifest = await yt.videos.streams.getManifest(videoId);
     log('Stream manifest: ${manifest.audioOnly}');
 
     // Get the audio stream with the highest bitrate
-    final audioStreamInfo = manifest.audioOnly.withHighestBitrate();
+    final audioStreamInfo = manifest.audioOnly.last;
     log('Selected audio stream: ${audioStreamInfo.toJson()}');
 
     // Cache the audio URL

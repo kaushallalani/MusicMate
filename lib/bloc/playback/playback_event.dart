@@ -12,15 +12,13 @@ class OnPlaySong extends SongsPlaybackEvent {
 
 class OnGetRecommendedSongs extends SongsPlaybackEvent {
   final List<String> artistId;
-
   OnGetRecommendedSongs({required this.artistId});
 }
 
 class onGetListOfVideoIds extends SongsPlaybackEvent {
   final List<String> songName;
   final List<List<String>> artistName;
-
-  onGetListOfVideoIds({required this.songName, required this.artistName});
+  onGetListOfVideoIds({required this.songName, required this.artistName});  
 }
 
 class OnDisplaySong extends SongsPlaybackEvent {

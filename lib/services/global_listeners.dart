@@ -1,7 +1,11 @@
 import 'dart:async';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:logger/logger.dart';
+import 'package:musicmate/bloc/authentication/authentication_bloc.dart';
 import 'package:musicmate/services/spotify_authentication.dart';
 import '../repositories/index.dart';
 
@@ -14,11 +18,14 @@ class GlobalListeners with WidgetsBindingObserver {
   final SpotifyAuthentication spotifyAuthentication = SpotifyAuthentication();
   String? authToken;
   Timer? timer;
+  BuildContext? context;
 
   String? get AUTHTOKEN => authToken;
-  void initializeAuthToken() {
-    Logger().d('Listener initialise');
+  void initializeAuthToken(BuildContext context) {
+    Logger().d('Listener initialise =>$context');
+
     WidgetsBinding.instance.addObserver(this);
+    this.context = context;
   }
 
   Future<void> setAuthToken(String token) async {
@@ -36,6 +43,8 @@ class GlobalListeners with WidgetsBindingObserver {
         authToken = token;
         UserRepository().saveAccessToken(
             token, DateTime.now().add(const Duration(hours: 1)));
+        BlocProvider.of<AuthenticationBloc>(context!)
+            .add(OnSaveAuthToken(authToken: authToken));
         startExpirationTimer();
       } else {
         throw Exception('Error fetching auth token');

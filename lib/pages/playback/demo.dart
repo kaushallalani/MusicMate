@@ -8,6 +8,7 @@ import 'package:logger/web.dart';
 import 'package:musicmate/bloc/playback/playback_bloc.dart';
 import 'package:musicmate/components/index.dart';
 import 'package:musicmate/components/newBox.dart';
+import 'package:musicmate/components/progress.dart';
 import 'package:musicmate/constants/index.dart';
 import 'package:musicmate/constants/utils/audio_cache_manager.dart';
 import 'package:musicmate/models/song_model.dart';
@@ -33,7 +34,7 @@ class _PlaybackState extends State<Playback> {
   AudioPlayer? audioPlayer;
   bool isLoading = false;
   bool isAudioLoading = true;
-  bool _isPlaying = false;
+  bool _isPlaying = true;
   List<SongModel?>? playList = [];
   String? currentVideoId;
   Duration currentDuration = Duration.zero;
@@ -97,6 +98,7 @@ class _PlaybackState extends State<Playback> {
     audioPlayer = AudioPlayer();
 
     audioPlayer!.playbackEventStream.listen((stateData) {
+      log('SEEEEKING =>${stateData.processingState}');
       switch (stateData.processingState) {
         case ProcessingState.loading:
           if (mounted) {
@@ -116,6 +118,7 @@ class _PlaybackState extends State<Playback> {
           log('dEfult');
           break;
         case ProcessingState.buffering:
+          break;
         // TODO: Handle this case.
         case ProcessingState.completed:
           setState(() {
@@ -154,7 +157,6 @@ class _PlaybackState extends State<Playback> {
         log('DURR =>$duration');
         await audioPlayer!.play();
       }
-      // final _player = AudioPlayer();
       log('doing222');
     } catch (e) {}
   }
@@ -173,7 +175,31 @@ class _PlaybackState extends State<Playback> {
     super.dispose();
   }
 
-  void handleAudioPlayPause() {}
+  void handleAudioPlayPause() {
+    if (_isPlaying == true) {
+      setState(() {
+        _isPlaying = false;
+      });
+      audioPlayer!.pause();
+    } else {
+      setState(() {
+        _isPlaying = true;
+      });
+      audioPlayer!.play();
+    }
+  }
+
+  void seekToSecond(int second) {
+    Duration newDuration = Duration(seconds: second);
+    audioPlayer!.seek(newDuration);
+
+    log('added here5');
+    setState(() {
+      _isPlaying = true;
+    });
+    audioCacheManager
+        .updatePlayedItem(currentVideoId!, {'position': newDuration});
+  }
   // handleGetTrackIds() {
   //   final List<String> songNames = recommendedTracks!
   //       .where((song) => song != null) // Remove null values
@@ -264,7 +290,7 @@ class _PlaybackState extends State<Playback> {
             setState(() {
               recommendedTracks = state.recommendedSongs;
             });
-            // handleCreateNextTrackPlaylist();
+            handleCreateNextTrackPlaylist();
           }
 
           if (state.nextTrackIds != null) {
@@ -417,22 +443,13 @@ class _PlaybackState extends State<Playback> {
                                   child: Column(
                                     children: [
                                       Container(
-                                          margin: EdgeInsets.symmetric(
+                                          margin: const EdgeInsets.symmetric(
                                               horizontal: 10, vertical: 10),
-                                          // width: MediaQuery.of(context)
-                                          //         .size
-                                          //         .width *
-                                          //     0.9,
                                           child: isAudioLoading == false
-                                              // child: widget.currentAudioId ==
-                                              //         widget.id
-                                              //     ? position != Duration.zero ||
-                                              //             _playerState ==
-                                              //                 PlayerState
-                                              //                     .completed
                                               ? SliderTheme(
                                                   data: SliderTheme.of(context)
                                                       .copyWith(
+                                                    trackHeight: 5,
                                                     overlayShape:
                                                         SliderComponentShape
                                                             .noOverlay,
@@ -449,16 +466,14 @@ class _PlaybackState extends State<Playback> {
                                                     min: 0.0,
                                                     max: 1.0,
                                                     onChanged: (double value) {
-                                                      // final newPosition =
-                                                      //     (value *
-                                                      //             (_duration
-                                                      //                 .inSeconds))
-                                                      //         .toInt();
-                                                      // seekToSecond(
-                                                      //     newPosition);
+                                                      final newPosition = (value *
+                                                              (audioPlayer!
+                                                                  .duration!
+                                                                  .inSeconds))
+                                                          .toInt();
+                                                      seekToSecond(newPosition);
                                                       setState(() {
-                                                        // sliderValue =
-                                                        //     value;
+                                                        sliderValue = value;
                                                       });
                                                     },
                                                   ),
@@ -554,9 +569,7 @@ class _PlaybackState extends State<Playback> {
                                   flex: 2,
                                   child: GestureDetector(
                                     onTap: () {
-                                      if (currentVideoId != null) {
-                                        getAudioStreamUrl(currentVideoId!);
-                                      }
+                                      handleAudioPlayPause();
                                       //  value.pauseOrResume,
                                     },
                                     child: NewBox(
@@ -596,8 +609,6 @@ class _PlaybackState extends State<Playback> {
       },
     );
   }
-
-  void seekToSecond(int newPosition) {}
 
   // @override
   // void dispose() {

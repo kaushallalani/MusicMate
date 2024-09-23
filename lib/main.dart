@@ -35,7 +35,6 @@ void main() async {
   await Hive.initFlutter();
   await Hive.openBox('userBox');
 
-  GlobalListeners().initializeAuthToken();
   Logger().d('main called');
 
   runApp(
@@ -70,6 +69,7 @@ class _MyAppState extends State<MyApp> {
     super.initState();
     appLanguage = userBox.get('appLanguage');
     WidgetsBinding.instance.addPostFrameCallback((_) async {
+      GlobalListeners().initializeAuthToken(context);
       handleGetLanguage();
     });
   }
