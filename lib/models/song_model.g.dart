@@ -11,9 +11,11 @@ SongModel _$SongModelFromJson(Map<String, dynamic> json) => SongModel(
           ? null
           : AlbumItem.fromJson(json['albumItem'] as Map<String, dynamic>),
       videoId: json['videoId'] as String?,
+      audioUrl: json['audioUrl'] as String?,
     );
 
 Map<String, dynamic> _$SongModelToJson(SongModel instance) => <String, dynamic>{
       'albumItem': instance.albumItem,
       'videoId': instance.videoId,
+      'audioUrl': instance.audioUrl,
     };

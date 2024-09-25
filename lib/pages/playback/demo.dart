@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:developer';
+import 'package:card_swiper/card_swiper.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -29,9 +30,10 @@ class Playback extends StatefulWidget {
 
 class _PlaybackState extends State<Playback> {
   List<Track?>? recommendedTracks;
-  List<dynamic>? nextTracks;
+  List<SongModel>? nextTracks;
   List<String>? videoIds;
   AudioPlayer? audioPlayer;
+  ConcatenatingAudioSource? audioTrackList;
   bool isLoading = false;
   bool isAudioLoading = true;
   bool _isPlaying = true;
@@ -42,6 +44,7 @@ class _PlaybackState extends State<Playback> {
   double sliderValue = 0.0;
   final AudioCacheManager audioCacheManager = AudioCacheManager();
   ProcessingState currentPlayerState = ProcessingState.idle;
+  SwiperController songsSwiper = SwiperController();
   @override
   void initState() {
     super.initState();
@@ -60,13 +63,17 @@ class _PlaybackState extends State<Playback> {
         widget.currentSong!.artists!.map((artist) => artist.name!).toList();
 
     final videoID = await getVideoId(widget.currentSong!.name!, artistList);
-    setState(() {
-      currentVideoId = videoID;
-    });
-    await getAudioData();
-    if (mounted) {
-      BlocProvider.of<SongsPlaybackBloc>(context)
-          .add(onSaveCurrentAudioId(videoId: videoID!));
+    if (videoID != null) {
+      await getAudioData(videoID);
+      if (mounted) {
+        setState(() {
+          currentVideoId = videoID;
+        });
+      }
+      if (mounted) {
+        BlocProvider.of<SongsPlaybackBloc>(context)
+            .add(onSaveCurrentAudioId(videoId: videoID!));
+      }
     }
   }
 
@@ -98,7 +105,7 @@ class _PlaybackState extends State<Playback> {
     audioPlayer = AudioPlayer();
 
     audioPlayer!.playbackEventStream.listen((stateData) {
-      log('SEEEEKING =>${stateData.processingState}');
+      // log('SEEEEKING =>${stateData.processingState}');
       switch (stateData.processingState) {
         case ProcessingState.loading:
           if (mounted) {
@@ -137,10 +144,10 @@ class _PlaybackState extends State<Playback> {
     });
   }
 
-  getAudioData() async {
+  getAudioData(videoId) async {
     try {
       log('HEREEe');
-      final audioUrl = await getAudioStreamUrl(currentVideoId!);
+      final audioUrl = await getAudioStreamUrl(videoId!);
       // final audioUrl = 'https://www.youtube.com/watch?v=h8rhLGhsa2M';
       if (audioUrl != null) {
         log('HEREEe =>$audioUrl');
@@ -151,13 +158,30 @@ class _PlaybackState extends State<Playback> {
         setState(() {
           totalDuration = duration!;
         });
-        audioCacheManager
-            .updatePlayedItem(currentVideoId!, {'duration': duration});
+        audioCacheManager.updatePlayedItem(videoId!, {'duration': duration});
 
         log('DURR =>$duration');
-        await audioPlayer!.play();
+
+        playList!.add(SongModel(
+            albumItem: widget.currentSong,
+            videoId: videoId,
+            audioUrl: audioUrl));
+        setState(() {
+          audioTrackList = ConcatenatingAudioSource(
+              children: [AudioSource.uri(Uri.parse(audioUrl))],
+              shuffleOrder: DefaultShuffleOrder(),
+              useLazyPreparation: true);
+        });
+
+        await audioPlayer!.setAudioSource(audioTrackList!,
+            initialIndex: 0, initialPosition: Duration.zero);
+
+        if (_isPlaying == true) {
+          // await audioPlayer!.play();
+        }
       }
       log('doing222');
+      return audioUrl;
     } catch (e) {}
   }
 
@@ -215,31 +239,36 @@ class _PlaybackState extends State<Playback> {
   //       .add(onGetListOfVideoIds(songName: songNames, artistName: artistNames));
   // }
 
-  handleCreateNextTrackPlaylist() {
-    final List<Map<String, dynamic>> newTrackPlaylist = [];
+  handleCreateNextTrackPlaylist() async {
+    final List<SongModel> playlist = [];
 
-    final List<dynamic> playlist = [];
-
-    if (widget.currentSong != null) {
-      playlist.add(
-          SongModel(albumItem: widget.currentSong, videoId: currentVideoId));
-    }
-
-    recommendedTracks!.forEach((val) => playlist.add(val));
-
-    for (int i = 1; i < recommendedTracks!.length; i++) {
+    for (int i = 0; i < recommendedTracks!.length; i++) {
+      log('hereeeee =>${recommendedTracks!.length}');
       var song = recommendedTracks![i]!;
-      // Logger().d(song.album);
+      final artistList = song.artists!.map((artist) => artist.name!).toList();
+      final idData = await getVideoId(song.name!, artistList);
+      if (idData != null) {
+        final audioUrl = await getAudioStreamUrl(idData);
+        log('DATTTTTT => ${idData}  ${artistList} $audioUrl');
+        Logger().d(song.album);
+        if (audioTrackList != null) {
+          audioTrackList!.children.add(AudioSource.uri(Uri.parse(audioUrl!)));
+        }
 
-      newTrackPlaylist.add({'track': song});
+        playlist.add(SongModel(
+            albumItem: song.album, videoId: idData, audioUrl: audioUrl));
+      }
       // Logger().d(Track.fromJson(newTrackPlaylist[i]).name);
     }
 
-    Logger().d('next => ${playlist}');
+    // Logger()
+    //     .d('next => ${playlist.length}  ${audioTrackList!.children.length}');
+    if (mounted) {
+      setState(() {
+        playList = [...playList!, ...playlist];
+      });
+    }
 
-    setState(() {
-      nextTracks = playlist;
-    });
     // playlistProvider.playCurrentSong();
   }
 
@@ -267,6 +296,7 @@ class _PlaybackState extends State<Playback> {
       //   break;
     }
 
+    log('PLAYYLIST =>${playList!.length}');
     return BlocConsumer<SongsPlaybackBloc, SongsPlaybackState>(
       listener: (context, state) {
         if (state is PlaybackInitial) {}
@@ -346,92 +376,165 @@ class _PlaybackState extends State<Playback> {
                           mainAxisAlignment: MainAxisAlignment.start,
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            NewBox(
-                              boxMargin: EdgeInsets.symmetric(
-                                  horizontal: Metrics.width(context) * 0.02),
-                              child: Column(
-                                children: [
-                                  widget.currentSong != null
-                                      ? Container(
-                                          child: ClipRRect(
-                                            borderRadius:
-                                                BorderRadius.circular(10),
-                                            child: Image.network(
-                                                height:
-                                                    Metrics.getResponsiveSize(
-                                                        context, 0.8),
-                                                filterQuality:
-                                                    FilterQuality.medium,
-                                                widget.currentSong!.images![2]
-                                                    .url!,
-                                                width: Metrics.width(context),
-                                                fit: BoxFit.cover,
-                                                frameBuilder: (context,
-                                                    child,
-                                                    frame,
-                                                    wasSynchronouslyLoaded) {
-                                              if (frame == null) {
-                                                return Container(
-                                                  width: Metrics.width(context),
-                                                  height:
-                                                      Metrics.getResponsiveSize(
-                                                          context, 0.8),
-                                                  child: Shimmer.fromColors(
-                                                    baseColor:
-                                                        const Color.fromARGB(
-                                                            255, 224, 224, 224),
-                                                    highlightColor:
-                                                        Colors.grey.shade100,
-                                                    child: Container(
-                                                      color: Colors.white,
-                                                    ),
-                                                  ),
-                                                );
-                                              } else {
-                                                return child;
-                                              }
-                                            }),
-                                          ),
-                                        )
-                                      : Container(
-                                          child: Center(
-                                            child: CircularProgressIndicator(
-                                              color: colors.redColor,
-                                            ),
-                                          ),
-                                        ),
-                                  Padding(
-                                    padding: EdgeInsets.all(
-                                        Metrics.width(context) * 0.02),
-                                    child: Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceBetween,
-                                      children: [
-                                        Expanded(
+                            Container(
+                              width: double.infinity,
+                              height: Metrics.getResponsiveSize(context, 1),
+                              child: playList != null && playList!.length != 0
+                                  ? Swiper(
+                                      scrollDirection: Axis.horizontal,
+                                      itemCount: playList!.length,
+
+                                      // pagination: SwiperPagination(),
+                                      controller: songsSwiper,
+                                      itemBuilder: (context, index) {
+                                        final SongModel songData =
+                                            playList![index]!;
+                                        final artistData = songData
+                                            .albumItem!.artists!
+                                            .map((artist) => artist.name!)
+                                            .toList();
+
+                                        log('INDex => $index  ');
+                                        return NewBox(
+                                          boxMargin: EdgeInsets.symmetric(
+                                              horizontal:
+                                                  Metrics.width(context) *
+                                                      0.02),
                                           child: Column(
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
                                             children: [
-                                              TextComponent(
-                                                text: name!,
-                                                textStyle: const TextStyle(
-                                                  fontWeight: FontWeight.w700,
-                                                  fontSize: FontSize.medium,
+                                              Flexible(
+                                                child: Container(
+                                                  child: ClipRRect(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            10),
+                                                    child: Image.network(
+                                                        height: Metrics
+                                                            .getResponsiveSize(
+                                                                context, 0.8),
+                                                        filterQuality:
+                                                            FilterQuality.high,
+                                                        songData.albumItem!
+                                                            .images![0].url!,
+                                                        width: Metrics.width(
+                                                            context),
+                                                        fit: BoxFit.cover,
+                                                        frameBuilder: (context,
+                                                            child,
+                                                            frame,
+                                                            wasSynchronouslyLoaded) {
+                                                      if (frame == null) {
+                                                        return Container(
+                                                          width: Metrics.width(
+                                                              context),
+                                                          height: Metrics
+                                                              .getResponsiveSize(
+                                                                  context, 0.8),
+                                                          decoration: BoxDecoration(
+                                                              borderRadius:
+                                                                  BorderRadius
+                                                                      .circular(
+                                                                          10)),
+                                                          child: Shimmer
+                                                              .fromColors(
+                                                            baseColor:
+                                                                const Color
+                                                                    .fromARGB(
+                                                                    255,
+                                                                    224,
+                                                                    224,
+                                                                    224),
+                                                            highlightColor:
+                                                                Colors.grey
+                                                                    .shade100,
+                                                            child: Container(
+                                                              decoration: BoxDecoration(
+                                                                  color: Colors
+                                                                      .white,
+                                                                  borderRadius:
+                                                                      BorderRadius
+                                                                          .circular(
+                                                                              10)),
+                                                            ),
+                                                          ),
+                                                        );
+                                                      } else {
+                                                        return child;
+                                                      }
+                                                    }),
+                                                  ),
                                                 ),
                                               ),
-                                              Text(artistList!.join(' , '))
+                                              Flexible(
+                                                flex: 0,
+                                                child: Padding(
+                                                  padding: EdgeInsets.all(
+                                                      Metrics.width(context) *
+                                                          0.02),
+                                                  child: Row(
+                                                    mainAxisAlignment:
+                                                        MainAxisAlignment
+                                                            .spaceBetween,
+                                                    children: [
+                                                      Expanded(
+                                                        child: Column(
+                                                          crossAxisAlignment:
+                                                              CrossAxisAlignment
+                                                                  .start,
+                                                          children: [
+                                                            TextComponent(
+                                                              text: songData
+                                                                  .albumItem!
+                                                                  .name!,
+                                                              textStyle:
+                                                                  const TextStyle(
+                                                                fontWeight:
+                                                                    FontWeight
+                                                                        .w700,
+                                                                fontSize:
+                                                                    FontSize
+                                                                        .medium,
+                                                              ),
+                                                            ),
+                                                            Text(artistData
+                                                                .join(' , '))
+                                                          ],
+                                                        ),
+                                                      ),
+                                                      const Icon(
+                                                        Icons.favorite_border,
+                                                        color: Colors.red,
+                                                      )
+                                                    ],
+                                                  ),
+                                                ),
+                                              )
                                             ],
                                           ),
+                                        );
+                                      })
+                                  : Container(
+                                      width: Metrics.width(context),
+                                      height: Metrics.getResponsiveSize(
+                                          context, 0.8),
+                                      margin: EdgeInsets.symmetric(
+                                          horizontal:
+                                              Metrics.width(context) * 0.02),
+                                      decoration: BoxDecoration(
+                                          borderRadius:
+                                              BorderRadius.circular(10)),
+                                      child: Shimmer.fromColors(
+                                        baseColor: const Color.fromARGB(
+                                            255, 224, 224, 224),
+                                        highlightColor: Colors.grey.shade100,
+                                        child: Container(
+                                          decoration: BoxDecoration(
+                                              color: Colors.white,
+                                              borderRadius:
+                                                  BorderRadius.circular(10)),
                                         ),
-                                        const Icon(
-                                          Icons.favorite_border,
-                                          color: Colors.red,
-                                        )
-                                      ],
+                                      ),
                                     ),
-                                  )
-                                ],
-                              ),
                             ),
                             Column(
                               children: [
@@ -484,43 +587,7 @@ class _PlaybackState extends State<Playback> {
                                                       BorderRadius.circular(5),
                                                   color: colors.headerBorder,
                                                   backgroundColor:
-                                                      colors.greyColor)
-
-                                          // : SliderTheme(
-                                          //     data:
-                                          //         SliderTheme.of(context)
-                                          //             .copyWith(
-                                          //       overlayShape:
-                                          //           SliderComponentShape
-                                          //               .noOverlay,
-                                          //       thumbShape:
-                                          //           const RoundSliderThumbShape(
-                                          //               enabledThumbRadius:
-                                          //                   5),
-                                          //     ),
-                                          //     child: Slider(
-                                          //       activeColor:
-                                          //           colors.blackColor,
-                                          //       inactiveColor:
-                                          //           Colors.grey,
-                                          //       value: sliderValue,
-                                          //       min: 0.0,
-                                          //       max: 1.0,
-                                          //       onChanged:
-                                          //           (double value) {
-                                          //         final newPosition = (value *
-                                          //                 (_duration
-                                          //                     .inSeconds))
-                                          //             .toInt();
-                                          //         seekToSecond(
-                                          //             newPosition);
-                                          //         setState(() {
-                                          //           sliderValue = value;
-                                          //         });
-                                          //       },
-                                          //     ),
-
-                                          ),
+                                                      colors.greyColor)),
                                       Padding(
                                         padding: const EdgeInsets.symmetric(
                                             horizontal: 10),
@@ -584,13 +651,16 @@ class _PlaybackState extends State<Playback> {
                                 Expanded(
                                   child: GestureDetector(
                                     onTap: () {
-                                      Logger().d('pressed');
+                                      songsSwiper.next();
+                                      audioPlayer!.seekToNext();
+                                      Logger().d(
+                                          'pressed =>${audioPlayer!.duration}');
 
-                                      context.goNamed(NAVIGATION.playback,
-                                          queryParameters: {
-                                            'currentSong': json,
-                                            'currentSongType': 'Track'
-                                          });
+                                      // context.goNamed(NAVIGATION.playback,
+                                      //     queryParameters: {
+                                      //       'currentSong': json,
+                                      //       'currentSongType': 'Track'
+                                      //     });
                                     },
                                     child: const NewBox(
                                       child: Icon(Icons.skip_next),

@@ -67,6 +67,7 @@ dependencies:
   shimmer: ^3.0.0
   just_audio: ^0.9.40
   http: ^1.2.2
+  card_swiper: ^3.0.1
   
 
 

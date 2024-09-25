@@ -64,7 +64,7 @@ Future<String?> getVideoId(String songName, List<String> artistName) async {
       final jsonResponse =
           await SpotifyAuthentication().fetchSearchSong(songName, artistName);
 
-      if (jsonResponse != null) {
+      if (jsonResponse != null && jsonResponse['items'].length != 0) {
         final videoId = jsonResponse!['items'][0]['id']['videoId'];
         Logger().d('videoId => ${jsonResponse['items'][0]['id']['videoId']}');
         if (videoId != null) {

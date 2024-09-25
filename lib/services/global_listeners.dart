@@ -31,6 +31,8 @@ class GlobalListeners with WidgetsBindingObserver {
   Future<void> setAuthToken(String token) async {
     authToken = token;
     Logger().d('Token set =>$token');
+    // BlocProvider.of<AuthenticationBloc>(context!)
+    //     .add(OnSaveAuthToken(authToken: authToken));
     startExpirationTimer();
   }
 
